@@ -1,14 +1,20 @@
 {
   "name": "mongoserver",
-  "version": "1.0.0",
-  "description": "An API to store data send from Loom in a MongoDB",
-  "main": "index.js",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./bin/www"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "express-react-views": "^0.11.0",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "mongodb": "^3.2.7",
+    "morgan": "~1.9.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   }
 }

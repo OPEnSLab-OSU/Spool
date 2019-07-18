@@ -5,7 +5,7 @@ class HelloMessage extends React.Component {
 
 	render() {
 		return (
-			<DefaultLayout title={this.props.title}>
+			<DefaultLayout title={this.props.title} locals={this.props.locals}>
 				<div>Hello {this.props.name}</div>
 			</DefaultLayout>
 		);

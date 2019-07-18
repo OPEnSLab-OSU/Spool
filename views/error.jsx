@@ -5,8 +5,9 @@ class Error extends React.Component {
 
 	render() {
 		return (
-			<DefaultLayout title={this.props.title}>
-				<div>Hello {this.props.name}</div>
+			<DefaultLayout title="Error" locals={{user: null}}>
+				<h3>{this.props.error.status} - {this.props.error.message}</h3>
+				<p>{this.props.error.stack}</p>
 			</DefaultLayout>
 		);
 	}

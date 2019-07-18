@@ -4,83 +4,30 @@
 
 var express = require('express');
 var router = express.Router();
+
+//MongoDB
 var mongoClient = require('../javascript/db.js');
+const ObjectID = require('mongodb').ObjectID;
 
-router.get('/data', function(req, res){
-	/*
-	API Endpoint to retrieve all data for a specific device.
+//API JSON Schema Validation
+var { Validator, ValidationError } = require('express-json-validator-middleware');
+var validator = new Validator({allErrors: true});
+// Define a shortcut function
+var validate = validator.validate;
+// TLS Client Authorization
+var authorized = require('../lib/middleware/authorized');
+const {RegisterDeviceSchema, PostDeviceDataSchema} = require('./api');
 
-	Request should look like
-
-	parameters:
-	 device_id = <device id>
-	 data_run = <data run> (optional)
-	 */
-
-	//Add user authentication
-	console.log("hello");
-
-	if (req.query.device_id) {
-		console.log(req.query.device_id);
-		var device_id = req.query.device_id;
-		mongoClient( (err, client) => {
-			if (err) {
-				throw err;
-			}
-			else {
-				const db = client.db("Loom");
-				const Devices = db.collection("devices");
-
-				Devices.find({device_id: device_id}).toArray((err, result) => {
-					if (err) throw err;
-					else {
-						console.log(result);
-						const device_type = result[0].device_type;
-
-						const DeviceData = db.collection(device_type);
-						if (!req.query.data_run) {
-							DeviceData.find({device_id: device_id}).toArray((err, results) => {
-								if (err) throw err;
-								else {
-									console.log(results);
-									res.send(results);
-								}
-							});
-						}
-						else {
-							var data_run = req.query.data_run;
-							const data_points = DeviceData.find({device_id: device_id, datarun_id: data_run}).toArray((err, results) => {
-								if (err) throw err;
-								else {
-									console.log("Hello!!");
-									res.send(results);
-								}
-							})
-						}
-
-					}
-				})
-
-
-
-			}
-		})
-	}
-	else {
-		res.send("No Device Specified.")
-	}
-});
-
-router.post('/data', function(req, res) {
+router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), function(req, res) {
 
 	/*
 	API Endpoint to save a new device datapoint into the database.
 
 	 Request should look like
 	 {
-	 "Device ID": <Device ID> (specific to each piece of hardware reporting data)
-	 "Data Run ID": <Data run ID> (specific to each set of data collection)
-	 "Data" : <json data provide from loom Manager.package()>
+	 "device_id": <string - Device ID> (specific to each piece of hardware reporting data)
+	 "data_run": <string - data run ID> (specific to each set of data collection)
+	 "data" : <json data provided from loom Manager.package()>
 	 }
 	 */
 
@@ -126,20 +73,31 @@ router.post('/data', function(req, res) {
 			res.send(err);
 		}
 		else {
-
+			var device_id = req.body.device_id;
 			const db = client.db('Loom');
+			const Devices = db.collection("Devices");
+			console.log("device id: " + device_id);
 
-			//IMPLEMENT data validation
-			//check that device type exists and data matches
-			//check that device id was registered
-
-			const DeviceData = db.collection(test_data.device_type);
-			DeviceData.insertOne(test_data, (err, result) => {
+			Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
 				if (err) throw err;
 				else {
-					res.send(result);
+					console.log(result);
+					const device_type = result[0].type;
+
+					const DeviceData = db.collection(device_type.toString());
+					var data = req.body;
+					data.device_type = device_type;
+
+					DeviceData.insertOne(data, (err, result) => {
+						if (err) throw err;
+						else {
+							res.send(result);
+						}
+					})
+
 				}
-			})
+			});
+
 		}
 	});
 });

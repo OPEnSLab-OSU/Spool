@@ -6,15 +6,24 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bootstrap": "^4.3.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^8.0.0",
     "express": "~4.16.1",
+    "express-json-validator-middleware": "^2.0.0",
     "express-react-views": "^0.11.0",
+    "express-session": "^1.16.2",
     "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
+    "jquery": "^3.4.1",
     "mongodb": "^3.2.7",
     "morgan": "~1.9.1",
+    "passport": "^0.4.0",
+    "passport-auth0": "^1.1.0",
+    "pem": "^1.14.2",
+    "popper.js": "^1.15.0",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "uuid-mongodb": "^2.0.1"
   }
 }

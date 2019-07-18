@@ -4,7 +4,7 @@ var mongoClient = require('../javascript/db.js');
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index');
+  res.render('index', {locals: res.locals});
 });
 
 

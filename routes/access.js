@@ -11,7 +11,6 @@ var pem = require('pem');
 var getKeys = require("../lib/manageKeys");
 //MongoDB
 var mongoClient = require('../javascript/db.js');
-const MUUID = require('uuid-mongodb');
 
 //API JSON Schema Validation
 var { Validator, ValidationError } = require('express-json-validator-middleware');
@@ -147,26 +146,30 @@ router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}
 					else {
 						const db = client.db("Loom");
 						const Devices = db.collection("Devices");
+						pem.getFingerprint(deviceKeys.certificate, (err, fingerprint) => {
 
-						var new_device = {
-							type: req.body.type,
-							name: req.body.name,
-							device_id: device_id,
-							certificate: deviceKeys.certificate
-						};
+							var new_device = {
+								type: req.body.type,
+								name: req.body.name,
+								device_id: device_id,
+								fingerprint: fingerprint.fingerprint
+							};
 
-						Devices.insertOne(new_device, (err, result) => {
-							if (err) throw err;
-							else {
-								//add device to user array
-								const Users = db.collection("Users");
-								req.user.meta.devices.push(device_id);
-								Users.updateOne({_id: new ObjectID(req.user.meta._id)}, {$set: {devices: req.user.meta.devices}}, function(err, result) {
-									if (err) {throw err;}
-									res.send({device_id: device_id, certificate: deviceKeys.certificate, private_key: deviceKeys.clientKey});
-								});
-							}
+							Devices.insertOne(new_device, (err, result) => {
+								if (err) throw err;
+								else {
+									//add device to user array
+									const Users = db.collection("Users");
+									req.user.meta.devices.push(device_id);
+									Users.updateOne({_id: new ObjectID(req.user.meta._id)}, {$set: {devices: req.user.meta.devices}}, function(err, result) {
+										if (err) {throw err;}
+										res.send({device_id: device_id, certificate: deviceKeys.certificate, private_key: deviceKeys.clientKey});
+									});
+								}
+							})
+
 						})
+
 					}
 				})
 

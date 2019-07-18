@@ -48,7 +48,6 @@ router.param('user', function (req, res, next, id) {
 router.get('/', secured(), function(req, res) {
 	if (req.user.meta.role == "user") {
 		//user dashboard
-		console.log(req.user);
 		//load user devices
 		mongoClient((err, client) => {
 			if (err) {return next(err);}
@@ -64,7 +63,6 @@ router.get('/', secured(), function(req, res) {
 
 			Devices.find({device_id: {$in: deviceArray}}).toArray((err, devices) => {
 				if (err) {return next(err);}
-				console.log(devices);
 				res.render("userDashboard", {devices: devices, locals: res.locals})
 			})
 		});
@@ -205,12 +203,10 @@ router.get('/device/:device/:data_run?', secured(), function(req, res){
 			else {
 				const db = client.db("Loom");
 				const Devices = db.collection("Devices");
-				console.log("device id: " + device_id);
 
 				Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
 					if (err) throw err;
 					else {
-						console.log(result);
 						const device_type = result[0].type;
 
 						const DeviceData = db.collection(device_type.toString());

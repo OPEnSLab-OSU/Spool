@@ -40,7 +40,6 @@ router.get('/callback', function (req, res, next) {
 						if (err) {
 							return next(err);
 						} else if (userMeta != null) {
-							console.log(userMeta);
 						
 							req.user.meta = userMeta;
 

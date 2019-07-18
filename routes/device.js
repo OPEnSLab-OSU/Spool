@@ -69,19 +69,16 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), func
 
 	mongoClient((err, client) => {
 		if (err) {
-			console.log(err);
 			res.send(err);
 		}
 		else {
 			var device_id = req.body.device_id;
 			const db = client.db('Loom');
 			const Devices = db.collection("Devices");
-			console.log("device id: " + device_id);
 
 			Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
 				if (err) throw err;
 				else {
-					console.log(result);
 					const device_type = result[0].type;
 
 					const DeviceData = db.collection(device_type.toString());

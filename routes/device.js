@@ -31,42 +31,6 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), func
 	 }
 	 */
 
-	var test_data = {
-		"device_type": 'eGreenhouse',
-		"device_id": '12345',
-		"datarun_id": '54321',
-		"data": {
-			"type": "data",
-			"timestamp": {
-				"Date": "2019/7/8",
-				"Time": "11:29:26"
-			},
-			"contents": [
-				{
-					"module": "TLS2561",
-					"data": {
-						"IR": 212,
-						"Full": 1672,
-						"Lux": 719
-					}
-				},
-				{
-					"module": "SHT31D",
-					"data": {
-						"Temp": 24.57542,
-						"Humid": 48.22004
-					}
-				},
-				{
-					"module": "K30",
-					"data": {
-						"C02": 654
-					}
-				}
-			]
-		}
-	};
-
 	mongoClient((err, client) => {
 		if (err) {
 			res.send(err);

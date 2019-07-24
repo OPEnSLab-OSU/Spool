@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('mongoserver:server');
 var https = require('https');
 var getKeys = require("../lib/manageKeys");
+var crypto = require('crypto');
 
 /**
  * Get port from environment and store in Express.
@@ -25,7 +26,6 @@ getKeys((keys) => {
   console.log(keys);
   startServer(keys);
 });
-
 
 /**
  * Normalize a port into a number, string, or false.
@@ -51,12 +51,15 @@ function normalizePort(val) {
 function startServer(keys) {
 //key is serviceKey
   //cert is certificate
+
   var server = https.createServer({
     key: keys.key,
     cert: keys.certificate,
     ca: keys.ca.certificate,
     requestCert: true,
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    ecdhCurve: 'P-256',
+    enableTrace: true
 }, app);
 
   /**
@@ -66,6 +69,7 @@ function startServer(keys) {
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);
+  
 
   console.log("Server listening on https://localhost:3000/");
   /**

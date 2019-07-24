@@ -1,5 +1,7 @@
 node_modules
 .certificates
 .clientTLS
+.ec-clientTLS
+.ec-certificates
 .env
 .idea

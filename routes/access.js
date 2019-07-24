@@ -61,19 +61,44 @@ router.get('/', secured(), function(req, res) {
 				return ObjectID(device)
 			});
 
+
+
 			Devices.find({device_id: {$in: deviceArray}}).toArray((err, devices) => {
 				if (err) {return next(err);}
-				res.render("userDashboard", {devices: devices, locals: res.locals})
+				res.render("userDashboard", {devices: devices, locals: res.locals, format: "cards"})
 			})
 		});
 	}
 
+
 	else if (req.user.meta.role == "admin") {
 
 		//admin dashboard
+		activeTab = req.query.tab;
+		if (activeTab == undefined) {
+			activeTab = "devices"
+		}
 		
-		res.render("index", {locals: res.locals})
+		//load all devices
+		mongoClient((err, client) => {
+			if (err) {return next(err);}
+
+			const db = client.db("Loom");
+			const Devices = db.collection("Devices");
+			const Users = db.collection("Users");
+
+			Devices.find({}).toArray((err, devices) => {
+				if (err) {return next(err);}
+
+				Users.find({}).toArray((err, users) => {
+					
+					console.log(users);
+					res.render("AdminDashboard", {devices: devices, users: users, locals: res.locals, activeTab: activeTab})
+				})
+			})
+		});
 	}
+		
 	else {
 		res.redirect('/auth/login');
 	}
@@ -98,6 +123,67 @@ router.get('/user/edit/:user?', secured(), function(req, res) {
 router.post('/user/edit/:user?', function(req, res) {
 
 });
+
+router.get('/device/view/:device', secured(), function(req, res) {
+
+	if (req.params.device) {
+
+		var device_id = req.params.device;
+		mongoClient( (err, client) => {
+			if (err) {
+				throw err;
+			}
+			else {
+				const db = client.db("Loom");
+				const Devices = db.collection("Devices");
+
+				Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
+					if (err) throw err;
+					else {
+						const device_type = result[0].type;
+						const device = result[0]
+						const DeviceData = db.collection(device_type.toString());
+
+						DeviceData.find({device_id: device_id}).toArray((err, results) => {
+							if (err) throw err;
+							else {
+
+
+								//reformat device data
+
+								var datas = results.map((data, index) => {
+
+									var formatted_device = {
+										Data_Run: data.data_run,
+										Date: data.data.timestamp.Date,
+										Time: data.data.timestamp.Time
+									};
+									data.data.contents.forEach((sensor) => {
+										for (var key in sensor.data) {
+											if (sensor.data.hasOwnProperty(key)) {
+
+												formatted_device[key] = sensor.data[key]
+
+											}
+										}
+									});
+									return formatted_device
+								});
+
+								res.render("DevicePage", {data: datas, device: device, locals: res.locals})
+							}
+						});
+					}
+				})
+			}
+		})
+	}
+	else {
+		res.send("No Device Specified.")
+	}
+
+});
+
 
 router.get('/device/register', secured(), function(req, res) {
 	res.render("RegisterDeviceForm", {locals: res.locals})
@@ -150,7 +236,8 @@ router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}
 								type: req.body.type,
 								name: req.body.name,
 								device_id: device_id,
-								fingerprint: fingerprint.fingerprint
+								fingerprint: fingerprint.fingerprint,
+								owner: req.user.meta._id
 							};
 
 							Devices.insertOne(new_device, (err, result) => {

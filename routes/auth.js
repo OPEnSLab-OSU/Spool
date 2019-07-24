@@ -53,7 +53,8 @@ router.get('/callback', function (req, res, next) {
 							Users.insertOne({
 								auth0_id: user.id,
 								devices: [],
-								role: "user"
+								role: "user",
+								email: user.email
 							}, function(err, response) {
 								if (err) {
 									return next(err);

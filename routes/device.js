@@ -4,6 +4,7 @@
 
 var express = require('express');
 var router = express.Router();
+var wrapAsync = require('../lib/middleware/asyncWrap');
 
 //MongoDB
 var mongoClient = require('../javascript/db.js');
@@ -18,7 +19,7 @@ var validate = validator.validate;
 var authorized = require('../lib/middleware/authorized');
 const {RegisterDeviceSchema, PostDeviceDataSchema} = require('./api');
 
-router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), function(req, res) {
+router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), wrapAsync(async function(req, res) {
 
 	/*
 	API Endpoint to save a new device datapoint into the database.
@@ -30,37 +31,28 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), func
 	 "data" : <json data provided from loom Manager.package()>
 	 }
 	 */
-
-	mongoClient((err, client) => {
-		if (err) {
-			res.send(err);
-		}
-		else {
-			var device_id = req.body.device_id;
-			const db = client.db('Loom');
-			const Devices = db.collection("Devices");
-
-			Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
-				if (err) throw err;
-				else {
-					const device_type = result[0].type;
-
-					const DeviceData = db.collection(device_type.toString());
-					var data = req.body;
-					data.device_type = device_type;
-
-					DeviceData.insertOne(data, (err, result) => {
-						if (err) throw err;
-						else {
-							res.send(result);
-						}
-					})
-
-				}
-			});
-
-		}
-	});
-});
+	
+	// get the database client
+	const client = await mongoClient().catch(err => {res.send(err)});
+	
+	//get the device id
+	var device_id = req.body.device_id;
+	const db = client.db('Loom');
+	
+	// device data collections are named by their device ID
+	const DeviceData = db.collection(device_id.toString());
+	
+	var data = req.body;
+	
+	data.device_type = device_type;
+	
+	let newData = await DeviceData.insertOne(data).catch(err => {throw err;});
+	if (newData) {
+		res.send(1);
+	}
+	else {
+		res.send(0)
+	}
+}));
 
 module.exports = router;

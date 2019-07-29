@@ -27,7 +27,7 @@ class RegisterDeviceForm extends React.Component {
 										</select>
 									</div>
 
-									<button type="submit" className="btn btn-primary">Submit</button>
+									<button type="submit" className="btn btn-primary">Download Configuration</button>
 								</form>
 							</div>
 						</div>

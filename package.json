@@ -1,11 +1,12 @@
 {
   "name": "mongoserver",
   "version": "0.0.0",
-  "private": true,
+  "main": "app.js",
   "scripts": {
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "asn1js": "^2.0.22",
     "bootstrap": "^4.3.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -18,6 +19,7 @@
     "jquery": "^3.4.1",
     "mongodb": "^3.2.7",
     "morgan": "~1.9.1",
+    "node-openssl-cert": "0.0.89",
     "passport": "^0.4.0",
     "passport-auth0": "^1.1.0",
     "pem": "^1.14.2",

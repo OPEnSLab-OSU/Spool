@@ -10,10 +10,13 @@ class DeviceBoard extends React.Component {
 	render() {
 
 		if (this.props.format == "list") {
+
+
 			const devices = this.props.devices.map((device, index) => {
-				var link = "/u/device/" + device.device_id;
+				var link = "/u/device/view/" + device.device_id;
 				return <div><DeviceRow name={device.name} type={device.type} key={index} index={index} link={link}/></div>
 			});
+
 
 			var deviceBoard =
 				<div>
@@ -31,11 +34,11 @@ class DeviceBoard extends React.Component {
 					</tbody>
 					</table>
 				</div>;
-			
 		}
+
 		else {
 			var devices = this.props.devices.map((device, index) => {
-				var link = "/u/device/" + device.device_id;
+				var link = "/u/device/view/" + device.device_id;
 				return <div className="col" style={{paddingBottom: "10px"}}><DevicePanel name={device.name} type={device.type} link={link}/></div>
 			});
 

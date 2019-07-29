@@ -7,22 +7,20 @@ const assert = require('assert');
 const mongoURI = "mongodb://localhost:27017";
 let _client;
 
+async function useClient() {
+	/**
+	 * Returns the MongoDB client as a promise
+	 */
 
-function useClient(callback) {
+	// check if we already have the client and return it if we do.
 	if (_client) {
-		callback(null, _client)
+			return _client
 	}
-		
 	else {
-		MongoClient.connect(mongoURI, function(err, client) {
-			if (err) {
-				callback(err, null)
-			}
-			else {
-				_client = client;
-				callback(null, client)
-			}
-		})
+
+		// otherwise connect to the client and return it
+		_client = MongoClient.connect(mongoURI).catch(err => {throw(err);});
+		return _client
 	}
 }
 

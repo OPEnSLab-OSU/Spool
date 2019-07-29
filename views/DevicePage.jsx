@@ -7,6 +7,8 @@ class DevicePage extends React.Component {
 	// also pass props.users which is an array of users with access to the device
 	render() {
 
+		// eventually we should display which users are attached to a device
+		
 		/*
 		const users = this.props.users.map((user, index) => {
 			var link = "/u/user/" + user._id;
@@ -29,36 +31,18 @@ class DevicePage extends React.Component {
 					</tbody>
 				</table>
 			</div>;*/
-
-		/*
-		console.log("hello");
-		const datas = this.props.data.map((data, index) => {
-			return <DataRow data = {this.props.data} />
-		});
-
-		var headers = [];
-		console.log(datas);
-		for (key in this.props.data) {
-
-			if (this.props.data.hasOwnProperty(key)) {
-				headers.push(<th>{key}</th>)
-			}
+		
+		// if there is data, display it in tabular format, otherwise don't display it
+		
+		var table;
+		
+		if (this.props.data.length != 0) {
+			table = <Table data={this.props.data}/>
 		}
-		console.log(headers);
-		var dataList =
-			<div>
-				<table className="table table-sm table-hover">
-				<thead>
-				<tr>
-					{headers}
-				</tr>
-				</thead>
-				<tbody>
-					{datas}
-				</tbody>
-				</table>
-			</div>;
-*/
+		else {
+			table = <h5>This device has not reported any data yet.</h5>
+		}
+
 		return (
 			<DefaultLayout title="Device" locals={this.props.locals}>
 				<div className="container-fluid">
@@ -66,36 +50,14 @@ class DevicePage extends React.Component {
 						<div className="col">
 							<h3>Name: {this.props.device.name} </h3>
 							<h4>Type: {this.props.device.type} </h4>
+							<a href={'/u/device/delete/' + this.props.device.device_id} className="btn btn-danger">Delete</a>
 						</div>
 					</div>
-
-						<Table data={this.props.data}/>
-
+					{table}
 				</div>
 			</DefaultLayout>
 		)
 	}
 }
-/*
-class DataRow extends React.Component {
 
-	render() {
-
-		var cols = [];
-
-		for (key in this.props.data) {
-
-			if (this.props.data.hasOwnProperty(key)) {
-				cols.push(<td>{this.props.data[key]}</td>)
-			}
-		}
-		console.log(cols);
-
-		return (
-			<tr>
-				{cols}
-			</tr>
-		)
-	}
-}*/
 module.exports = DevicePage;

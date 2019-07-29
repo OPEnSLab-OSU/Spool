@@ -6,192 +6,255 @@
 var express = require('express');
 var router = express.Router();
 var secured = require('../lib/middleware/secured');
-const ObjectID = require('mongodb').ObjectID;
+var wrapAsync = require('../lib/middleware/asyncWrap');
+
+// Certificate Generation
+var ClientCertFactory = require('../lib/ClientCertFactory');
 var pem = require('pem');
 var getKeys = require("../lib/manageKeys");
+
+
 //MongoDB
 var mongoClient = require('../javascript/db.js');
+const ObjectID = require('mongodb').ObjectID;
+
 
 //API JSON Schema Validation
-var { Validator, ValidationError } = require('express-json-validator-middleware');
+var {Validator, ValidationError} = require('express-json-validator-middleware');
 var validator = new Validator({allErrors: true});
 // Define a shortcut function
 var validate = validator.validate;
 const {RegisterDeviceSchema} = require('./api');
 
+router.param('user', wrapAsync(async function (req, res, next, id) {
+	/***
+	 * Try to get the user details from the User model and attach it to the request object for any user based requests
+	 */
 
-//take care of fetching user
-router.param('user', function (req, res, next, id) {
+	let client = await mongoClient().catch((err) => {
+		throw err;
+	});
 
-		// try to get the user details from the User model and attach it to the request object
-		mongoClient( (err, client) => {
-			if (err) {
-				return next(err);
-			}
-			else {
-				const db = client.db("Loom");
-				const Users = db.collection("Users");
-				Users.findOne({"_id": id}, function (err, user) {
-					if (err) {
-						return next(err)
-					} else if (user) {
-						req.changingUser = user;
-						next()
-					} else {
-						return next(new Error('failed to load user'))
-					}
-				})
-			}
-		})
-});
+	const db = client.db("Loom");
+	const Users = db.collection("Users");
 
-router.get('/', secured(), function(req, res) {
-	if (req.user.meta.role == "user") {
-		//user dashboard
-		//load user devices
-		mongoClient((err, client) => {
-			if (err) {return next(err);}
+	let devices = await Devices.find({device_id: new ObjectID(device_id)}).toArray().catch((err) => {
+		throw err;
+	});
+	let user = await Users.findOne({"_id": id}).catch(err => {
+		throw err;
+	});
 
-			const db = client.db("Loom");
-			const Devices = db.collection("Devices");
-
-
-			const deviceArray = req.user.meta.devices.map(device => {
-
-				return ObjectID(device)
-			});
-
-
-
-			Devices.find({device_id: {$in: deviceArray}}).toArray((err, devices) => {
-				if (err) {return next(err);}
-				res.render("userDashboard", {devices: devices, locals: res.locals, format: "cards"})
-			})
-		});
+	if (user) {
+		req.changingUser = user;
+		next()
+	} else {
+		return next(new Error('failed to load user'))
 	}
+}));
 
+router.get('/', secured(), wrapAsync(async function (req, res) {
+	/***
+	 * Endpoint that renders the user dashboard.
+	 * Authentication: User must be logged in.
+	 */
+
+	// check which user role we have to handle
+	if (req.user.meta.role == "user") {
+
+		//user dashboard
+
+		let client = await mongoClient().catch(err => {
+			throw err;
+		});
+
+		//grab the users devices from the database
+		const db = client.db("Loom");
+		const Devices = db.collection("Devices");
+		const deviceArray = req.user.meta.devices.map(device => {
+			return ObjectID(device)
+		});
+
+		let devices = await Devices.find({device_id: {$in: deviceArray}}).toArray().catch(err => {
+			throw err;
+		});
+
+		//render the user dashboard
+		res.render("userDashboard", {devices: devices, locals: res.locals, format: "cards"})
+	}
 
 	else if (req.user.meta.role == "admin") {
 
-		//admin dashboard
+		// admin dashboard
+
 		activeTab = req.query.tab;
 		if (activeTab == undefined) {
 			activeTab = "devices"
 		}
-		
-		//load all devices
-		mongoClient((err, client) => {
-			if (err) {return next(err);}
 
-			const db = client.db("Loom");
-			const Devices = db.collection("Devices");
-			const Users = db.collection("Users");
+		let client = await mongoClient().catch(err => {
+			throw err;
+		});
 
-			Devices.find({}).toArray((err, devices) => {
-				if (err) {return next(err);}
+		// grab the devices and the users from the database
+		const db = client.db("Loom");
+		const Devices = db.collection("Devices");
+		const Users = db.collection("Users");
 
-				Users.find({}).toArray((err, users) => {
-					
-					console.log(users);
-					res.render("AdminDashboard", {devices: devices, users: users, locals: res.locals, activeTab: activeTab})
-				})
-			})
+		var devices = await Devices.find({}).toArray().catch(err => {
+			throw err;
+		});
+
+		var users = await Users.find({}).toArray().catch(err => {
+			throw err;
+		});
+
+		// render the admin dashboard
+		res.render("AdminDashboard", {
+			devices: devices,
+			users: users,
+			locals: res.locals,
+			activeTab: activeTab
 		});
 	}
-		
 	else {
+		//send to the login page
 		res.redirect('/auth/login');
 	}
-});
+}));
 
-router.get('/user/edit/:user?', secured(), function(req, res) {
+router.get('/user/edit/:user?', secured(), function (req, res) {
+	/***
+	 * Endpoint for a user editing form
+	 */
 
 	//don't let non-admins modify anyone but themselves
-	if (req.user.meta.role !== "admin") {
-		req.changingUser = undefined
-	}
-	if (req.changingUser == undefined) {
-		user = req.user
-	}
-	else {
+	let user;
+	if (req.user.meta.role == "admin" && req.changingUser !== undefined) {
 		user = req.changingUser
 	}
+	else {
+		user = req.user
+	}
 
+	//render the user edit form
 	res.render('EditUserForm', {user: user, locals: res.locals})
 });
 
-router.post('/user/edit/:user?', function(req, res) {
+router.post('/user/edit/:user?', function (req, res) {
 
 });
 
-router.get('/device/view/:device', secured(), function(req, res) {
+router.get('/device/view/:device', secured(), wrapAsync(async function (req, res) {
+	/***
+	 * Endpoint to view a device and its data.
+	 *
+	 * Authentication: User must be logged in.
+	 */
+	if (req.params.device) {
+		if (req.user.meta.devices.includes(req.params.device)) {
 
+			var device_id = req.params.device;
+
+			var client = await mongoClient().catch((err) => {
+				next(err);
+			});
+			
+			// get the device and it's data
+			const db = client.db("Loom");
+			const Devices = db.collection("Devices");
+			const DeviceData = db.collection(device_id.toString());
+			var deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {
+				throw err;
+			});
+
+			var devices = await Devices.find({device_id: new ObjectID(device_id)}).toArray().catch(err => {throw err});
+			var device = devices[0];
+			console.log(devices);
+			var datas = formatDeviceData(deviceData);
+
+			// render the device view page
+			res.render("DevicePage", {data: datas, device: device, locals: res.locals})
+		}
+
+		else {
+			res.status(401);
+			res.send("Not Authorized.");
+		}
+	}
+
+	else {
+		res.redirect("/")
+	}
+}));
+
+router.get('/device/delete/:device', secured(), wrapAsync(async function (req, res) {
+	/**
+	 *  Deletes a device the user owns.
+	 *  Authentication: User must be logged in.
+	 */
+
+	//make sure there is a device (this should be unnecessary but done just to be safe)
 	if (req.params.device) {
 
-		var device_id = req.params.device;
-		mongoClient( (err, client) => {
-			if (err) {
-				throw err;
-			}
-			else {
-				const db = client.db("Loom");
-				const Devices = db.collection("Devices");
+		// Load the MongoDB client
+		var client = await mongoClient().catch(err => {
+			throw err;
+		});
 
-				Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
-					if (err) throw err;
-					else {
-						const device_type = result[0].type;
-						const device = result[0]
-						const DeviceData = db.collection(device_type.toString());
+		const db = client.db("Loom");
+		const Devices = db.collection("Devices");
+		const device_id = req.params.device;
 
-						DeviceData.find({device_id: device_id}).toArray((err, results) => {
-							if (err) throw err;
-							else {
+		//get the device
+		var devices = await Devices.find({device_id: new ObjectID(device_id)}).toArray().catch(err => {
+			throw err;
+		});
 
+		var device = devices[0];
 
-								//reformat device data
+		//check if the device is owned by this user
+		if (device.owner == req.user.meta._id) {
 
-								var datas = results.map((data, index) => {
+			// delete the device
+			Devices.deleteOne({_id: device._id});
 
-									var formatted_device = {
-										Data_Run: data.data_run,
-										Date: data.data.timestamp.Date,
-										Time: data.data.timestamp.Time
-									};
-									data.data.contents.forEach((sensor) => {
-										for (var key in sensor.data) {
-											if (sensor.data.hasOwnProperty(key)) {
+			//delete the device data
+			const DeviceData = db.collection(device_id.toString());
+			DeviceData.remove({device_id: device.device_id});
 
-												formatted_device[key] = sensor.data[key]
+			// redirect to the user dashboard
+			res.redirect('/u/')
+		}
+		else {
 
-											}
-										}
-									});
-									return formatted_device
-								});
-
-								res.render("DevicePage", {data: datas, device: device, locals: res.locals})
-							}
-						});
-					}
-				})
-			}
-		})
+			// redirect to the user dashboard
+			res.redirect('/u/')
+		}
 	}
 	else {
-		res.send("No Device Specified.")
+
+		// redirect to the user dashboard
+		res.redirect("/u/")
 	}
+}));
 
-});
+router.get('/device/register', secured(), function (req, res) {
+	/**
 
+	 User form to register a new loom device.
 
-router.get('/device/register', secured(), function(req, res) {
+	 Sends form data to POST 'device/register'
+	 and generates a device id and client certificate.
+
+	 **/
+
 	res.render("RegisterDeviceForm", {locals: res.locals})
 });
 
-router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}), function(req, res) {
+router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}), wrapAsync(async function (req, res) {
 	/*
-	 API Endpoint to register a new device for data collection.
+	 Endpoint to register a new device for data collection.
 
 	 Request format:
 	 {
@@ -199,76 +262,81 @@ router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}
 	 “name”: <string - device name>
 	 }
 
-	 Function: Add request JSON object into mongodb devices collection with an added UUID called “device_id”. (Add a user?)
+	 Function:
+	 1. Generate a client certificate and device id for the new device.
+	 2. Add the new device object to the MongoDB "Devices" collection.
+	 Note: The owner of the device is set as the currently logged in user.
 
-	 Response: If successful, return created object. Otherwise, return error codes.
-
+	 Response: If successful, render a page with the new device id and authentication info and a button to download the JSON as a file.
 	 */
-	//add schema validation later with https://www.npmjs.com/package/express-json-validator-middleware
 
-	// naively validate request
-	if (req.body.type && req.body.name)
-	{
+	// naively validate request (the JSON Schema validation should be
+	if (req.body.type && req.body.name) {
 
 		//generate a device_id
 		const device_id = new ObjectID();
-		//generate a public and secret key for the device
 
-		getKeys((keys) => {
 
-			var keyOptions = {
-				serviceKey: keys.ca.key,
-				serviceCertificate: keys.ca.certificate,
-				serviceKeyPassword: process.env.CA_PASSWORD
-			};
+		//======= Generate Client Certificate =======//
 
-			pem.createCertificate(keyOptions, (err, deviceKeys) => {
-				//save keys to the db and then return them to the user.
+		// get the certificate authority keys
+		const keys = await getKeys();
 
-				mongoClient( (err, client) => {
-					if (err) throw err;
-					else {
-						const db = client.db("Loom");
-						const Devices = db.collection("Devices");
-						pem.getFingerprint(deviceKeys.certificate, (err, fingerprint) => {
-
-							var new_device = {
-								type: req.body.type,
-								name: req.body.name,
-								device_id: device_id,
-								fingerprint: fingerprint.fingerprint,
-								owner: req.user.meta._id
-							};
-
-							Devices.insertOne(new_device, (err, result) => {
-								if (err) throw err;
-								else {
-									//add device to user array
-									const Users = db.collection("Users");
-									req.user.meta.devices.push(device_id);
-									Users.updateOne({_id: new ObjectID(req.user.meta._id)}, {$set: {devices: req.user.meta.devices}}, function(err, result) {
-										if (err) {throw err;}
-										res.send({device_id: device_id, certificate: deviceKeys.certificate, private_key: deviceKeys.clientKey});
-									});
-								}
-							})
-
-						})
-
-					}
-				})
-
-			})
+		// generate a client certificate
+		const certFactory = new ClientCertFactory(process.env.OPENSSL_BINARY_PATH, keys.ca.certificate);
+		const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client " + device_id, false).catch((err) => {
+			throw err
 		});
+
+		//======= Add the new device to the database =======//
+
+		const client = await mongoClient().catch(err => {
+			throw err;
+		});
+		const db = client.db("Loom");
+		const Devices = db.collection("Devices");
+		const new_device = {
+			type: req.body.type,
+			name: req.body.name,
+			device_id: device_id,
+			fingerprint: clientCert.fingerprint,
+			owner: req.user.meta._id
+		};
+
+		let devices = await Devices.insertOne(new_device).catch(err => {
+			throw err;
+		});
+
+		//add device to user array
+		const Users = db.collection("Users");
+		req.user.meta.devices.push(device_id);
+
+		let userUpdate = Users.updateOne({_id: new ObjectID(req.user.meta._id)}, {$set: {devices: req.user.meta.devices}}).catch(err => {
+			throw err
+		});
+
+
+		// give the device info to the user
+
+		var text = JSON.stringify({
+			device_id: device_id,
+			certificate: clientCert.certificate,
+			private_key: clientCert.key_raw
+		});
+
+		// render the device info page
+		res.render("NewDeviceInfo", {device_info: text, locals: res.locals});
+
 	}
 	else {
 		res.send("Not a valid request");
 	}
-});
+}));
 
-router.get('/device/:device/:data_run?', secured(), function(req, res){
+/*
+router.get('/device/:device/:data_run?', secured(), async function (req, res) {
 	/*
-	 API Endpoint to retrieve all data for a specific device.
+	 API Endpoint to retrieve all data for a specific device. This endpoint isn't being used by the frontend and has been replaced by 'device/view/:device'
 
 	 Request format:
 
@@ -276,54 +344,76 @@ router.get('/device/:device/:data_run?', secured(), function(req, res){
 	 device_id = <string - device id>
 	 data_run = <string - data run> (optional)
 	 */
-
+/*
 	//Add user authentication
-
 
 	if (req.params.device) {
 
+		// get the device
 		var device_id = req.params.device;
-		mongoClient( (err, client) => {
-			if (err) {
-				throw err;
-			}
-			else {
-				const db = client.db("Loom");
-				const Devices = db.collection("Devices");
+		const client = mongoClient().catch(err => {
+			throw err;
+		});
 
-				Devices.find({device_id: new ObjectID(device_id)}).toArray((err, result) => {
-					if (err) throw err;
-					else {
-						const device_type = result[0].type;
+		const db = client.db("Loom");
+		const Devices = db.collection("Devices");
+		
+		const devices = Devices.find({device_id: new ObjectID(device_id)}).toArray().catch(err => {
+			throw err
+		});
 
-						const DeviceData = db.collection(device_type.toString());
-						if (!req.params.data_run) {
-							DeviceData.find({device_id: device_id}).toArray((err, results) => {
-								if (err) throw err;
-								else {
+		const device_type = devices[0].type;
 
-									res.send(results);
-								}
-							});
-						}
-						else {
-							var data_run = req.params.data_run;
-							const data_points = DeviceData.find({device_id: device_id, datarun_id: data_run}).toArray((err, results) => {
-								if (err) throw err;
-								else {
+		// NOTE: change this to new DB design
 
-									res.send(results);
-								}
-							})
-						}
-					}
-				})
-			}
-		})
+		const DeviceData = db.collection(device_type.toString());
+
+		let query;
+		if (!req.params.data_run) {
+			
+			query = {device_id: device_id};
+			//find devices without the data run in the query
+
+			DeviceData.find({device_id: device_id}).toArray((err, results) => {
+				if (err) throw err;
+				else {
+					res.send(results);
+				}
+			});
+		}
+		else {
+			//find the devices with the data run in the query
+			var data_run = req.params.data_run;
+			query = {device_id: device_id, datarun_id: data_run};
+		}
+
+		const datapoints = await DeviceData.find(query).toArray().catch(err => {throw err});
+		res.send(datapoints);
 	}
 	else {
 		res.send("No Device Specified.")
 	}
 });
+**/
 
+
+function formatDeviceData(deviceData) {
+	return deviceData.map((data, index) => {
+
+		var formatted_device = {
+			Data_Run: data.data_run,
+			Date: data.data.timestamp.Date,
+			Time: data.data.timestamp.Time
+		};
+
+		data.data.contents.forEach((sensor) => {
+			for (var key in sensor.data) {
+				if (sensor.data.hasOwnProperty(key)) {
+					formatted_device[key] = sensor.data[key]
+				}
+			}
+		});
+		return formatted_device
+	});
+}
 module.exports = router;

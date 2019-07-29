@@ -20,8 +20,8 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
-getKeys((keys) => {
+///////NOTE: use promises here ///////
+key = getKeys().then(keys => {
   //get or create keys
   console.log(keys);
   startServer(keys);
@@ -58,8 +58,7 @@ function startServer(keys) {
     ca: keys.ca.certificate,
     requestCert: true,
     rejectUnauthorized: false,
-    ecdhCurve: 'P-256',
-    enableTrace: true
+    ecdhCurve: 'P-256'
 }, app);
 
   /**

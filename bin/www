@@ -23,7 +23,6 @@ app.set('port', port);
 ///////NOTE: use promises here ///////
 key = getKeys().then(keys => {
   //get or create keys
-  console.log(keys);
   startServer(keys);
 });
 

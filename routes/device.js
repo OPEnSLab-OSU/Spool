@@ -46,10 +46,10 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), wrap
 	
 	let newData = await DeviceData.insertOne(data).catch(err => {throw err;});
 	if (newData) {
-		res.send(1);
+		res.sendStatus(200);
 	}
 	else {
-		res.send(0)
+		res.sendStatus(500)
 	}
 }));
 

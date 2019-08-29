@@ -321,7 +321,7 @@ router.post('/device/register', secured(), validate({body: RegisterDeviceSchema}
 		var text = JSON.stringify({
 			device_id: device_id,
 			certificate: clientCert.certificate,
-			private_key: clientCert.key_raw
+			private_key: clientCert.key
 		});
 
 		// render the device info page

@@ -44,8 +44,6 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), wrap
 	
 	var data = req.body;
 	
-	data.device_type = device_type;
-	
 	let newData = await DeviceData.insertOne(data).catch(err => {throw err;});
 	if (newData) {
 		res.send(1);

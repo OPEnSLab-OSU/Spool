@@ -396,7 +396,6 @@ router.get('/device/:device/:data_run?', secured(), async function (req, res) {
 });
 **/
 
-
 function formatDeviceData(deviceData) {
 	return deviceData.map((data, index) => {
 

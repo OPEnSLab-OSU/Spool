@@ -17,7 +17,12 @@ class Table extends React.Component {
 	render() {
 
 		var items = this.props.data;
-		var keys = Object.keys(this.props.data[0]);
+		
+		//var keys = Object.keys(this.props.data[0]);
+		var keys = this.props.data[0].map((key, index) => {
+			return key
+		});
+		console.log(keys);
 		var header = keys.map((key, index)=>{
 			console.log(key);
 			return <th key={key}>{key.toUpperCase()}</th>

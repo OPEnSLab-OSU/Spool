@@ -399,16 +399,16 @@ router.get('/device/:device/:data_run?', secured(), async function (req, res) {
 function formatDeviceData(deviceData) {
 	return deviceData.map((data, index) => {
 
-		var formatted_device = {
-			"Data_Run": data.data_run,
-			"Date": data.data.timestamp.date,
-			"Time": data.data.timestamp.time
-		};
+		var formatted_device = new Map();
+
+		formatted_device.set("Data_Run", data.data_run);
+		formatted_device.set("Date", data.data.timestamp.date);
+		formatted_device.set("Time", data.data.timestamp.time);
 
 		data.data.contents.forEach((sensor) => {
 			for (var key in sensor.data) {
 				if (sensor.data.hasOwnProperty(key)) {
-					formatted_device[String(key)] = sensor.data[key]
+					formatted_device.set(String(key), sensor.data[key]);
 				}
 			}
 		});
@@ -416,4 +416,5 @@ function formatDeviceData(deviceData) {
 		return formatted_device
 	});
 }
+
 module.exports = router;

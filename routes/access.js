@@ -401,8 +401,8 @@ function formatDeviceData(deviceData) {
 
 		var formatted_device = {
 			Data_Run: data.data_run,
-			Date: data.data.timestamp.Date,
-			Time: data.data.timestamp.Time
+			Date: data.data.timestamp.date,
+			Time: data.data.timestamp.time
 		};
 
 		data.data.contents.forEach((sensor) => {

@@ -14,15 +14,12 @@ class Table extends React.Component {
 
 	};
 
-
-
-
-
 	render() {
 
 		var items = this.props.data;
 		var keys = Object.keys(this.props.data[0]);
 		var header = keys.map((key, index)=>{
+			console.log(key);
 			return <th key={key}>{key.toUpperCase()}</th>
 		});
 

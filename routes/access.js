@@ -408,7 +408,7 @@ function formatDeviceData(deviceData) {
 		data.data.contents.forEach((sensor) => {
 			for (var key in sensor.data) {
 				if (sensor.data.hasOwnProperty(key)) {
-					formatted_device[key] = sensor.data[key]
+					formatted_device[String(key)] = sensor.data[key]
 				}
 			}
 		});

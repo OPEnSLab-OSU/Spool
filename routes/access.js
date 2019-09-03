@@ -400,9 +400,9 @@ function formatDeviceData(deviceData) {
 	return deviceData.map((data, index) => {
 
 		var formatted_device = {
-			Data_Run: data.data_run,
-			Date: data.data.timestamp.date,
-			Time: data.data.timestamp.time
+			"Data_Run": data.data_run,
+			"Date": data.data.timestamp.date,
+			"Time": data.data.timestamp.time
 		};
 
 		data.data.contents.forEach((sensor) => {
@@ -412,6 +412,7 @@ function formatDeviceData(deviceData) {
 				}
 			}
 		});
+		console.log(formatted_device);
 		return formatted_device
 	});
 }

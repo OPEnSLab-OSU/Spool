@@ -17,16 +17,15 @@ class Table extends React.Component {
 	render() {
 
 		var items = this.props.data;
-		console.log(items);
-		var keys = Object.keys(this.props.data[0]);
-		
-		var header = keys.map((key, index)=>{
+
+
+		var header = items.keys().map((key, index)=>{
 			console.log(key);
 			return <th key={key}>{key.toUpperCase()}</th>
 		});
 
 		var rowData = items.map((row, index)=>{
-				return <tr key={index}><RenderRow key={index} data={row} keys={keys}/></tr>
+				return <tr key={index}><RenderRow key={index} data={row} keys={items.keys()}/></tr>
 			});
 
 

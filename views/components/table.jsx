@@ -18,14 +18,15 @@ class Table extends React.Component {
 
 		var items = this.props.data;
 
+		var keys = items[0].keys();
 
-		var header = items.keys().map((key, index)=>{
+		var header = keys.map((key, index)=>{
 			console.log(key);
 			return <th key={key}>{key.toUpperCase()}</th>
 		});
 
 		var rowData = items.map((row, index)=>{
-				return <tr key={index}><RenderRow key={index} data={row} keys={items.keys()}/></tr>
+				return <tr key={index}><RenderRow key={index} data={row} keys={keys}/></tr>
 			});
 
 
@@ -49,8 +50,8 @@ class Table extends React.Component {
 class RenderRow extends React.Component {
 
 	render() {
-		return this.props.keys.map((key, index)=>{
-			return <td key={this.props.data[key]}>{this.props.data[key]}</td>
+		return Array.from(this.props.keys).map(([key, value]) => {
+			return <td key={key}>{value}</td>
 		})
 	}
 

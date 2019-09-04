@@ -176,7 +176,7 @@ router.get('/device/view/:device', secured(), wrapAsync(async function (req, res
 				console.log(value);
 				return value.get('Date')
 			});
-			var y = datas.map((key, value) => {
+			var y = datas.map((value, index) => {
 				return value.get('Time')
 			});
 			var data = {
@@ -423,7 +423,7 @@ function formatDeviceData(deviceData) {
 				}
 			}
 		});
-		console.log(formatted_device);
+
 		return formatted_device
 	});
 }

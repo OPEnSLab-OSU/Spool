@@ -173,10 +173,11 @@ router.get('/device/view/:device', secured(), wrapAsync(async function (req, res
 			console.log(devices);
 			var datas = formatDeviceData(deviceData);
 			var x = datas.map((key, value) => {
-				return value.get('Date')
+				console.log(value);
+				return value['Date']
 			});
 			var y = datas.map((key, value) => {
-				return value.get('Time')
+				return value['Time']
 			});
 			var data = {
 				x: x,

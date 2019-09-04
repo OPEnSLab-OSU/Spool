@@ -1,4 +1,5 @@
 var React = require('react');
+import Plot from 'react-plotly.js';
 
 class AnalysisView extends  React.Component {
 	render() {
@@ -9,7 +10,7 @@ class AnalysisView extends  React.Component {
 			</script>
 			<div className="card">
 				<div className="card-body" id={this.props.analysis.name}>
-
+					<Plot data={[this.props.analysis.data]} layout={{}} />
 				</div>
 			</div>
 			</div>

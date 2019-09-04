@@ -7,7 +7,7 @@ var express = require('express');
 var router = express.Router();
 var secured = require('../lib/middleware/secured');
 var wrapAsync = require('../lib/middleware/asyncWrap');
-
+var AnalysisManager = require('../Analysis/Analysis');
 // Certificate Generation
 var ClientCertFactory = require('../lib/ClientCertFactory');
 var pem = require('pem');
@@ -172,9 +172,19 @@ router.get('/device/view/:device', secured(), wrapAsync(async function (req, res
 			var device = devices[0];
 			console.log(devices);
 			var datas = formatDeviceData(deviceData);
-
+			var x = datas.map((key, value) => {
+				return value.get('Date')
+			});
+			var y = datas.map((key, value) => {
+				return value.get('Time')
+			});
+			var data = {
+				x: x,
+				y: y,
+				mode: 'lines'
+			};
 			// render the device view page
-			res.render("DevicePage", {data: datas, device: device, locals: res.locals})
+			res.render("DevicePage", {data: datas, device: device, locals: res.locals, analysis: AnalysisManager('graph', data, null, {})})
 		}
 
 		else {

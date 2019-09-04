@@ -1,6 +1,7 @@
 var React = require('react');
 var DefaultLayout = require('./layouts/default');
 var Table = require('./components/table');
+var AnalysisView = require('./components/AnalysisView');
 
 class DevicePage extends React.Component {
 	//this needs to be passed props.device and props.data where device is the device and data is an array of the data the device has collected sorted by timestamp.
@@ -53,6 +54,7 @@ class DevicePage extends React.Component {
 							<a href={'/u/device/delete/' + this.props.device.device_id} className="btn btn-danger">Delete</a>
 						</div>
 					</div>
+					<AnalysisView analysis={this.props.analysis} />
 					{table}
 				</div>
 			</DefaultLayout>

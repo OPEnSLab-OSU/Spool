@@ -7,8 +7,6 @@ class Table extends React.Component {
 
 	}
 
-
-
 	getHeader (){
 		var keys = this.getKeys();
 
@@ -17,8 +15,6 @@ class Table extends React.Component {
 	render() {
 
 		var items = this.props.data;
-
-
 
 		var header = Array.from(items[0]).map(([key, value])=>{
 			console.log(key);
@@ -42,19 +38,16 @@ class Table extends React.Component {
 					</tbody>
 				</table>
 			</div>
-
 		);
 	}
 }
 
 class RenderRow extends React.Component {
-
 	render() {
 		return Array.from(this.props.data).map(([key, value]) => {
 			return <td key={key}>{value}</td>
 		})
 	}
-
 }
 
 module.exports = Table;

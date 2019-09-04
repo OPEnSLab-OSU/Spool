@@ -6,6 +6,8 @@ class DefaultLayout extends React.Component {
 			<html>
 			<head>
 				<link rel="stylesheet" href="/css/bootstrap.min.css" />
+				<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 				<title>{this.props.title}</title></head>
 				<body>
 					<NavBar locals={this.props.locals}/>

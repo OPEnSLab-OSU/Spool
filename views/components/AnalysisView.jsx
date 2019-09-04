@@ -1,5 +1,4 @@
 var React = require('react');
-var Plotly = require('plotly.js-dist');
 
 class AnalysisView extends  React.Component {
 	render() {

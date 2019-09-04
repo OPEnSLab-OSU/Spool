@@ -5,7 +5,7 @@ class AnalysisView extends  React.Component {
 		return (
 			<div>
 			<script>
-				Plotly.newPlot(this.props.analysis.name, this.props.analysis.data, this.props.analysis.layout);
+				Plotly.newPlot({this.props.analysis.name}, {this.props.analysis.data}, {this.props.analysis.layout});
 			</script>
 			<div className="card">
 				<div className="card-body" id={this.props.analysis.name}>

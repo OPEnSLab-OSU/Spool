@@ -185,7 +185,7 @@ router.get('/device/view/:device', secured(), wrapAsync(async function (req, res
 				mode: 'lines'
 			};
 			// render the device view page
-			res.render("DevicePage", {data: datas, device: device, locals: res.locals, analysis: AnalysisManager('graph', data, null, {})})
+			res.render("DevicePage", {data: datas, device: device, locals: res.locals, analysis: new AnalysisManager('graph', data, null, {})})
 		}
 
 		else {

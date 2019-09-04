@@ -1,5 +1,4 @@
 var React = require('react');
-var DefaultLayout = require('./layouts/default');
 
 class AnalysisView extends  React.Component {
 	render() {

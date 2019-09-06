@@ -7,7 +7,7 @@ var router = express.Router();
 var wrapAsync = require('../lib/middleware/asyncWrap');
 
 //MongoDB
-var mongoClient = require('../javascript/db.js');
+var mongoClient = require('../javascript/db');
 const ObjectID = require('mongodb').ObjectID;
 
 //API JSON Schema Validation

@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var mongoClient = require('../javascript/db.js');
+var mongoClient = require('../javascript/db');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

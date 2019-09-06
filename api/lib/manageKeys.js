@@ -7,10 +7,10 @@ const caPath = './.ec-certificates/ca';
 const keyPath = '-key.pem';
 const certificatePath = '-crt.pem';
 var pem = require('pem');
-
 const readOptions = {
 	encoding: "utf8"
 };
+
 
 module.exports = async function getKeys() {
 	//update this function to regenerate only necessary pieces 
@@ -36,7 +36,6 @@ module.exports = async function getKeys() {
 			};
 			
 			//check that certificate hasn't expired. renew them if they have.
-
 			return keys
 		}
 		else {

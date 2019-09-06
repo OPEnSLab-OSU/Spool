@@ -1,6 +1,5 @@
 var React = require('react');
 var DefaultLayout = require('./layouts/default');
-
 class DeviceBoard extends React.Component {
 	constructor(props) {
 		super(props);

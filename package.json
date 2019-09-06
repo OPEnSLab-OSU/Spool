@@ -1,9 +1,14 @@
 {
   "name": "mongoserver",
   "version": "0.0.0",
-  "main": "app.js",
+  "main": "api/app.js",
   "scripts": {
-    "start": "node ./bin/www"
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject",
+      "dev": "npm-run-all --parallel start server",
+      "server": "node ./api/bin/www"
   },
   "dependencies": {
     "asn1js": "^2.0.22",
@@ -13,13 +18,16 @@
     "dotenv": "^8.0.0",
     "express": "~4.16.1",
     "express-json-validator-middleware": "^2.0.0",
+    "express-jwt": "^5.3.1",
     "express-react-views": "^0.11.0",
     "express-session": "^1.16.2",
     "http-errors": "~1.6.3",
     "jquery": "^3.4.1",
+    "jwks-rsa": "^1.6.0",
     "mongodb": "^3.2.7",
     "morgan": "~1.9.1",
     "node-openssl-cert": "0.0.89",
+    "npm-run-all": "^4.1.5",
     "passport": "^0.4.0",
     "passport-auth0": "^1.1.0",
     "pem": "^1.14.2",
@@ -27,9 +35,30 @@
     "plotly.js": "^1.49.4",
     "plotly.js-dist": "^1.49.4",
     "popper.js": "^1.15.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
     "react-plotly.js": "^2.3.0",
-    "uuid-mongodb": "^2.0.1"
-  }
+    "uuid-mongodb": "^2.0.1",
+    "@auth0/auth0-spa-js": "^1.2.3",
+    "react": "^16.9.0",
+    "react-bootstrap": "^1.0.0-beta.12",
+    "react-dom": "^16.9.0",
+    "react-helmet": "^5.2.1",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "3.1.1"
+  },
+  "eslintConfig": {
+      "extends": "react-app"
+  },
+  "browserslist": {
+      "production": [
+          ">0.2%",
+          "not dead",
+          "not op_mini all"
+      ],
+      "development": [
+          "last 1 chrome version",
+          "last 1 firefox version",
+          "last 1 safari version"
+      ]
+  },
+  "proxy": "https://localhost:3001"
 }

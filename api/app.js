@@ -14,47 +14,19 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var deviceRouter = require('./routes/device');
 var frontEndRouter = require('./routes/access');
-var authRouter = require('./routes/auth');
 
 
-
-
-//setup authentication
 
 // Load environment variables from .env
 dotenv.config();
 
-var Auth0Strategy = require('passport-auth0');
-
-// Configure Passport to use Auth0
-var strategy = new Auth0Strategy(
-    {
-      domain: process.env.AUTH0_DOMAIN,
-      clientID: process.env.AUTH0_CLIENT_ID,
-      clientSecret: process.env.AUTH0_CLIENT_SECRET,
-      callbackURL:
-      process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/auth/callback'
-    },
-    function (accessToken, refreshToken, extraParams, profile, done) {
-      // accessToken is the token to call Auth0 API (not needed in the most cases)
-      // extraParams.id_token has the JSON Web Token
-      // profile has all the information from the user
-      return done(null, profile);
-    }
-);
-
-passport.use(strategy);
-
-// You can use this section to keep a smaller payload
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (user, done) {
-  done(null, user);
-});
-
 var app = express();
+
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send('invalid token...');
+    }
+});
 
 app.use(cookieParser());
 
@@ -89,11 +61,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use(userInViews());
 
-app.use('/', indexRouter);
+app.use('/home/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/device', deviceRouter);
-app.use('/u', frontEndRouter);
-app.use('/auth', authRouter);
+app.use('/access', frontEndRouter);
+
 //Error handling for API request validation failures
 
 // catch 404 and forward to error handler
@@ -123,6 +95,7 @@ app.use(function(err, req, res, next) {
   }
 
 });
+
 
 
 

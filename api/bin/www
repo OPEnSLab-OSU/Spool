@@ -14,7 +14,7 @@ var crypto = require('crypto');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**
@@ -69,7 +69,7 @@ function startServer(keys) {
   server.on('listening', onListening);
   
 
-  console.log("Server listening on https://localhost:3000/");
+  console.log("Server listening on https://localhost:3001/");
   /**
    * Event listener for HTTP server "error" event.
    */

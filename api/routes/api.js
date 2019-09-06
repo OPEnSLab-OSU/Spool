@@ -12,12 +12,19 @@
 
 const RegisterDeviceSchema = {
 	type: 'object',
-	required: ['name', 'type'],
+	required: ['name'],
 	properties: {
 		name: {
 			type: 'string'
-		},
-		type: {
+		}
+	}
+};
+
+const GetUsersDevicesSchema = {
+	type: 'object',
+	required: ['user_id'],
+	properties: {
+		user_id: {
 			type: 'string'
 		}
 	}
@@ -54,5 +61,6 @@ const PostDeviceDataSchema = {
 
 module.exports = {
 	RegisterDeviceSchema: RegisterDeviceSchema,
-	PostDeviceDataSchema: PostDeviceDataSchema
+	PostDeviceDataSchema: PostDeviceDataSchema,
+	GetUsersDeviceDataSchema: GetDeviceDataSchema
 };

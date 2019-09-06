@@ -5,29 +5,43 @@
 
 import React from "react";
 import { useAuth0 } from "../react-auth0-wrapper";
-import { Link } from "react-router-dom";
-
-const NavBar = () => {
+import { Link, withRouter} from "react-router-dom";
+import { Navbar, Nav, Button } from 'react-bootstrap'
+const NavBar = (props) => {
 	const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
 	return (
-	<div className="navbar navbar-expand">
-		<div className="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul className="navbar-nav ml-auto">
-				<li className="nav-item">
-					<Link className="nav-link" to="/u/">Dashboard<span class="sr-only">(current)</span></Link>
-				</li>
-				<li className="nav-item">
+	<Navbar expand="sm" bg="light" className="mb-5">
+		<Navbar.Toggle aria-controls="basic-navbar-nav" />
+
+		<Navbar.Collapse id="navbarSupportedContent">
+			<Nav className="mr-auto">
+				<Nav.Item>
+					<Link className="nav-link" to="/u/">Dashboard<span className="sr-only">(current)</span></Link>
+				</Nav.Item>
+				<Nav.Item>
 					<Link className="nav-link" to="/profile">Profile</Link>
-				</li>
-				<li className="nav-item">
-					{!isAuthenticated && (<button className="btn btn-outline-primary" onClick={() => loginWithRedirect({})}>Log in</button>)}
-					{isAuthenticated && <button className="btn btn-outline-primary" onClick={() => logout()}>Log out</button>}
-				</li>
-			</ul>
-		</div>
-	</div>
+				</Nav.Item>
+				<Nav.Item>
+					{!isAuthenticated && (<Button variant="outline-primary" onClick={() => loginWithRedirect({})}>Log in</Button>)}
+					{isAuthenticated && <Button variant="outline-primary" onClick={() => logout()}>Log out</Button>}
+				</Nav.Item>
+			</Nav>
+		</Navbar.Collapse>
+		{isAuthenticated
+			&& props.location.pathname != '/u/'
+		&&
+			<Nav className="justify-content-end">
+				<Nav.Item>
+					<Button variant="secondary" onClick={() => {props.history.goBack()}}>
+						Back
+					</Button>
+				</Nav.Item>
+			</Nav>
+		}
+
+	</Navbar>
 	);
 };
 
-export default NavBar;
+export default withRouter(NavBar);

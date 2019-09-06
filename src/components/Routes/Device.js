@@ -4,10 +4,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
+import { accessDevice } from "../../api";
+import DeviceDataTable from "../DeviceDataTable";
+import DeviceDetails from '../DeviceDetails';
 
-var Table = require('../table');
-
-const DevicePage = (props) => {
+function DevicePage(props) {
 	//this needs to be passed props.device and props.data where device is the device and data is an array of the data the device has collected sorted by timestamp.
 	// also pass props.users which is an array of users with access to the device
 
@@ -45,80 +46,31 @@ const DevicePage = (props) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			try {
-				const token = await getTokenSilently();
-				console.log(props.match.params.device);
-				const response = await fetch("/access/devices/"+props.match.params.device, {
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
-				});
-
-				const responseData = await response.json();
-				console.log(responseData);
-				setApiMessage(responseData);
-				setShowResult(true)
-
-			} catch (error) {
-				console.error(error);
-			}
+			accessDevice(props.match.params.device, getTokenSilently, (data) => {
+				setApiMessage(data);
+				setShowResult(true);
+			})
 		}
-
 		fetchData();
-
 	}, []);
 
 	const confirmDeleteDevice = () => {
 
 	};
 
-	const deleteDevice = async () => {
-		try {
-			const token = await getTokenSilently();
 
-			const response = await fetch("/access/devices/delete/"+props.match.params.device, {
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			});
-			props.history.push('/u/');
-		}
-		catch (error) {
-			console.error(error)
-		}
-	};
 
-	const dataTable = (data) => {
-		var table;
-		if (data.length !== 0) {
-			table = <Table data={data}/>
-		}
-		else {
-			table = <h5>This device has not reported any data yet.</h5>
-		}
-		return table;
-	};
-
-	const deviceDetails = (device) => {
-		return <div className="row">
-			<div className="col">
-				<h3>Name: {device.name} </h3>
-				<h4>Type: {device.type} </h4>
-				<button onClick={deleteDevice} className="btn btn-danger">Delete</button>
-				{/*<a href={'/u/device/delete/' + this.props.device.device_id} className="btn btn-danger">Delete</a>*/}
-			</div>
-		</div>
-	};
 
 	return (
 		<>
 		{showResult && <div className="container-fluid">
-			{deviceDetails(apiMessage.device)}
-			{dataTable(apiMessage.data)}
+			<DeviceDetails device={apiMessage.device}/>
+			<DeviceDataTable data={apiMessage.data}/>
 		</div>
 		}
 		</>
 	)
 };
+
 
 export default DevicePage;

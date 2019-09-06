@@ -10,8 +10,6 @@ var userInViews = require('./lib/middleware/userInViews');
 
 var { Validator, ValidationError } = require('express-json-validator-middleware');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var deviceRouter = require('./routes/device');
 var frontEndRouter = require('./routes/access');
 
@@ -61,8 +59,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use(userInViews());
 
-app.use('/home/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/device', deviceRouter);
 app.use('/access', frontEndRouter);
 

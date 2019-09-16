@@ -80,8 +80,10 @@ router.post('/update/', secured, wrapAsync(async (req, res) => {
 
 	const VisualizationCollection = db.collection("Visualization");
 
+	let visualization = await VisualizationCollection.findOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
 
-	if (req.apiUser._id.toString() == req.body.owner.toString()) {
+
+	if (req.apiUser._id.toString() == visualization.owner.toString()) {
 
 		let visualizationData = new VisualizationModel(req.body);
 		console.log(visualizationData);
@@ -94,9 +96,9 @@ router.post('/update/', secured, wrapAsync(async (req, res) => {
 	}
 }));
 
-router.post('/delete/:visualization_id', secured, wrapAsync(async (req, res) => {
+router.post('/delete/', secured, wrapAsync(async (req, res) => {
 
-	const visualization_id = req.params.visualization_id;
+	const visualization_id = req.body.visualization_id;
 
 	let client = await mongoClient().catch(err => {
 		throw err;
@@ -106,13 +108,11 @@ router.post('/delete/:visualization_id', secured, wrapAsync(async (req, res) => 
 
 	const VisualizationCollection = db.collection("Visualization");
 
-	let visualization = await VisualizationCollection.findOne({visualization_id: visualization_id}).catch((err) => {next(err)});
+	let visualization = await VisualizationCollection.findOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
 
-	if (req.apiUser._id == visualization.owner) {
+	if (req.apiUser._id.toString() == visualization.owner.toString()) {
 
-		let visualizationData = VisualizationModel(req.body.visualizationData);
-
-		let _ = await VisualizationCollection.deleteOne({visualization_id: visualization_id}).catch((err) => {next(err)});
+		let _ = await VisualizationCollection.deleteOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
 
 		res.sendStatus(200);
 	}

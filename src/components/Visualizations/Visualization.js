@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react'
 import VisualizationEditor from './VisualizationEditor';
 import Plot from 'react-plotly.js';
 import {Card, Button, Modal, Form} from 'react-bootstrap';
-import {updateVisualization} from '../../api';
+import {updateVisualization, deleteVisualization} from '../../api';
 import {useAuth0} from '../../react-auth0-wrapper'
 
 function Visualization(props) {
@@ -43,6 +43,14 @@ function Visualization(props) {
 
 		updateVisualization(visualizationData, getTokenSilently, () => {
 			handleClose();
+		})
+	};
+
+	const handleDelete = () => {
+		deleteVisualization(props.visualizationData, getTokenSilently, (status) => {
+			if (status = 200) {
+				props.onDelete();
+			}
 		})
 	};
 
@@ -87,12 +95,13 @@ function Visualization(props) {
 
 	return (
 		<>
-		<Card id={props.visualizationData.visualization_id} style={{minWidth: '300px', minHeight: '300px'}}>
-			<Card.Body>
+		<Card id={props.visualizationData.visualization_id} style={{minWidth: '300px', minHeight: '300px', maxHeight: '10vh', maxWidth: '50vw'}}>
+			<Card.Body style={{maxHeight: '50vh'}}>
 				{React.createElement(Plot, {data: data, layout: {autosize: true, margin: {l: 20, r: 0, b: 20, t: 0, pad: 0}}, useResizeHandler: true, style: {width: "100%", height: "100%"}})}
 			</Card.Body>
 			<Card.Footer>
 				<Button variant="primary" onClick={handleShow} size="sm">Edit</Button>
+				<Button variant="danger" onClick={handleDelete} size="sm">Delete</Button>
 			</Card.Footer>
 		</Card>
 		<VisualizationEditor dataSources={props.dataSources} handleSave={handleSave} show={showEditModal} handleShow={handleShow} handleClose={handleClose} changeXLabel={changeXLabel} changeYLabel={changeYLabel} xLabel={props.visualizationData.xLabel} yLabel={props.visualizationData.yLabel}/>

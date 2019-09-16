@@ -32,7 +32,7 @@ function VisualizationDashboard(props) {
 	let dataSources = Array.from(props.deviceData[0]).map(([key, value])=>{
 		return key;
 	});
-
+	
 	const handleNewVisualization = () => {
 		
 			if (dataSources.length < 2) {
@@ -60,7 +60,7 @@ function VisualizationDashboard(props) {
 		return visualizations.map((visualization, index) => {
 			console.log(visualization);
 			return (
-					<Visualization visualizationData={visualization} deviceData={props.deviceData} dataSources={dataSources}/>
+					<Visualization visualizationData={visualization} onDelete={fetchData} deviceData={props.deviceData} dataSources={dataSources}/>
 			)
 		});
 	};

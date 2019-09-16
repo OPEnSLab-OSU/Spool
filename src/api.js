@@ -165,6 +165,27 @@ export async function updateVisualization(visualizationData, getTokenSilently, c
 	}
 }
 
+export async function deleteVisualization(visualizationData, getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+
+		const response = await fetch('/access/visualization/delete/', {
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify(visualizationData)
+		});
+
+		callback(response.status);
+	}
+	catch (error) {
+		console.log(error);
+	}
+}
+
 function strMapToObj(strMap) {
 	let obj = Object.create(null);
 	for (let [k,v] of strMap) {

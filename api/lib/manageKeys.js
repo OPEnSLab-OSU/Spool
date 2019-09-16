@@ -2,10 +2,9 @@
  * Created by eliwinkelman on 7/17/19.
  */
 var fs = require('fs');
-const serverPath = './.ec-certificates/server';
-const caPath = './.ec-certificates/ca';
-const keyPath = '-key.pem';
-const certificatePath = '-crt.pem';
+const caPath = './api/temp/ca';
+const keyPath = '.key';
+const certificatePath = '.crt';
 var pem = require('pem');
 const readOptions = {
 	encoding: "utf8"

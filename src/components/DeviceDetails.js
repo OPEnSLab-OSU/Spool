@@ -14,12 +14,10 @@ function DeviceDetails(props) {
 
 	const handleClose = () => setShowDeleteConfirm(false);
 	const handleShow = () => setShowDeleteConfirm(true);
-
-
+	
 	const onConfirmDelete = () => {
 		deleteDevice(props.device.device_id, getTokenSilently, () => {props.history.push('/u/');})
 	};
-
 
 	return (
 		<Row>

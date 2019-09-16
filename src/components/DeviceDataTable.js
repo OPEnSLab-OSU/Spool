@@ -3,17 +3,17 @@
  */
 
 import React from 'react'
-var Table = require('table');
+import TableComponent from './table'
 
 function DeviceDataTable(props){
-	var table;
 	if (props.data.length !== 0) {
-		table = <Table data={props.data}/>
+
+		return <TableComponent data={props.data}/>;
+		//return <h5>This device has not reported any data yet.</h5>
 	}
 	else {
-		table = <h5>This device has not reported any data yet.</h5>
+		return <h5>This device has not reported any data yet.</h5>
 	}
-	return (table);
-};
+}
 
 export default DeviceDataTable;

@@ -1,72 +1,27 @@
 /**
- * Created by eliwinkelman on 7/10/19.
+ * Created by eliwinkelman on 9/13/19.
  */
-
 
 var express = require('express');
 var router = express.Router();
-var secured = require('../lib/middleware/secured');
-var wrapAsync = require('../lib/middleware/asyncWrap');
-var AnalysisManager = require('../Analysis/Analysis');
-// Certificate Generation
-var ClientCertFactory = require('../lib/ClientCertFactory');
+var secured = require('../../lib/middleware/secured');
+var wrapAsync = require('../../lib/middleware/asyncWrap');
+var ClientCertFactory = require('../../lib/ClientCertFactory');
 var pem = require('pem');
-var getKeys = require("../lib/manageKeys");
-
+var getKeys = require("../../lib/manageKeys");
 
 //MongoDB
-var mongoClient = require('../javascript/db');
+var mongoClient = require('../../javascript/db');
 const ObjectID = require('mongodb').ObjectID;
 
-
-//API JSON Schema Validation
-var {Validator, ValidationError} = require('express-json-validator-middleware');
-var validator = new Validator({allErrors: true});
-// Define a shortcut function
-var validate = validator.validate;
-const {RegisterDeviceSchema, GetUsersDevicesSchema} = require('./api');
-
-async function getUser(auth0_id) {
-
-	let client = await mongoClient().catch((err) => {
-		throw err;
-	});
-
-	const db = client.db("Loom");
-	const Users = db.collection("Users");
-
-	var user = await Users.findOne({"auth0_id": auth0_id}).catch((err) => {
-		throw err;
-	});
-
-	if (user != null) {
-		return user;
-	} else {
-		//we don't have this user in our system yet
-		//create a new user that doesn't own any devices
-
-		var newUser = await Users.insertOne({
-			auth0_id: id,
-			devices: [],
-			role: "user"
-		}).catch((err) => {
-			throw err;
-		});
-		return newUser;
-	}
-}
-
-router.get('/devices', secured, wrapAsync(async function (req, res) {
+router.get('/', secured, wrapAsync(async function (req, res) {
 	/***
 	 * Endpoint that returns a users devices
 	 * Authentication:
 	 */
-	var user = await getUser(req.user.sub).catch(err => {
-		throw err;
-	});
-
+	console.log("devices!");
 	// check which user role we have to handle
-	if (user.role == "user") {
+	if (req.apiUser.role == "user") {
 
 		//user dashboard
 
@@ -77,7 +32,7 @@ router.get('/devices', secured, wrapAsync(async function (req, res) {
 		//grab the users devices from the database
 		const db = client.db("Loom");
 		const Devices = db.collection("Devices");
-		const deviceArray = user.devices.map(device => {
+		const deviceArray = req.apiUser.devices.map(device => {
 			return ObjectID(device)
 		});
 
@@ -88,7 +43,7 @@ router.get('/devices', secured, wrapAsync(async function (req, res) {
 		res.json({devices: devices});
 	}
 
-	else if (user.role == "admin") {
+	else if (req.apiUser.role == "admin") {
 
 		// admin dashboard
 		activeTab = req.query.tab;
@@ -117,24 +72,17 @@ router.get('/devices', secured, wrapAsync(async function (req, res) {
 	}
 }));
 
-router.get('/devices/:device', secured, wrapAsync(async function (req, res) {
+router.get('/info/:device', secured, wrapAsync(async function (req, res) {
 	/***
 	 * Endpoint to view a device and its data.
 	 *
 	 * Authentication: User must be logged in.
 	 */
 
-	console.log(1);
-
-	var user = await getUser(req.user.sub).catch(err => {
-		throw err;
-	});
-
-	console.log(user);
-	console.log(req.params.device);
+	
 	var device_id = req.params.device;
 	if (req.params.device) {
-		if (user.devices.includes(device_id.toString())) {
+		if (req.apiUser.devices.includes(device_id.toString())) {
 
 			let client = await mongoClient().catch(err => {
 				throw err;
@@ -143,21 +91,15 @@ router.get('/devices/:device', secured, wrapAsync(async function (req, res) {
 			//grab the users devices from the database
 			const db = client.db("Loom");
 			const Devices = db.collection("Devices");
-			console.log("hello");
-			const DeviceData = db.collection(device_id.toString());
-			var deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {
-				throw err;
-			});
-			console.log(deviceData);
+
 			var devices = await Devices.find({device_id: new ObjectID(device_id)}).toArray().catch(err => {
 				throw err
 			});
 			var device = devices[0];
-			console.log(devices);
-			var datas = formatDeviceData(deviceData);
+
 
 			// render the device view page
-			res.json({data: datas, device: device});
+			res.json({device: device});
 		}
 
 		else {
@@ -170,7 +112,10 @@ router.get('/devices/:device', secured, wrapAsync(async function (req, res) {
 
 }));
 
-router.get('/devices/delete/:device', secured, wrapAsync(async function (req, res) {
+
+
+
+router.get('/delete/:device', secured, wrapAsync(async function (req, res) {
 	/**
 	 *  Deletes a device the user owns.
 	 *  Authentication: User must be logged in.
@@ -178,9 +123,7 @@ router.get('/devices/delete/:device', secured, wrapAsync(async function (req, re
 
 	//make sure there is a device (this should be unnecessary but done just to be safe)
 
-	var user = await getUser(req.user.sub).catch(err => {
-		throw err;
-	});
+
 
 	// Load the MongoDB client
 	var client = await mongoClient().catch(err => {
@@ -200,7 +143,7 @@ router.get('/devices/delete/:device', secured, wrapAsync(async function (req, re
 
 	//check if the device is owned by this user
 
-	if (device.owner.toString() == user._id.toString()) {
+	if (device.owner.toString() == req.apiUser._id.toString()) {
 
 		// delete the device
 		Devices.deleteOne({_id: device._id});
@@ -218,7 +161,7 @@ router.get('/devices/delete/:device', secured, wrapAsync(async function (req, re
 	}
 }));
 
-router.post('/devices/register', secured, wrapAsync(async function (req, res) {
+router.post('/register', secured, wrapAsync(async function (req, res) {
 	/*
 	 Endpoint to register a new device for data collection.
 
@@ -237,11 +180,6 @@ router.post('/devices/register', secured, wrapAsync(async function (req, res) {
 	 */
 
 	console.log(req.body);
-
-	var user = await getUser(req.user.sub).catch(err => {
-		throw err;
-	});
-
 
 	//generate a device_id
 	const device_id = new ObjectID();
@@ -268,7 +206,7 @@ router.post('/devices/register', secured, wrapAsync(async function (req, res) {
 		name: req.body.name,
 		device_id: device_id,
 		fingerprint: clientCert.fingerprint,
-		owner: user._id
+		owner: req.apiUser._id
 	};
 
 	let devices = await Devices.insertOne(new_device).catch(err => {
@@ -277,9 +215,9 @@ router.post('/devices/register', secured, wrapAsync(async function (req, res) {
 
 	//add device to user array
 	const Users = db.collection("Users");
-	user.devices.push(device_id.toString());
+	req.apiUser.devices.push(device_id.toString());
 
-	let userUpdate = Users.updateOne({_id: new ObjectID(user._id)}, {$set: {devices: user.devices}}).catch(err => {
+	let userUpdate = Users.updateOne({_id: new ObjectID(req.apiUser._id)}, {$set: {devices: req.apiUser.devices}}).catch(err => {
 		throw err
 	});
 
@@ -292,77 +230,47 @@ router.post('/devices/register', secured, wrapAsync(async function (req, res) {
 
 }));
 
-/*
- router.get('/device/:device/:data_run?', secured(), async function (req, res) {
- /*
- API Endpoint to retrieve all data for a specific device. This endpoint isn't being used by the frontend and has been replaced by 'device/view/:device'
+router.get('/data/:device/', secured, wrapAsync(async (req, res) => {
 
- Request format:
 
- parameters:
- device_id = <string - device id>
- data_run = <string - data run> (optional)
- */
-/*
- //Add user authentication
+	var device_id = req.params.device;
+	if (req.params.device) {
+		if (req.apiUser.devices.includes(device_id.toString())) {
 
- if (req.params.device) {
+			let client = await mongoClient().catch(err => {
+				throw err;
+			});
 
- // get the device
- var device_id = req.params.device;
- const client = mongoClient().catch(err => {
- throw err;
- });
+			//grab the users devices from the database
+			const db = client.db("Loom");
+			const Devices = db.collection("Devices");
 
- const db = client.db("Loom");
- const Devices = db.collection("Devices");
+			const DeviceData = db.collection(device_id.toString());
+			var deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {
+				throw err;
+			});
 
- const devices = Devices.find({device_id: new ObjectID(device_id)}).toArray().catch(err => {
- throw err
- });
+			var datas = formatDeviceData(deviceData);
+			console.log(datas);
+			// render the device view page
+			res.send({data: datas});
+		}
 
- const device_type = devices[0].type;
+		else {
+			res.sendStatus(401);
+		}
+	}
+}));
 
- // NOTE: change this to new DB design
-
- const DeviceData = db.collection(device_type.toString());
-
- let query;
- if (!req.params.data_run) {
-
- query = {device_id: device_id};
- //find devices without the data run in the query
-
- DeviceData.find({device_id: device_id}).toArray((err, results) => {
- if (err) throw err;
- else {
- res.send(results);
- }
- });
- }
- else {
- //find the devices with the data run in the query
- var data_run = req.params.data_run;
- query = {device_id: device_id, datarun_id: data_run};
- }
-
- const datapoints = await DeviceData.find(query).toArray().catch(err => {throw err});
- res.send(datapoints);
- }
- else {
- res.send("No Device Specified.")
- }
- });
- **/
 
 function formatDeviceData(deviceData) {
 	return deviceData.map((data, index) => {
 
-		var formatted_device = new Map();
+		let formatted_device = new Map();
 
 		formatted_device.set("Data_Run", data.data_run);
-		formatted_device.set("Date", data.data.timestamp.date);
-		formatted_device.set("Time", data.data.timestamp.time);
+		formatted_device.set("Date", data.data.timestamp.Date);
+		formatted_device.set("Time", data.data.timestamp.Time);
 
 		data.data.contents.forEach((sensor) => {
 			for (var key in sensor.data) {
@@ -372,8 +280,18 @@ function formatDeviceData(deviceData) {
 			}
 		});
 
-		return formatted_device
+		return strMapToObj(formatted_device);
 	});
+}
+
+function strMapToObj(strMap) {
+	let obj = Object.create(null);
+	for (let [k,v] of strMap) {
+		// We don’t escape the key '__proto__'
+		// which can cause problems on older engines
+		obj[k] = v;
+	}
+	return obj;
 }
 
 module.exports = router;

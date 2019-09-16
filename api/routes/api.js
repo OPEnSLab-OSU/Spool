@@ -59,8 +59,28 @@ const PostDeviceDataSchema = {
 	}
 };
 
+const NewVisualizationSchema = {
+	type: 'object',
+	required: ['name', 'device_id', 'xLabel', 'yLabel'],
+	properties: {
+		name: {
+			type: 'string'
+		},
+		device_id:{
+			type: 'string'
+		},
+		xLabel: {
+			type: 'string'
+		},
+		yLabel: {
+			type: 'stirng'
+		}
+	}
+};
+
 module.exports = {
 	RegisterDeviceSchema: RegisterDeviceSchema,
 	PostDeviceDataSchema: PostDeviceDataSchema,
-	GetUsersDeviceDataSchema: GetDeviceDataSchema
+	GetUsersDeviceDataSchema: GetDeviceDataSchema,
+	NewVisualizationSchema: NewVisualizationSchema
 };

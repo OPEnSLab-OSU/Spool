@@ -4,9 +4,12 @@
 
 import React, { useState, useEffect } from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
-import { accessDevice } from "../../api";
+import { accessDevice, accessDeviceData } from "../../api";
 import DeviceDataTable from "../DeviceDataTable";
 import DeviceDetails from '../DeviceDetails';
+import VisualizationDashboard from '../Visualizations/VisualizationDashboard'
+
+import { Tabs, Tab } from 'react-bootstrap'
 
 function DevicePage(props) {
 	//this needs to be passed props.device and props.data where device is the device and data is an array of the data the device has collected sorted by timestamp.
@@ -40,37 +43,45 @@ function DevicePage(props) {
 
 		// if there is data, display it in tabular format, otherwise don't display it
 
-	const [showResult, setShowResult] = useState(false);
-	const [apiMessage, setApiMessage] = useState({});
+	const [showDevice, setShowDevice] = useState(false);
+	const [showData, setShowData] = useState(false);
+	const [device, setDevice] = useState({});
+	const [data, setData] = useState({});
 	const {getTokenSilently} = useAuth0();
 
 	useEffect(() => {
 		async function fetchData() {
-			accessDevice(props.match.params.device, getTokenSilently, (data) => {
-				setApiMessage(data);
-				setShowResult(true);
-			})
+			accessDevice(props.match.params.device, getTokenSilently, (device) => {
+				setDevice(device);
+				setShowDevice(true);
+			});
+
+			accessDeviceData(props.match.params.device, getTokenSilently, (data) => {
+				setData(data);
+				console.log(data);
+				setShowData(true);
+			});
 		}
 		fetchData();
 	}, []);
 
-	const confirmDeleteDevice = () => {
-
-	};
-
-
-
 
 	return (
-		<>
-		{showResult && <div className="container-fluid">
-			<DeviceDetails device={apiMessage.device}/>
-			<DeviceDataTable data={apiMessage.data}/>
-		</div>
-		}
-		</>
-	)
-};
 
+		<div className="container-fluid">
+			{showDevice && <DeviceDetails device={device.device}/> }
+
+			<Tabs>
+				<Tab eventKey="Data" title="Data">
+					{showData && <DeviceDataTable data={data.data}/> }
+				</Tab>
+				<Tab eventKey="Visualizations" title="Visualizations">
+					{showData && <VisualizationDashboard device_id={props.match.params.device} deviceData={data.data}/>}
+				</Tab>
+			</Tabs>
+
+		</div>
+	)
+}
 
 export default DevicePage;

@@ -9,7 +9,7 @@ const Crypto = require("crypto");
  */
 function promisifyOpenSSL() {
     const functionPtr = arguments[0];
-    const otherArgs = Array.prototype.slice.call(arguments, 1)
+    const otherArgs = Array.prototype.slice.call(arguments, 1);
     return new Promise((resolve, reject) =>
         functionPtr.apply(null, 
             otherArgs.concat([(err, key, cmd) => err ? reject(err) : resolve([key, cmd])])));

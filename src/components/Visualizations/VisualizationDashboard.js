@@ -27,8 +27,7 @@ function VisualizationDashboard(props) {
 	useEffect(() => {
 		fetchData();
 	}, []);
-
-
+	
 	let dataSources = Array.from(props.deviceData[0]).map(([key, value])=>{
 		return key;
 	});

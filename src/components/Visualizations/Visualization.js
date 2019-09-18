@@ -79,7 +79,7 @@ function Visualization(props) {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
-
+		console.log(name);
 		let currentGraphState = graphState;
 		currentGraphState = unpackNestedName(currentGraphState, name, value);
 
@@ -88,16 +88,42 @@ function Visualization(props) {
 		forceUpdate();
 	};
 
-	console.log(graphState.layout);
+	const addPlot = () => {
+		if (graphState.data != undefined) {
+			let tempGraphState = graphState;
+			tempGraphState.data.push({index: graphState.data.length, type: 'scatter'});
+			setGraphState(tempGraphState);
+		}
+		else {
+			let tempGraphState = graphState;
+			tempGraphState.data = [{index: 0, type: 'scatter'}];
+			setGraphState(tempGraphState);
+		}
+		console.log(graphState.data);
+		forceUpdate();
+	};
+
+	const deletePlot = (index) => {
+		return () => {
+			let tempGraphState = graphState;
+			tempGraphState.data.splice(index, 1);
+			console.log("deleted");
+			tempGraphState.data.forEach((data, index) => {
+				console.log(index);
+				console.log(data);
+				
+				tempGraphState.data[index].index = index;
+			});
+
+			setGraphState(tempGraphState);
+			forceUpdate();
+		}
+	};
+	
+	console.log(graphState);
 
 	let data;
-	data = [createOneDataPlot([{name: 'x', label: graphState.xLabel}, {
-			name: 'y',
-			label: graphState.yLabel
-		}], props.deviceData,
-		[{name: 'type', value: 'scatter'}, {name: 'mode', value: 'lines'}]
-	)];
-
+	data = createDataPlots(graphState.data, props.deviceData);
 
 	return (
 		<>
@@ -110,7 +136,7 @@ function Visualization(props) {
 				<Button variant="danger" onClick={handleDelete} size="sm">Delete</Button>
 			</Card.Footer>
 		</Card>
-		<VisualizationEditor dataSources={props.dataSources} handleSave={handleSave} show={showEditModal} handleShow={handleShow} handleClose={handleClose} onChange={handleInputChange} graphState={graphState}/>
+		<VisualizationEditor dataSources={props.dataSources} addPlot={addPlot} deletePlot={deletePlot} handleSave={handleSave} show={showEditModal} handleShow={handleShow} handleClose={handleClose} onChange={handleInputChange} graphState={graphState}/>
 		</>
 	)
 }
@@ -122,29 +148,46 @@ function getLayout(graphState) {
 	layout.margin = {l: 40, r: 0, b: 40, t: 40, pad: 0};
 	return layout;
 }
-function createOneDataPlot(dataSources, deviceData, options) {
+
+function createDataPlots(datas, deviceData) {
+
+	let plots = [];
+
+	if (datas != undefined) {
+		datas.forEach((data) => {
+			if (data != undefined) {
+				plots.push(createOneDataPlot(data, deviceData))
+			}
+		})
+	}
+
+	return plots;
+}
+
+function createOneDataPlot(data, deviceData) {
 	/*
 	dataSources is an array of objects that look like [{name: string, label: string}]
 	 */
 
-	let data = {};
+	let plot = {};
 
-	// generate datasources
-	dataSources.forEach((dataSource) => {
-		console.log(dataSource);
-		data[dataSource.name] = getGraphData(deviceData, dataSource.label);
-	});
+	if (data.data != undefined){
+		for (const key of Object.keys(data.data)) {
+			plot[key] = getGraphData(deviceData, data.data[key])
+		}
+	}
 
-	options.forEach((option) => {
-		data[option.name] = option.value;
-	});
+	for (const key of Object.keys(data)) {
+		if (key != "data") {
+			plot[key] = data[key];
+		}
+	}
 
-	return data;
+	return plot;
 }
 
 function unpackNestedName(parentObject, name, value) {
-	console.log(parentObject);
-	console.log(name);
+	
 	let names = name.split(".");
 	if (names.length == 1) {
 		// we are as nested as possible, set the value.
@@ -154,15 +197,33 @@ function unpackNestedName(parentObject, name, value) {
 		// we aren't nested enough
 
 		let currentObjectName = names.shift();
-		console.log(names);
-		console.log(currentObjectName);
-		let name = names.join(".");
+		let nextObjectName = names.shift();
+		let nextObject;
 
-		if (parentObject[currentObjectName] == undefined) {
-			parentObject[currentObjectName] = {};
+		if (!isNaN(nextObjectName)) {
+			// current object is actually an array, need to treat it as such.
+
+			if (parentObject[currentObjectName] == undefined) {
+				parentObject[currentObjectName] = [];
+			}
+			if (parentObject[currentObjectName][parseInt(nextObjectName)] == undefined) {
+				parentObject[currentObjectName][parseInt(nextObjectName)] = {}
+			}
+			nextObject = parentObject[currentObjectName][parseInt(nextObjectName)];
+			console.log(nextObject);
 		}
-		console.log(parentObject[currentObjectName]);
-		unpackNestedName(parentObject[currentObjectName], name, value)
+
+		else {
+			
+			names.unshift(nextObjectName);
+
+			if (parentObject[currentObjectName] == undefined) {
+				parentObject[currentObjectName] = {};
+			}
+			nextObject = parentObject[currentObjectName];
+		}
+		let name = names.join(".");
+		unpackNestedName(nextObject, name, value)
 	}
 	
 	return parentObject;

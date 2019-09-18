@@ -40,9 +40,10 @@ export const DataSourceOptions = (dataLabels, currentType) => {
 	}
 	
 	let options = [
-		{name: 'type', type: 'select', options: types}
+		{name: 'type', type: 'select', options: types},
+		{name: 'name', type: 'input'}
 	];
-	console.log(typeOptionMap[currentType].options);
+
 	options = options.concat(typeOptionMap[currentType].options);
 
 	return {

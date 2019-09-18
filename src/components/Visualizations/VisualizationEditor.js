@@ -43,7 +43,7 @@ function DataSourceEditor(props) {
 	
 	return (
 		<>
-		<FormGroupFromOptions onChange={props.onChange} name={"data."+dataSourceState.index} options={options} formFooter={<Button variant="danger" onClick={props.deletePlot(dataSourceState.index)}>Delete</Button>}/>
+		<FormGroupFromOptions onChange={props.onChange} name={"data."+dataSourceState.index} formState={dataSourceState} options={options} formFooter={<Button variant="danger" onClick={props.deletePlot(dataSourceState.index)}>Delete</Button>}/>
 		</>
 	)
 }
@@ -56,11 +56,21 @@ function FormGroupFromOptions(props) {
 
 	props.options.forEach(option => {
 		// look at the type and handle as necessary
+		let optionState = {};
+		if (props.formState != undefined) {
+			optionState = props.formState[option.name] || {};
+		}
+
+		console.log(props.formState);
+
 		let elementName = name != '' ? [name, option.name].join('.') : option.name;
 		switch(option.type) {
-			case 'select': form.push(<SelectElement option={option} name={elementName} onChange={props.onChange}/>);
+			case 'select': form.push(<SelectElement option={option} name={elementName} state={optionState} onChange={props.onChange}/>);
 				break;
-			case 'form': form.push(<FormGroupFromOptions name={elementName} options={option.options} onChange={props.onChange}/>);
+			case 'input': form.push(<InputElement option={option} name={elementName} state={optionState} onChange={props.onChange} />);
+				break;
+			case 'form': form.push(<FormGroupFromOptions name={elementName} options={option.options} formState={optionState} onChange={props.onChange}/>);
+				break;
 		}
 	});
 
@@ -86,13 +96,25 @@ function FormGroupFromOptions(props) {
 	)
 }
 
+function InputElement(props) {
+	let option = props.option;
+
+	return (
+		<Form.Group controlId="GraphForm.title">
+			<Form.Label>{option.name.capitalize()}</Form.Label>
+			<Form.Control onChange={props.onChange} name={props.name} onChange={props.onChange} value={props.state}/>
+		</Form.Group>
+	)
+}
+
+
 function SelectElement(props){
 	let option = props.option;
 
 	return (
 		<Form.Group controlId={option.name}>
 			<Form.Label>{option.name.capitalize()}</Form.Label>
-			<Form.Control as="select" name={props.name} onChange={props.onChange}>
+			<Form.Control as="select" name={props.name} onChange={props.onChange} value={props.state}>
 				{option.options.map((value, index)=> {return <option>{value}</option>})}
 			</Form.Control>
 		</Form.Group>

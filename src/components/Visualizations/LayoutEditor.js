@@ -18,9 +18,7 @@ function LayoutEditor(props) {
 	if (layout.yaxis == undefined) {
 		layout.yaxis = {}
 	}
-
-	console.log(layout);
-
+	
 	return (
 		<>
 			<Form.Group controlId="GraphForm.title">

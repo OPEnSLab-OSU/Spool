@@ -57,7 +57,6 @@ function VisualizationDashboard(props) {
 
 	const visualizationDisplay = (visualizations) => {
 		return visualizations.map((visualization, index) => {
-			console.log(visualization);
 			return (
 					<Visualization visualizationData={visualization} onDelete={fetchData} deviceData={props.deviceData} dataSources={dataSources}/>
 			)

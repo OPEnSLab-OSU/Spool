@@ -58,7 +58,7 @@ function Visualization(props) {
 		})
 	};
 
-	/*useEffect(() => {
+	useEffect(() => {
 		const height = document.getElementById(props.visualizationData.visualization_id).clientHeight;
 
 		if (height != 0) {
@@ -72,19 +72,19 @@ function Visualization(props) {
 		else {
 			setUpdateStateForSizeCounter(-updateStateForSizeCounter)
 		}
-	}, [updateStateForSizeCounter]);*/
+	}, [updateStateForSizeCounter]);
 
 	const handleInputChange = (event) => {
 
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
-		console.log(name);
+
 		let currentGraphState = graphState;
 		currentGraphState = unpackNestedName(currentGraphState, name, value);
 
 		setGraphState(currentGraphState);
-		console.log(graphState);
+
 		forceUpdate();
 	};
 
@@ -99,7 +99,6 @@ function Visualization(props) {
 			tempGraphState.data = [{index: 0, type: 'scatter'}];
 			setGraphState(tempGraphState);
 		}
-		console.log(graphState.data);
 		forceUpdate();
 	};
 
@@ -107,11 +106,8 @@ function Visualization(props) {
 		return () => {
 			let tempGraphState = graphState;
 			tempGraphState.data.splice(index, 1);
-			console.log("deleted");
 			tempGraphState.data.forEach((data, index) => {
-				console.log(index);
-				console.log(data);
-				
+
 				tempGraphState.data[index].index = index;
 			});
 
@@ -119,8 +115,6 @@ function Visualization(props) {
 			forceUpdate();
 		}
 	};
-	
-	console.log(graphState);
 
 	let data;
 	data = createDataPlots(graphState.data, props.deviceData);
@@ -210,7 +204,6 @@ function unpackNestedName(parentObject, name, value) {
 				parentObject[currentObjectName][parseInt(nextObjectName)] = {}
 			}
 			nextObject = parentObject[currentObjectName][parseInt(nextObjectName)];
-			console.log(nextObject);
 		}
 
 		else {

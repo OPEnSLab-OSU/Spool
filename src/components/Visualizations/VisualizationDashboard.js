@@ -14,13 +14,19 @@ function VisualizationDashboard(props) {
 
 	const [showResult, setShowResult] = useState(false);
 	const [visualizationApi, setVisualizationApi] = useState([]);
+	const [dataSources, setDataSources] = useState([]);
 	const {getTokenSilently} = useAuth0();
 
 	async function fetchData() {
 		getVisualizations(props.device_id, getTokenSilently, (visualizations) => {
-			setVisualizationApi(visualizations);
-			setShowResult(true);
-			
+			if (visualizations != undefined) {
+				setVisualizationApi(visualizations);
+				setDataSources(Array.from(props.deviceData[0]).map(([key, value])=>{
+					return key;
+				}));
+
+				setShowResult(true);
+			}
 		});
 	}
 
@@ -28,10 +34,7 @@ function VisualizationDashboard(props) {
 		fetchData();
 	}, []);
 	
-	let dataSources = Array.from(props.deviceData[0]).map(([key, value])=>{
-		return key;
-	});
-	
+
 	const handleNewVisualization = () => {
 		
 			if (dataSources.length < 2) {

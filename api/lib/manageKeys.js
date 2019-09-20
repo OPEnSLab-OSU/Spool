@@ -1,16 +1,22 @@
 /**
- * Created by eliwinkelman on 7/17/19.
+ * @module manageKeys
  */
+
 var fs = require('fs');
 const caPath = './api/temp/ca';
 const keyPath = '.key';
 const certificatePath = '.crt';
 var pem = require('pem');
+
 const readOptions = {
 	encoding: "utf8"
 };
 
-
+/**
+ * Retrieves the relevant TLS certificates and keys.
+ * @function getKeys
+ * @returns {Promise<Object, any>} A promise that will eventually return an object containing the servers key, certificate and the device certificate authority certificate and key.
+ */
 module.exports = async function getKeys() {
 	//update this function to regenerate only necessary pieces 
 	// (i.e. csr and client 

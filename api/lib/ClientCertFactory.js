@@ -1,10 +1,12 @@
+/** @module ClientCertFactory */
+
 const node_ssl = require("node-openssl-cert");
 const ASN1 = require("asn1js");
 const Crypto = require("crypto");
 
 /**
  * @param {...any[]} arguments The arguments to the openSSL function, minus the callback at the end.
- * @returns {Promise<[any, string]>} A tuple with the result of the function in the first spot, and
+ * @returns {Promise} A tuple with the result of the function in the first spot, and
  * the OpenSSL comment used in the second. The promise will reject if the OpenSSL command fails.
  */
 function promisifyOpenSSL() {

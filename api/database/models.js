@@ -1,7 +1,3 @@
-/**
- * Created by eliwinkelman on 9/12/19.
- */
-
 
 class DeviceModel {
 	constructor(name, device_id, fingerprint, owner) {

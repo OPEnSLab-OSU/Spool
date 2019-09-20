@@ -1,13 +1,6 @@
 /**
- * Created by eliwinkelman on 7/10/19.
- *
  * Defines the schema for each api endpoint to ensure that the API is consistent.
- */
-
-/**
- * Schema
- *
- * request: POST 'devices/register'
+ * @module ApiSchemas
  */
 
 const RegisterDeviceSchema = {

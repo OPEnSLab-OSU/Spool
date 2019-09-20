@@ -1,17 +1,13 @@
-/**
- * Created by eliwinkelman on 9/13/19.
- */
-
 
 
 var express = require('express');
 var router = express.Router();
 var secured = require('../../lib/middleware/secured');
 var wrapAsync = require('../../lib/middleware/asyncWrap');
-const {VisualizationModel} = require('../../javascript/models');
+const {VisualizationModel} = require('../../database/models');
 
 //MongoDB
-var mongoClient = require('../../javascript/db');
+var {useClient} = require('../../database/db');
 const ObjectID = require('mongodb').ObjectID;
 
 router.post('/new', wrapAsync(async (req, res) => {
@@ -22,7 +18,7 @@ router.post('/new', wrapAsync(async (req, res) => {
 	const device_id = req.body.device_id;
 
 	if (req.apiUser.devices.includes(device_id)) {
-		let client = await mongoClient().catch(err => {
+		let client = await useClient().catch(err => {
 			throw err;
 		});
 
@@ -51,7 +47,7 @@ router.get('/:device_id', secured, wrapAsync(async (req, res) => {
 
 	if (req.apiUser.devices.includes(device_id)) {
 
-		let client = await mongoClient().catch(err => {
+		let client = await useClient().catch(err => {
 			throw err;
 		});
 
@@ -72,7 +68,7 @@ router.post('/update/', secured, wrapAsync(async (req, res) => {
 
 	const visualization_id = req.body.visualization_id;
 
-	let client = await mongoClient().catch(err => {
+	let client = await useClient().catch(err => {
 		throw err;
 	});
 
@@ -100,7 +96,7 @@ router.post('/delete/', secured, wrapAsync(async (req, res) => {
 
 	const visualization_id = req.body.visualization_id;
 
-	let client = await mongoClient().catch(err => {
+	let client = await useClient().catch(err => {
 		throw err;
 	});
 

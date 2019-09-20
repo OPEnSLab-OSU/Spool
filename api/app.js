@@ -10,9 +10,9 @@ var passport = require('passport');
 
 var { Validator, ValidationError } = require('express-json-validator-middleware');
 
-var deviceRouter = require('./routes/device');
-var frontEndRouter = require('./routes/access/access');
-
+const deviceRouter = require('./routes/device');
+const frontEndRouter = require('./routes/access/access');
+const documentationRouter = require('./swagger-jsdoc');
 
 
 // Load environment variables from .env
@@ -60,6 +60,7 @@ app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 app.use('/device', deviceRouter);
 app.use('/access', frontEndRouter);
+app.use('/docs', documentationRouter);
 
 //Error handling for API request validation failures
 

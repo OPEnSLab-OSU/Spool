@@ -1,14 +1,12 @@
-/**
- * Created by eliwinkelman on 9/13/19.
- */
+
 const wrapAsync = require('./asyncWrap');
-var mongoClient = require('../../javascript/db');
+var { useClient } = require('../../database/db');
 
 module.exports = function() {
 	return wrapAsync(async (req, res, next) => {
 
 		let auth0_id = req.user.sub;
-		let client = await mongoClient().catch((err) => {
+		let client = await useClient().catch((err) => {
 			throw err;
 		});
 

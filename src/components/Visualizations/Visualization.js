@@ -122,7 +122,7 @@ function Visualization(props) {
 	return (
 		<>
 		<Card id={props.visualizationData.visualization_id} style={{minWidth: '300px', minHeight: '300px', maxWidth: '40vw'}}>
-			<Card.Body style={{maxHeight: '50vh', maxWidth: '50vw'}}>
+			<Card.Body style={{maxWidth: '50vw'}}>
 				{React.createElement(Plot, {data: data, layout: getLayout(graphState), useResizeHandler: true, style: {width: "100%", height: "100%"}})}
 			</Card.Body>
 			<Card.Footer>

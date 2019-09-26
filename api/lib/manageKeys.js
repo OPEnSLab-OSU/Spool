@@ -18,25 +18,27 @@ const readOptions = {
  * @returns {Promise<Object, any>} A promise that will eventually return an object containing the servers key, certificate and the device certificate authority certificate and key.
  */
 module.exports = async function getKeys() {
-	//update this function to regenerate only necessary pieces 
-	// (i.e. csr and client 
-	// key should always stay the same but service key
-	// and certificate should get regenerated)
-	if (fs.existsSync(caPath + keyPath) && fs.existsSync(caPath + certificatePath)) {
+
+	const caKeyPath = "/run/secrets/ca.key";
+	const caCertPath = "/run/secrets/ca.crt";
+	const serverKeyPath = "/run/secrets/server.key";
+	const serverCertPath = "/run/secrets/server.crt";
+
+	if (fs.existsSync(caKeyPath) && fs.existsSync(caCertPath)) {
 		//we have a certificate authority.
 
 		var ca = {
-			key: fs.readFileSync(caPath + keyPath, readOptions),
-			certificate: fs.readFileSync(caPath + certificatePath, readOptions)
+			key: fs.readFileSync(caKeyPath, readOptions),
+			certificate: fs.readFileSync(caCertPath, readOptions)
 		};
 
 		//check if we have keys for the client
-		if (fs.existsSync(process.env.SERVER_SSL_KEY) && fs.existsSync(process.env.SERVER_SSL_CERT)) {
+		if (fs.existsSync(serverKeyPath) && fs.existsSync(serverCertPath)) {
 			console.log("Loading keys from file system.");
 
 			var keys = {
-				key: fs.readFileSync(process.env.SERVER_SSL_KEY, readOptions),
-				certificate: fs.readFileSync(process.env.SERVER_SSL_CERT, readOptions),
+				key: fs.readFileSync(serverKeyPath, readOptions),
+				certificate: fs.readFileSync(serverCertPath, readOptions),
 				ca: ca
 			};
 			
@@ -44,16 +46,12 @@ module.exports = async function getKeys() {
 			return keys
 		}
 		else {
-			console.log("You must have server certificate in '" + process.env.SERVER_SSL_CERT + "'.\n" +
-			"Key should be named " + keyPath + " and certificate should be named " + certificatePath + "\n")
+			console.log("You must have server certificate at " + serverCertPath + " and a server key at " + serverKeyPath + "./n")
 		}
 	}
 	else {
-		console.log("You must have a certificate authority in ./.certificates/. \n" +
-			"Key should be at ca-key.pem and certificate at ca-crt.pem. \n" +
-			"These can be generated with: \n \n" +
-			"       openssl req -new -x509 -days 365 -keyout ca-key.pem -out ca-crt.pem");
-		throw new Error("No certificate authority");
+		console.log("You must have a certificate authority at " + caCertPath + " and a certificate authority key at " + caKeyPath + "./n")
 
+		throw new Error("No certificate authority");
 	}
 };

@@ -1,0 +1,4 @@
+node_modules
+nom-debug.log
+.git
+.idea

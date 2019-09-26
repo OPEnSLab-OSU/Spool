@@ -1,8 +1,3 @@
-/**
- * Defines the schema for each api endpoint to ensure that the API is consistent.
- * @module ApiSchemas
- */
-
 const RegisterDeviceSchema = {
 	type: 'object',
 	required: ['name'],

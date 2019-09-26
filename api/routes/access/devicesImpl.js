@@ -1,5 +1,5 @@
 /**
- * Created by eliwinkelman on 9/19/19.
+ * @module access/devices
  */
 
 //MongoDB
@@ -8,6 +8,11 @@ const ObjectID = require('mongodb').ObjectID;
 const DeviceDatabase = require('../../database/models/device');
 const DeviceDataDatabase = require('../../database/models/deviceData');
 
+/**
+ * Retrieves devices from the database by user and sends them as the http response.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
 async function getDevices(req, res) {
 	try {
 		let devices = await DeviceDatabase.getByUser(req.apiUser);
@@ -18,12 +23,13 @@ async function getDevices(req, res) {
 	}
 }
 
+/**
+ * Retrieve a specific devices data from the database and sends it as the http response.
+ * 
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
 async function getDevice(req, res) {
-	/***
-	 * Endpoint to view a device and its data.
-	 *
-	 * Authentication: User must be logged in.
-	 */
 	
 	var device_id = req.params.device;
 	
@@ -37,12 +43,14 @@ async function getDevice(req, res) {
 	}
 }
 
+/**
+ * Deletes a device and sends a success http status code if successful.
+ * 
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
 async function deleteDevice(req, res) {
-	/**
-	 *  Deletes a device the user owns.
-	 *  Authentication: User must be logged in.
-	 */
-
+	
 	try {
 		DeviceDatabase.del(req.params.device, req.apiUser);
 		res.sendStatus(200);
@@ -53,28 +61,24 @@ async function deleteDevice(req, res) {
 	}
 }
 
+/**
+ * Creates a new device and sends an http response with the devices authentication information.
+ * 
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
 async function createDevice(req, res) {
-	/*
-	 Endpoint to register a new device for data collection.
-
-	 Request format:
-	 {
-	 “type”: <string - device type>
-	 “name”: <string - device name>
-	 }
-
-	 Function:
-	 1. Generate a client certificate and device id for the new device.
-	 2. Add the new device object to the MongoDB "Devices" collection.
-	 Note: The owner of the device is set as the currently logged in user.
-
-	 Response: If successful, render a page with the new device id and authentication info and a button to download the JSON as a file.
-	 */
 
 	const newDeviceInfo = await DeviceDatabase.create(req.body.type, req.body.name, req.apiUser);
 	res.send(newDeviceInfo);
 }
 
+/**
+ * Retrieves the data of a device from the database and sends the data as the http response.
+ * 
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
 async function getDeviceData(req, res) {
 
 	var device_id = req.params.device;

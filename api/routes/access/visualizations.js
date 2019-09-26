@@ -1,118 +1,153 @@
-
+/**
+ * @module access/visualization
+ */
 
 var express = require('express');
 var router = express.Router();
 var secured = require('../../lib/middleware/secured');
 var wrapAsync = require('../../lib/middleware/asyncWrap');
-const {VisualizationModel} = require('../../database/models');
+const VisualizationDatabase = require('../../database/models/visualization');
 
-//MongoDB
-var {useClient} = require('../../database/db');
-const ObjectID = require('mongodb').ObjectID;
 
+/**
+ * API Endpoint to create a new visualization object for the passed device.
+ * @function newVisualization
+ *
+ * @swagger
+ * /access/visualization/new:
+ *      post:
+ *          description: Creates a new visualization.
+ *          tags:
+ *              - access
+ *              - visualization
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - device_id
+ *                          properties:
+ *                              device_id:
+ *                                  type: string
+ *                                  description: The id of the device given by spool during registration. 
+ *                          example:
+ *                              device_id: asdg034kajd024lc94
+ *                              
+ */
 router.post('/new', wrapAsync(async (req, res) => {
 
-	//generate a device_id
-	const visualization_id = new ObjectID();
+	let visualizationData = req.body;
+
 	//get the device id
 	const device_id = req.body.device_id;
 
-	if (req.apiUser.devices.includes(device_id)) {
-		let client = await useClient().catch(err => {
-			throw err;
-		});
-
-		const db = client.db('Loom');
-
-		const VisualizationCollection = db.collection("Visualization");
-
-		let visualizationData = req.body;
-		visualizationData.visualization_id = visualization_id.toString();
-		visualizationData.owner = req.apiUser._id;
-
-		let analysis = new VisualizationModel(visualizationData);
-
-		let _ = await VisualizationCollection.insertOne(analysis).catch((err) => {next(err)});
-
+	try {
+		const _ = await VisualizationDatabase.create(visualizationData, device_id, req.apiUser);
 		res.sendStatus(200);
 	}
-	else {
+	catch(error) {
+		console.log(error);
 		res.sendStatus(401);
 	}
 }));
 
+/**
+ * API Endpoint to retrieve all the visualizations for a device.
+ * @function getVisualizations
+ *
+ * @swagger
+ * /access/visualization/{device_id}:
+ *      get:
+ *          description: Creates a new visualization.
+ *          tags:
+ *              - access
+ *              - visualization
+ *          parameters:
+ *              - in: path
+ *                name: device
+ *                schema:
+ *                  type: string
+ *                required: true
+ *                description: The id of the device to get visualizations for.
+ */
 router.get('/:device_id', secured, wrapAsync(async (req, res) => {
 
 	const device_id = req.params.device_id;
 
-	if (req.apiUser.devices.includes(device_id)) {
-
-		let client = await useClient().catch(err => {
-			throw err;
-		});
-
-		const db = client.db('Loom');
-
-		const VisualizationCollection = db.collection("Visualization");
-
-		let visualizations = await VisualizationCollection.find({device_id: device_id}).toArray().catch((err) => {next(err)});
-		console.log(visualizations);
+	try {
+		const visualizations = await VisualizationDatabase.getByDevice(device_id, req.apiUser);
 		res.send(visualizations);
 	}
-	else {
+	catch (error) {
 		res.sendStatus(401);
 	}
+
 }));
 
+/**
+ * API Endpoint to update a visualization.
+ * @function updateVisualization
+ *
+ * @swagger
+ *  /access/visualization/{device_id}:
+ *      post:
+ *          description: Updates a visualization.
+ *          tags:
+ *              - access
+ *              - visualization
+ *         
+ */
 router.post('/update/', secured, wrapAsync(async (req, res) => {
 
 	const visualization_id = req.body.visualization_id;
 
-	let client = await useClient().catch(err => {
-		throw err;
-	});
-
-	const db = client.db('Loom');
-
-	const VisualizationCollection = db.collection("Visualization");
-
-	let visualization = await VisualizationCollection.findOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
-
-
-	if (req.apiUser._id.toString() == visualization.owner.toString()) {
-
-		let visualizationData = new VisualizationModel(req.body);
-		console.log(visualizationData);
-		let _ = await VisualizationCollection.replaceOne({visualization_id: visualization_id.toString()}, visualizationData).catch((err) => {throw(err)});
-		console.log("updating");
+	try {
+		await VisualizationDatabase.update(visualization_id, req.body);
 		res.sendStatus(200);
 	}
-	else {
+	catch(error) {
 		res.sendStatus(401);
+		/* TODO: Add an APIErrorResponseHandler class/function to deal with different types of errors and send meaningful messages to the client. */
 	}
 }));
 
+/**
+ * API Endpoint to delete a visualization.
+ * @function deleteVisualization
+ * 
+ * @swagger
+ * /access/visualization/:
+ *      post:
+ *          description: Deletes a visualization.
+ *          tags:
+ *              - access
+ *              - visualization
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - device_id
+ *                          properties:
+ *                              device_id:
+ *                                  type: string
+ *                                  description: The id of the device given by spool during registration.
+ *                          example:
+ *                              device_id: asdg034kajd024lc94
+ */
 router.post('/delete/', secured, wrapAsync(async (req, res) => {
 
 	const visualization_id = req.body.visualization_id;
 
-	let client = await useClient().catch(err => {
-		throw err;
-	});
-
-	const db = client.db('Loom');
-
-	const VisualizationCollection = db.collection("Visualization");
-
-	let visualization = await VisualizationCollection.findOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
-
-	if (req.apiUser._id.toString() == visualization.owner.toString()) {
-
-		let _ = await VisualizationCollection.deleteOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
-
+	try {
+		VisualizationDatabase.del(visualization_id, req.apiUser);
 		res.sendStatus(200);
 	}
-	else {
+	catch(error) {
 		res.sendStatus(401);
 	}
 }));

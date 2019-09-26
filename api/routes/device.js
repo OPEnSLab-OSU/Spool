@@ -13,14 +13,12 @@ var validate = validator.validate;
 var authorized = require('../lib/middleware/authorized');
 const {RegisterDeviceSchema, PostDeviceDataSchema} = require('./api');
 
-const {DeviceDataDatabase} = require('../database/models/deviceData');
+const DeviceDataDatabase = require('../database/models/deviceData');
 
 /**
  * @swagger
  * /device/data/:
  *    post:
- *      security:
- *         bearerAuth: []
  *      description: Accepts data from a Loom device and saves it to the database. It requires the device to be registered with the API and have the proper X509 Client Certificate issued by the API when the device was registered.
  *      requestBody:
  *          required: true
@@ -65,13 +63,13 @@ router.post('/data/', validate({body: PostDeviceDataSchema}), authorized(), wrap
 	const data = req.body;
 	
 	try {
-		const inserted = await DeviceDataDatabase.create(device_id, data, req.apiUser);
+		const inserted = await DeviceDataDatabase.create(device_id, data);
 		res.sendStatus(200);
 	}
 	catch(error) {
+		console.log(error);
 		res.sendStatus(401)
 	}
-
 }));
 
 module.exports = router;

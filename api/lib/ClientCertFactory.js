@@ -49,7 +49,7 @@ class ClientCertFactory {
      * Different curves may or may not be supported by the version of OpenSSL you are using.
      * @param {number} lifetime_days The number of days to issue certificates for. 
      * Certificates will automatically be valid from the time issued
-     * @param {{ countryName: string, stateOrProvinceName: string, organizationName: string }} subjectBase An object
+     * @param {{ countryName: string, stateOrProvinceName: string, organizationName: string }} subject_base An object
      * specifiying some information to put on all the certificates.
      */
     constructor(    binpath,

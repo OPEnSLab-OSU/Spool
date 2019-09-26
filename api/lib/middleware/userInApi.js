@@ -26,7 +26,7 @@ module.exports = function() {
 			//create a new user that doesn't own any devices
 
 			let newUser = await Users.insertOne({
-				auth0_id: id,
+				auth0_id: auth0_id,
 				devices: [],
 				role: "user"
 			}).catch((err) => {

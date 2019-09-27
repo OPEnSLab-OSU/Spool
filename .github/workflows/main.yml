@@ -1,0 +1,16 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: maddox/actions/ssh@master
+    - name: Deploy to production server.
+      args: "/src/update.sh"

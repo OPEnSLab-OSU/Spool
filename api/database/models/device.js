@@ -150,32 +150,35 @@ class DeviceDatabase extends DatabaseInterface {
 	 * @param {Object} user - The user creating the device.
 	 * @returns {{device_id: string, certificate: string, private_key: string}} An object containing the authentication information for the device.
 	 */
-	static async create(type, name, user) {
+	static async create(type, name, coordinator, user) {
 		
 		//generate a device_id
 		const device_id = new ObjectID();
 
-		//======= Generate Client Certificate =======//
-		// get the certificate authority keys
-		const keys = await getKeys();
-
-		// generate a client certificate
-		const certFactory = new ClientCertFactory(process.env.OPENSSL_BINARY_PATH, keys.ca.certificate);
-		const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client " + device_id, false).catch((err) => {
-			throw err
-		});
-
-		//======= Add the new device to the database =======//
-
-		const Devices = await this.getCollection();
-		
-		const new_device = {
+		let new_device = {
 			type: type,
 			name: name,
 			device_id: device_id,
-			fingerprint: clientCert.fingerprint,
 			owner: user._id
 		};
+
+		if (coordinator) {
+
+			//======= Generate Client Certificate =======//
+			// get the certificate authority keys
+			const keys = await getKeys();
+
+			// generate a client certificate
+			const certFactory = new ClientCertFactory(process.env.OPENSSL_BINARY_PATH, keys.ca.certificate);
+			const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client " + device_id, false).catch((err) => {
+				throw err
+			});
+
+			//======= Add the new device to the database =======//
+			const Devices = await this.getCollection();
+
+			new_device.fingerprint = clientCert.fingerprint;
+		}
 
 		let devices = await Devices.insertOne(new_device).catch(err => {
 			throw err;

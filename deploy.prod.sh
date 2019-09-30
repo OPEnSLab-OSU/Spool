@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#
+
 npm run build
-serve -s build &
+node_modules/.bin/serve -s build &
 node api/bin/www

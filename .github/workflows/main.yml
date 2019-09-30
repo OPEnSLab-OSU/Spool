@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: maddox/actions/ssh@master
     - name: Deploy to production server.
-      args: "/src/update.sh"
+    - args: "/src/update.sh"

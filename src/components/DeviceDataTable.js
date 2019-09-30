@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import TableComponent from './table'
+import TableComponent from './Table'
 
 function DeviceDataTable(props){
 	if (props.data.length !== 0) {

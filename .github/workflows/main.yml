@@ -17,4 +17,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          script: whoami
+          script: |
+            cd ~/app
+            git pull origin/production
+            cd ..
+            docker-compose down
+            docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+

@@ -13,6 +13,7 @@ jobs:
     - name: Deploy to production server.
       uses: appleboy/ssh-action@master
       with:
+          command_timeout: "10m"
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
@@ -23,5 +24,4 @@ jobs:
             git pull
             cd ..
             sudo docker-compose down
-            sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build &
-
+            sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d

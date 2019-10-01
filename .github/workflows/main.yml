@@ -24,5 +24,4 @@ jobs:
             git pull
             cd ..
             sudo docker-compose down
-            sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build &
-
+            sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d

@@ -4,7 +4,6 @@
 
 
 const { DatabaseInterface } = require("../db") ;
-const ObjectID = require('mongodb').ObjectID;
 
 class NetworkModel {
 	constructor(networkData) {

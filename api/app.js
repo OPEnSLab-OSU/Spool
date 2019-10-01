@@ -15,27 +15,28 @@ dotenv.config();
 
 var app = express();
 
-app.use(function (err, req, res, next) {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401).send('invalid token...');
-    }
-});
+app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
-app.use('/device', deviceRouter);
-app.use('/access', frontEndRouter);
-app.use('/docs', documentationRouter);
+const router = express.Router();
+router.use('/device', deviceRouter);
+router.use('/access', frontEndRouter);
+router.use('/docs', documentationRouter);
+
+app.use('/api', router);
+app.use(express.static(path.join(__dirname, '..', 'build')));
+
 
 //Error handling for API request validation failures
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+    res.redirect('/');
 });
 
 // error handler
@@ -45,12 +46,16 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  if (err instanceof ValidationError) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).send('invalid token...');
+    }
+  else if (err instanceof ValidationError) {
 
     // At this point you can execute your error handling code
 
     res.status(400).send('invalid');
     next();
+
   }
   else {
     // render the error page
@@ -58,7 +63,6 @@ app.use(function(err, req, res, next) {
     console.log(err);
     res.render('error', {error: err});
   }
-
 });
 
 

@@ -11,7 +11,7 @@
         "server": "node ./api/bin/www"
     },
     "dependencies": {
-        "@auth0/auth0-spa-js": "^1.2.3",
+        "@auth0/auth0-spa-js": "^1.2.4",
         "asn1js": "^2.0.22",
         "bootstrap": "^4.3.1",
         "cookie-parser": "~1.4.4",

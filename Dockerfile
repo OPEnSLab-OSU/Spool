@@ -16,4 +16,4 @@ RUN npm ci --only=production
 COPY . .
 
 ### Build the react site
-node_modules/.bin/react-scripts build
+RUN node_modules/.bin/react-scripts build

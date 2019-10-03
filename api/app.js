@@ -4,7 +4,7 @@ var path = require('path');
 var logger = require('morgan');
 var dotenv = require('dotenv');
 
-var { Validator, ValidationError } = require('express-json-validator-middleware');
+var {Validator, ValidationError} = require('express-json-validator-middleware');
 
 const deviceRouter = require('./routes/device');
 const frontEndRouter = require('./routes/access/access');
@@ -17,7 +17,7 @@ var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.set('view engine', 'pug');
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
@@ -33,36 +33,36 @@ app.use(express.static(path.join(__dirname, '..', 'build')));
 //Error handling for API request validation failures
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    res.sendStatus(404);
+app.use(function (req, res, next) {
+	res.sendStatus(404);
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
 
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    if (err.name === 'UnauthorizedError') {
-        res.status(401).send('invalid token...');
-    }
-  else if (err instanceof ValidationError) {
+	if (err.name === 'UnauthorizedError') {
+		res.status(401).send('Unauthorized');
+	}
+	else if (err instanceof ValidationError) {
 
-    // At this point you can execute your error handling code
+		// At this point you can execute your error handling code
+		console.log(err.message);
+		res.status(400).send('Invalid Request');
+		next();
 
-    res.status(400).send('Invalid Request');
-    next();
+	}
+	else {
+		// render the error page
 
-  }
-  else {
-    // render the error page
-    res.sendStatus(err.status || 500);
+		console.log(err.message);
+		res.sendStatus(err.status || 500);
 
-  }
+	}
 });
-
-
 
 
 module.exports = app;

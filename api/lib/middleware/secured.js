@@ -5,13 +5,18 @@ var dotenv = require('dotenv');
 
 dotenv.config();
 // using JWKS from YOUR_DOMAIN
+const client = jwksRsa({
+	strictSsl: true, // Default value
+	jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
+	requestHeaders: {}, // Optional
+	requestAgentOptions: {}
+});
 
 const checkJwt = jwt({
-	secret: jwksRsa.expressJwtSecret({
+	secret: client.expressJwtSecret({
 		cache: true,
 		rateLimit: true,
-		jwksRequestsPerMinute: 5,
-		jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
+		jwksRequestsPerMinute: 5
 	}),
 
 	audience: 'localhost:4000',

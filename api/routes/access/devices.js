@@ -18,7 +18,7 @@ const ObjectID = require('mongodb').ObjectID;
  *              - access
  *              - devices
  */
-router.get('/', secured, wrapAsync(getDevices));
+router.get('/', wrapAsync(getDevices));
 
 /**
  * @swagger

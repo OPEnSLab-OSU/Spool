@@ -15,7 +15,7 @@ const DeviceDataDatabase = require('../../database/models/deviceData');
  */
 async function getDevices(req, res) {
 	try {
-		console.log("Getting devices");
+
 		let devices = await DeviceDatabase.getByUser(req.apiUser);
 		res.send({devices: devices})
 	}

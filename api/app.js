@@ -50,7 +50,7 @@ app.use(function (err, req, res, next) {
 	else if (err instanceof ValidationError) {
 
 		// At this point you can execute your error handling code
-		console.log(err.message);
+		console.log(err);
 		res.status(400).send('Invalid Request');
 		next();
 
@@ -58,7 +58,7 @@ app.use(function (err, req, res, next) {
 	else {
 		// render the error page
 
-		console.log(err.message);
+		console.log(err);
 		res.sendStatus(err.status || 500);
 
 	}

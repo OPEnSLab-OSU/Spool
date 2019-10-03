@@ -10,10 +10,10 @@ const checkJwt = jwt({
 		cache: true,
 		rateLimit: true,
 		jwksRequestsPerMinute: 5,
-		requestHeaders: {}, // Optional
-		requestAgentOptions: {},
 		jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
 	}),
+	requestHeaders: {}, // Optional
+	requestAgentOptions: {},
 	audience: 'localhost:4000',
 	issuer: `https://${process.env.AUTH0_DOMAIN}/`,
 	algorithm: ["RS256"]

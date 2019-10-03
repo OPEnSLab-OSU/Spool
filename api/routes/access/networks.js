@@ -20,3 +20,7 @@ router.post("/new/", secured, wrapAsync(async (req, res) => {
 		
 	
 }));
+
+router.post("/:network_id", secured, wrapAsync(async (req, res) => {
+	
+}));

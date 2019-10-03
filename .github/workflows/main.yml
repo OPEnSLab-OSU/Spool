@@ -12,6 +12,6 @@ jobs:
       - name: Publish to Docker Registry
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          name: eliwinkelman/Spool
+          name: eliwinkelman/spool
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}

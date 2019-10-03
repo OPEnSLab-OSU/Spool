@@ -7,6 +7,7 @@ export async function accessDevices(getTokenSilently, callback) {
 
 		const token = await getTokenSilently();
 		const response = await fetch("/api/access/devices/", {
+			mode: 'cors',
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -25,6 +26,8 @@ export async function accessDevice(device_id, getTokenSilently, callback) {
 		const token = await getTokenSilently();
 		
 		const response = await fetch("/api/access/devices/info/"+device_id, {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -44,6 +47,8 @@ export async function accessDeviceData(device_id, getTokenSilently, callback) {
 		const token = await getTokenSilently();
 		
 		const response = await fetch("/api/access/devices/data/" + device_id, {
+			credentials: 'omit',
+			mode: 'cors',
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -65,6 +70,8 @@ export async function deleteDevice (device_id, getTokenSilently, callback) {
 		const token = await getTokenSilently();
 
 		const response = await fetch("/api/access/devices/delete/"+device_id, {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -83,6 +90,8 @@ export async function registerDevice (name, getTokenSilently, callback) {
 		const token = await getTokenSilently();
 
 		const response = await fetch('/api/access/devices/register', {
+			credentials: 'omit',
+			mode: 'cors',
 			headers: {
 				'Authorization': `Bearer ${token}`,
 				'Accept': 'application/json',
@@ -106,6 +115,8 @@ export async function newVisualization(visualization, getTokenSilently, callback
 		const token = await getTokenSilently();
 		
 		const response = await fetch('/api/access/visualization/new', {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				'Authorization': `Bearer ${token}`,
 				'Accept': 'application/json',
@@ -128,6 +139,8 @@ export async function getVisualizations(device_id, getTokenSilently, callback) {
 		const token = await getTokenSilently();
 		
 		const response = await fetch('/api/access/visualization/'+device_id, {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -148,6 +161,8 @@ export async function updateVisualization(visualizationData, getTokenSilently, c
 		const token = await getTokenSilently();
 
 		const response = await fetch('/api/access/visualization/update/', {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				'Authorization': `Bearer ${token}`,
 				'Accept': 'application/json',
@@ -170,6 +185,8 @@ export async function deleteVisualization(visualizationData, getTokenSilently, c
 		const token = await getTokenSilently();
 
 		const response = await fetch('/api/access/visualization/delete/', {
+			mode: 'cors',
+			credentials: 'omit',
 			headers: {
 				'Authorization': `Bearer ${token}`,
 				'Accept': 'application/json',

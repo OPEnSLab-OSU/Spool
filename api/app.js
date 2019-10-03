@@ -18,8 +18,7 @@ var app = express();
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.set('view engine', 'pug')
-
+app.set('view engine', 'pug');
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const router = express.Router();
@@ -35,7 +34,7 @@ app.use(express.static(path.join(__dirname, '..', 'build')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    res.redirect('/');
+    res.sendStatus(404);
 });
 
 // error handler
@@ -52,15 +51,14 @@ app.use(function(err, req, res, next) {
 
     // At this point you can execute your error handling code
 
-    res.status(400).send('invalid');
+    res.status(400).send('Invalid Request');
     next();
 
   }
   else {
     // render the error page
-    res.status(err.status || 500);
-    console.log(err);
-    res.render('error', {error: err});
+    res.sendStatus(err.status || 500);
+
   }
 });
 

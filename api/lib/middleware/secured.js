@@ -7,6 +7,7 @@ dotenv.config();
 
 const checkJwt = jwt({
 	secret: jwksRsa.expressJwtSecret({
+		strictSSL: false,
 		cache: true,
 		rateLimit: true,
 		jwksRequestsPerMinute: 5,

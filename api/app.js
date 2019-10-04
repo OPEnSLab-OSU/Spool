@@ -48,20 +48,15 @@ app.use(function (err, req, res, next) {
 		res.status(401).send('Unauthorized');
 	}
 	else if (err instanceof ValidationError) {
-
 		// At this point you can execute your error handling code
 		console.log(err);
-		console.log(req);
 		res.status(400).send('Invalid Request');
 		next();
-
 	}
 	else {
 		// render the error page
 		console.log(err);
-		console.log(req);
 		res.sendStatus(err.status || 500);
-
 	}
 });
 

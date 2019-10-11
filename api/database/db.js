@@ -60,13 +60,11 @@ class DatabaseInterface {
 
 	static async update(id){};
 
-	static async createAsUser(user) {};
-	
-	static async delAsUser(id, user) {};
-	
-	static async updateAsUser(id, user) {}
-	
-	static async getAsUser(id, user) {}
+	static async asUser(id, user, fn) {
+		const owns = await this.checkOwnership(id, user);
+		
+		return fn;
+	}
 
 	/**
 	 * Checks whether or not a user owns a type of object with the id. This method calls the owns method of the child that calls it, so ownership is determined by each model.

@@ -4,7 +4,8 @@ const jwksRsa = require("jwks-rsa");
 var dotenv = require('dotenv');
 
 dotenv.config();
-// using JWKS from YOUR_DOMAIN
+
+console.log(process.env.AUTH0_DOMAIN);
 
 const checkJwt = jwt({
 	secret: jwksRsa.expressJwtSecret({
@@ -13,7 +14,6 @@ const checkJwt = jwt({
 		jwksRequestsPerMinute: 5,
 		jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
 	}),
-
 	audience: 'localhost:4000',
 	issuer: `https://${process.env.AUTH0_DOMAIN}/`,
 	algorithm: ["RS256"]

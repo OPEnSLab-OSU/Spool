@@ -28,7 +28,6 @@ const wrapAsync = require('./asyncWrap');
  *  res.send("Device authenticated successfully!")
  * });
  */
-
 const authorized = require('./authorized');
 
 /**
@@ -49,9 +48,17 @@ const secured = require('./secured');
  */
 const userInApi = require('./userInApi');
 
+
+/**
+ * Middleware to wrap request to the database and provide automatic error response handling.
+ * @function databaseWrap
+ * @param {Function} fn - The function to wrap.
+ */
+const databaseWrap = require('./databaseWrap');
+
 module.exports = {
 	wrapAsync: wrapAsync,
 	authorized: authorized,
-	secured: secured
-
+	secured: secured,
+	databaseWrap: databaseWrap
 };

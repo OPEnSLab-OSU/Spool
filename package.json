@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "main": "api/app.js",
     "scripts": {
-        "start": "react-scripts start",
+        "start": "PORT=3001 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
@@ -11,7 +11,7 @@
         "server": "node ./api/bin/www"
     },
     "dependencies": {
-        "@auth0/auth0-spa-js": "^1.2.3",
+        "@auth0/auth0-spa-js": "^1.2.4",
         "asn1js": "^2.0.22",
         "bootstrap": "^4.3.1",
         "cookie-parser": "~1.4.4",
@@ -37,6 +37,7 @@
         "plotly.js": "^1.49.4",
         "plotly.js-dist": "^1.49.4",
         "popper.js": "^1.15.0",
+        "pug": "^2.0.4",
         "react": "^16.9.0",
         "react-bootstrap": "^1.0.0-beta.12",
         "react-dom": "^16.9.0",
@@ -64,5 +65,5 @@
             "last 1 safari version"
         ]
     },
-    "proxy": "https://localhost:3001"
+    "proxy": "https://localhost:3000"
 }

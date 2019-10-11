@@ -4,7 +4,6 @@
 
 
 const { DatabaseInterface } = require("../db") ;
-const ObjectID = require('mongodb').ObjectID;
 
 class NetworkModel {
 	constructor(networkData) {
@@ -34,11 +33,17 @@ class NetworkDatabase extends DatabaseInterface {
 		return networks[0];
 	}
 
-	static async getByUser(id, user) {
-		
-		this.checkOwnership(id, user);
-	
-		return await this.get(id);
+	static async getByUser(user) {
+
+		const Networks = await this.getCollection();
+		const userNetworks = user.networks;
+		if (user.networks == undefined) {
+			return [];
+		}
+		console.log(userNetworks);
+		const networks = await Networks.find({_id: {$in: userNetworks}}).toArray();
+
+		return networks;
 	}
 	
 	static async createWithUser(user) {
@@ -53,7 +58,7 @@ class NetworkDatabase extends DatabaseInterface {
 		
 	}
 
-	static addDevice(id, device_id) {
+	static async addDevice(id, device_id) {
 		const Networks = await this.getCollection();
 		const network = await this.get(id);
 
@@ -67,7 +72,7 @@ class NetworkDatabase extends DatabaseInterface {
 		return true;
 	}
 
-	static removeDevice(id, device_id) {
+	static async removeDevice(id, device_id) {
 		const Networks = await this.getCollection();
 
 		const network = await this.get(id);
@@ -88,7 +93,7 @@ class NetworkDatabase extends DatabaseInterface {
 		
 		const Networks = await this.getCollection();
 	
-		const update = await Networks.updateOne({_id: id}, update);
+		const _ = await Networks.updateOne({_id: id}, update);
 	
 		return true
 	}

@@ -4,17 +4,14 @@ on:
   push:
     branches:
       - production
-
 jobs:
-  deploy:
-
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy to production server.
-    uses: appleboy/ssh-action@master
-    with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.KEY }}
-        port: ${{ secrets.PORT }}
-        script: whoami
+      - uses: actions/checkout@master
+      - name: Publish to Docker Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: eliwinkelman/spool
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}

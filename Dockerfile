@@ -14,3 +14,6 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 COPY . .
+
+### Build the react site
+RUN node_modules/.bin/react-scripts build

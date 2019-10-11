@@ -148,7 +148,7 @@ class DeviceDatabase extends DatabaseInterface {
 	 * @param {string} type - The type of the device.
 	 * @param {string} name - The name of the device.
 	 * @param {Object} user - The user creating the device.
-	 * @returns {{device_id: string, certificate: string, private_key: string}} An object containing the authentication information for the device.
+	 * @returns {{device_id: string, certificate: string?, private_key: string?}} An object containing the authentication information for the device.
 	 */
 	static async create(type, name, coordinator, user) {
 		
@@ -162,6 +162,12 @@ class DeviceDatabase extends DatabaseInterface {
 			owner: user._id
 		};
 
+		const Devices = await this.getCollection();
+
+
+		let response = {
+			device_id: device_id
+		};
 		if (coordinator) {
 
 			//======= Generate Client Certificate =======//
@@ -175,8 +181,8 @@ class DeviceDatabase extends DatabaseInterface {
 			});
 
 			//======= Add the new device to the database =======//
-			const Devices = await this.getCollection();
-
+			response.certificate = clientCert.certificate;
+			response.private_key = clientCert.key;
 			new_device.fingerprint = clientCert.fingerprint;
 		}
 
@@ -192,11 +198,7 @@ class DeviceDatabase extends DatabaseInterface {
 			throw err
 		});
 
-		return {
-			device_id: device_id,
-			certificate: clientCert.certificate,
-			private_key: clientCert.key
-		}
+		return response;
 	}
 }
 

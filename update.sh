@@ -10,4 +10,4 @@ cd ..
 
 # build the new app.
 sudo docker-compose down
-sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d

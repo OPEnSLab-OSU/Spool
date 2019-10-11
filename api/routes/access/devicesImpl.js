@@ -69,7 +69,7 @@ async function deleteDevice(req, res) {
  * @param {Object} res - An Express response object.
  */
 async function createDevice(req, res) {
-	const newDeviceInfo = await DeviceDatabase.create(req.body.type, req.body.name, false, req.apiUser);
+	const newDeviceInfo = await DeviceDatabase.create(req.body.type, req.body.name, true, req.apiUser);
 	res.send(newDeviceInfo);
 }
 

@@ -5,16 +5,14 @@ var dotenv = require('dotenv');
 
 dotenv.config();
 
+console.log(process.env.AUTH0_DOMAIN);
+
 const checkJwt = jwt({
 	secret: jwksRsa.expressJwtSecret({
-		strictSsl: false,
 		cache: true,
 		rateLimit: true,
 		jwksRequestsPerMinute: 5,
-		jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
-		requestAgentOptions: {
-			rejectUnauthorized: false
-		}
+		jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
 	}),
 	audience: 'localhost:4000',
 	issuer: `https://${process.env.AUTH0_DOMAIN}/`,

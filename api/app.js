@@ -9,7 +9,7 @@ var {Validator, ValidationError} = require('express-json-validator-middleware');
 const deviceRouter = require('./routes/device');
 const frontEndRouter = require('./routes/access/access');
 const documentationRouter = require('./swagger-jsdoc');
-
+	
 // Load environment variables from .env
 dotenv.config();
 

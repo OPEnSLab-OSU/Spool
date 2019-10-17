@@ -40,7 +40,7 @@ router.get('/info/:device', secured, wrapAsync(getDevice));
 
 /**
  * @swagger
- * /access/devices/delete/{device}:
+ * /access/devices/delete:
  *      get:
  *          description: Deletes the specified device.
  *          tags:
@@ -54,7 +54,7 @@ router.get('/info/:device', secured, wrapAsync(getDevice));
  *                required: true
  *                description: id of the device to get
  */
-router.get('/delete/:device', secured, wrapAsync(deleteDevice));
+router.post('/delete/', secured, wrapAsync(deleteDevice));
 
 /**
  * @swagger

@@ -15,6 +15,6 @@ router.use(userInApi());
 
 router.use('/devices', deviceRouter);
 router.use('/visualization', visualizationRouter);
-router.use('/network', networkRouter);
+router.use('/networks', networkRouter);
 
 module.exports = router;

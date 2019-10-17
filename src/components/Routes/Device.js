@@ -9,7 +9,7 @@ import DeviceDataTable from "../DeviceDataTable";
 import DeviceDetails from '../DeviceDetails';
 import VisualizationDashboard from '../Visualizations/VisualizationDashboard'
 
-import { Tabs, Tab } from 'react-bootstrap'
+import { Container, Tabs, Tab } from 'react-bootstrap'
 
 function DevicePage(props) {
 	//this needs to be passed props.device and props.data where device is the device and data is an array of the data the device has collected sorted by timestamp.
@@ -42,13 +42,13 @@ function DevicePage(props) {
 		 </div>;*/
 
 		// if there is data, display it in tabular format, otherwise don't display it
-
+	
 	const [showDevice, setShowDevice] = useState(false);
 	const [showData, setShowData] = useState(false);
 	const [device, setDevice] = useState({});
 	const [data, setData] = useState({});
 	const {getTokenSilently} = useAuth0();
-
+	
 	useEffect(() => {
 		async function fetchData() {
 			accessDevice(props.match.params.device, getTokenSilently, (device) => {
@@ -64,12 +64,11 @@ function DevicePage(props) {
 		}
 		fetchData();
 	}, []);
-
-
+	
 	return (
 
-		<div className="container-fluid">
-			{showDevice && <DeviceDetails device={device.device}/> }
+		<Container fluid={true}>
+			{showDevice && <DeviceDetails device={device.device} /> }
 
 			<Tabs>
 				<Tab eventKey="Data" title="Data">
@@ -80,7 +79,7 @@ function DevicePage(props) {
 				</Tab>
 			</Tabs>
 
-		</div>
+		</Container>
 	)
 }
 

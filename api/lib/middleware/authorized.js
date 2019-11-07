@@ -11,8 +11,9 @@ function authorized(req, res, next) {
 		return res.status(401).send('Device is not authorized 1');
 	}
 
-	var device_id = req.body.device_id;
-
+	let device_id = req.body.device_id;
+	let coordinator_id = req.body.coordinator_id;
+	
 	if (!device_id) {
 		return res.status(401).send('Device is not authorized 2');
 	}
@@ -20,7 +21,7 @@ function authorized(req, res, next) {
 		next();
 
 		//make sure that the certification actually belongs to the requesting device
-		var cert = req.socket.getPeerCertificate();
+		let cert = req.socket.getPeerCertificate();
 		
 		useClient((err, client) => {
 			if (err) {return next(err);}
@@ -28,18 +29,31 @@ function authorized(req, res, next) {
 			const db = client.db("Loom");
 			const Devices = db.collection("Devices");
 
-			Devices.find({device_id: new ObjectID(device_id)}).toArray((err, device) => {
+			Devices.find({device_id: new ObjectID(coordinator_id)}).toArray((err, coordinator) => {
 				if (err) {return next(err);}
 
-				if (device.length == 0) {
+				if (coordinator.length == 0) {
 					return res.status(401).send('Device is not authorized 3')
 				}
 
-				var fingerprint = device[0].fingerprint;
+				var fingerprint = coordinator[0].fingerprint;
 
 				// compare the fingerprint in the db to the devices fingerprint
 				if (fingerprint === cert.fingerprint) {
-					next()
+					// fingerprint is right. Check that this device actually has this coordinator.
+					Devices.find({device_id: new ObjectID(device_id)}).toArray((err, device) => {
+						if (device.length == 0) {
+							return res.sendStatus(401)
+						}
+						if (device[0].coordinator == coordinator_id) {
+							// success!
+							next()
+						}
+						else {
+							return res.sendStatus(401)
+						}
+					})
+					
 				}
 				else{
 					return res.status(401).send('Device is not authorized 4');

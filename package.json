@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "main": "api/app.js",
     "scripts": {
-        "start": "PORT=3001 react-scripts start",
+        "start": "HTTPS=true PORT=3001 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",

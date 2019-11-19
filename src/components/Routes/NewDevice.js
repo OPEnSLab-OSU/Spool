@@ -6,20 +6,19 @@ import { useAuth0 } from "../../react-auth0-wrapper";
 import React, { useState, useEffect } from 'react'
 import {Button, Row, Container, Col} from 'react-bootstrap'
 import {registerDevice} from '../../api';
+import {withRouter} from 'react-router-dom';
 
-const RegisterDeviceForm = () => {
 
-	const [showResult, setShowResult] = useState(false);
-	const [apiMessage, setApiMessage] = useState({});
+const RegisterDeviceForm = (props) => {
+
 	const [deviceName, setDeviceName] = useState("");
 	const {getTokenSilently} = useAuth0();
 
 	const PostData = async (event) => {
 		event.preventDefault();
 
-		registerDevice(deviceName, getTokenSilently, (responseData) => {
-			setApiMessage(responseData);
-			setShowResult(true);
+		registerDevice(deviceName, props.match.params.network, getTokenSilently, (responseData) => {
+			props.history.push('/u/networks/view/'+props.match.params.network)
 		})
 	};
 
@@ -28,8 +27,7 @@ const RegisterDeviceForm = () => {
 	};
 
 	return (
-		<>
-	{!showResult &&
+
 		<Container fluid={true}>
 			<Row>
 				<Col sm={{span: 6, offset: 3}}>
@@ -46,36 +44,8 @@ const RegisterDeviceForm = () => {
 				</Col>
 			</Row>
 		</Container>
-	}
 
-		{showResult && NewDeviceInfo({info_raw: JSON.stringify(apiMessage)})}
-
-		</>
 	);
 };
 
-
-const NewDeviceInfo = (props) => {
-
-	var url = 'data:text/plain;charset=utf-8,' + encodeURIComponent(props.info_raw);
-	var downloadbutton = <a href={url} download="loom_configuration.json"><Button variant="primary">Download</Button></a>;
-
-	return (
-			<Container fluid={true}>
-				<Row>
-					<Col sm={{span: 6, offset: 3}}>
-						<h1>New Device Info</h1>
-						<p>Include this in your loom config</p>
-						<code className="text-break">
-							{props.info_raw}
-						</code>
-						<br />
-						{downloadbutton}
-					</Col>
-				</Row>
-			</Container>
-	);
-
-};
-
-export default RegisterDeviceForm;
+export default withRouter(RegisterDeviceForm);

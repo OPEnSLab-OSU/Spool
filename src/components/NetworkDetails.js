@@ -1,35 +1,35 @@
 /**
- * Created by eliwinkelman on 9/6/19.
+ * Created by eliwinkelman on 10/17/19.
  */
 
 import React, { useState, useEffect } from 'react'
 import { useAuth0 } from "../react-auth0-wrapper";
 import {Row, Col, Button, Modal} from 'react-bootstrap'
 import {withRouter} from 'react-router-dom'
-import {deleteDevice} from '../api';
+import {deleteNetwork} from '../api';
 
-function DeviceDetails(props) {
+function NetworkDetails(props) {
 	const {getTokenSilently} = useAuth0();
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 	const handleClose = () => setShowDeleteConfirm(false);
 	const handleShow = () => setShowDeleteConfirm(true);
-	
+
 	const onConfirmDelete = () => {
-		deleteDevice(props.device.device_id, getTokenSilently, () => {props.history.push('/u/');})
+		deleteNetwork(props.network._id, getTokenSilently, () => {props.history.push('/u/');})
 	};
-	console.log(props.device);
+
 	return (
 		<Row>
 			<Col xs={10}>
-				<h3>Name: {props.device.name} </h3>
+				<h3>Network: {props.network.name} </h3>
 			</Col>
 			<Col xs={1}>
-				{!props.device.coordinator && <Button variant="danger" size="sm" onClick={handleShow}>Delete</Button>}
+				<Button variant="danger" size="sm" onClick={handleShow}>Delete</Button>
 			</Col>
 			<Modal show={showDeleteConfirm} onHide={handleClose} centered>
 
-				<Modal.Body>Are you sure you want to delete this device?<br/>
+				<Modal.Body>Are you sure you want to delete this network?<br/>
 					This cannot be undone.</Modal.Body>
 				<Modal.Footer>
 					<Button variant="danger" onClick={onConfirmDelete}>
@@ -44,4 +44,4 @@ function DeviceDetails(props) {
 	)
 }
 
-export default withRouter(DeviceDetails);
+export default withRouter(NetworkDetails);

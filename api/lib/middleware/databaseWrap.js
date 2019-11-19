@@ -5,7 +5,7 @@ async function databaseWrap (res, next, fn, ...args) {
 		let result;
 		try {
 			result = await fn(args);
-			console.log(result)
+			console.log(result);
 		}
 		catch (err) {
 			// error handler

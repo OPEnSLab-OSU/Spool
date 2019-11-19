@@ -7,7 +7,7 @@ var {useClient} = require('../../database/db');
 const ObjectID = require('mongodb').ObjectID;
 const DeviceDatabase = require('../../database/models/device');
 const DeviceDataDatabase = require('../../database/models/deviceData');
-
+const NetworkDatabase = require("../../database/models/network");
 /**
  * Retrieves devices from the database by user and sends them as the http response.
  * @param {Object} req - An Express request object.
@@ -53,7 +53,11 @@ async function getDevice(req, res) {
 async function deleteDevice(req, res) {
 	
 	try {
-		DeviceDatabase.del(req.params.device, req.apiUser);
+
+		const device = DeviceDatabase.get(req.body.device_id, req.apiUser);
+		DeviceDatabase.del(req.body.device_id, req.apiUser);
+		NetworkDatabase.removeDevice(device.network, req.body.device_id);
+
 		res.sendStatus(200);
 	}
 	catch (error) {
@@ -69,7 +73,11 @@ async function deleteDevice(req, res) {
  * @param {Object} res - An Express response object.
  */
 async function createDevice(req, res) {
-	const newDeviceInfo = await DeviceDatabase.create(req.body.type, req.body.name, true, req.apiUser);
+
+	const newDeviceInfo = await DeviceDatabase.create(req.body.name, false, req.apiUser, req.body.network_id);
+
+	NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
+
 	res.send(newDeviceInfo);
 }
 

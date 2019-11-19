@@ -3,9 +3,9 @@ node_modules
 .clientTLS
 .ec-clientTLS
 .ec-certificates
-.env
 .idea/
 .ssh/
+
 
 # dependencies
 /node_modules

@@ -27,6 +27,7 @@ router.use('/access', frontEndRouter);
 router.use('/docs', documentationRouter);
 
 app.use('/api', router);
+app.use('/docs', express.static(path.join(__dirname, '..', 'docs')));
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
 

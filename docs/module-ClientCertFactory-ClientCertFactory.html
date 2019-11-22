@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: ClientCertFactory</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: ClientCertFactory</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="module-ClientCertFactory.html">ClientCertFactory</a>~</span>ClientCertFactory<span class="signature">(binpath, root_cert, domains, hash, curve, lifetime_days, subject_base)</span><span class="type-signature"></span></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    
+    <h4 class="name" id="ClientCertFactory"><span class="type-signature"></span>new ClientCertFactory<span class="signature">(binpath, root_cert, domains, hash, curve, lifetime_days, subject_base)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>ClientCertFactory properties.
+This function will throw an exception if the OpenSSL binary is not found.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>binpath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>A path to the OpenSSL binary, global if falsey</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>root_cert</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The PEM string representing the root certificate authority.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>domains</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>An array of DNS names to allow the certificates to authenticate.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>hash</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    sha256
+                
+                </td>
+            
+
+            <td class="description last"><p>A string representing the hash function to sign the certificate with (ex. sha256)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>curve</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    prime256v1
+                
+                </td>
+            
+
+            <td class="description last"><p>The name of the eliptical curve to use (from <code>openssl ecparam -list_curves</code>).
+Different curves may or may not be supported by the version of OpenSSL you are using.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lifetime_days</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    200
+                
+                </td>
+            
+
+            <td class="description last"><p>The number of days to issue certificates for.
+Certificates will automatically be valid from the time issued</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>subject_base</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>An object
+specifiying some information to put on all the certificates.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_ClientCertFactory.js.html">lib/ClientCertFactory.js</a>, <a href="lib_ClientCertFactory.js.html#line55">line 55</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="create_cert"><span class="type-signature">(async) </span>create_cert<span class="signature">(root_priv_key, common_name, use_extensions)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Create a client certificate.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>root_priv_key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>The private key of the root certificate provided in the constructor, in PEM format.
+This argument is passed here instead of the constructor to allow removing the key from memory when it is not in use.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>common_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Common name to use for the certificate, should be something unique/generated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>use_extensions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Whether or not to use extensions restricting the use of the issued certificate.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_ClientCertFactory.js.html">lib/ClientCertFactory.js</a>, <a href="lib_ClientCertFactory.js.html#line93">line 93</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>An object with all of the generated values.
+key is the private key in PEM format, key_raw is just the private key in base64, and fingerprint is the sha256 fingerprint
+of the client certificate, in the format provided by the nodejs TLS engine.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-access_devices.html">access/devices</a></li><li><a href="module-access_networks.html">access/networks</a></li><li><a href="module-access_visualization.html">access/visualization</a></li><li><a href="module-ClientCertFactory.html">ClientCertFactory</a></li><li><a href="module-manageKeys.html">manageKeys</a></li><li><a href="module-middleware.html">middleware</a></li></ul><h3>Classes</h3><ul><li><a href="DeviceDatabase.html">DeviceDatabase</a></li><li><a href="DeviceDataDatabase.html">DeviceDataDatabase</a></li><li><a href="module-ClientCertFactory-ClientCertFactory.html">ClientCertFactory</a></li><li><a href="VisualizationDatabase.html">VisualizationDatabase</a></li></ul><h3>Interfaces</h3><ul><li><a href="DatabaseInterface.html">DatabaseInterface</a></li></ul><h3>Global</h3><ul><li><a href="global.html#databaseWrap">databaseWrap</a></li><li><a href="global.html#strMapToObj">strMapToObj</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 21 2019 16:04:42 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

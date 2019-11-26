@@ -60,7 +60,7 @@ class NetworkDatabase extends DatabaseInterface {
 		const insertion = await Networks.insertOne(network);
 
 		// make a coordinator device
-		const coordinator = await DeviceDatabase.create("Coordinator", true, user, insertion.insertedId);
+		const coordinator = await DeviceDatabase.create("Coordinator", null, user, insertion.insertedId);
 
 		// add the coordinator to the network
 		const addedCoordinator = await this.addDevice(insertion.insertedId, coordinator.device_id);

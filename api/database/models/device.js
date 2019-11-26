@@ -16,6 +16,7 @@ class DeviceModel {
 		this.fingerprint = deviceData.fingerprint;
 		this.owner = deviceData.owner;
 		this.coordinator = deviceData.coordinator;
+		this.coordinator_id = deviceData.coordinator_id;
 		this.network = deviceData.network;
 	}
 }
@@ -162,22 +163,30 @@ class DeviceDatabase extends DatabaseInterface {
 	 *
 	 * 1. Generate a client certificate and device id for the new device.
 	 * 2. Add the new device object to the MongoDB "Devices" collection.
-	 * 
-	 * @param {string} type - The type of the device.
+	 *
 	 * @param {string} name - The name of the device.
+	 * @param {Object} coordinator_id - The id of the coordinator these device is under.
 	 * @param {Object} user - The user creating the device.
 	 * @returns {{device_id: string, certificate: string?, private_key: string?}} An object containing the authentication information for the device.
 	 */
-	static async create(name, coordinator, user, network_id) {
-		
+
+	static async create(name, coordinator_id, user, network_id) {
+		let coordinator = false;
 		//generate a device_id
-		const device_id = new ObjectID();
+		let device_id = coordinator_id;
+
+		if (coordinator_id == null) {
+			// then this is a coordinator
+			coordinator = true;
+			device_id = new ObjectID();
+		}
 
 		let new_device = new DeviceModel({
 			name: name,
 			device_id: device_id,
 			owner: user._id,
 			coordinator: coordinator,
+			coordinator_id: coordinator_id,
 			network: network_id
 		});
 
@@ -195,7 +204,7 @@ class DeviceDatabase extends DatabaseInterface {
 
 			// generate a client certificate
 			const certFactory = new ClientCertFactory(process.env.OPENSSL_BINARY_PATH, keys.ca.certificate);
-			const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client " + device_id, false).catch((err) => {
+			const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client", false).catch((err) => {
 				throw err
 			});
 

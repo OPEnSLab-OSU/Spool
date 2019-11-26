@@ -1,21 +1,32 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
-const mongoURI = "mongodb://mongo:27017";
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+dotenv.config();
+
 let _client;
+
+const readOptions = {
+	encoding: "utf8"
+};
 
 async function useClient() {
 	/**
 	 * Returns the MongoDB client as a promise
 	 */
 	console.log("Attempting to connect to mongodb");
+	const passKeyPath = "/run/secrets/mongopass.txt";
+	const uri= "mongodb+srv://Admin:RiNu7ae0VouyTQ06@spool-me8kz.mongodb.net/test?retryWrites=true&w=majority";
+	
 	// check if we already have the client and return it if we do.
 	if (_client) {
 			return _client
 	}
 	else {
 		// otherwise connect to the client and return it
-		_client = await MongoClient.connect(mongoURI).catch(err => {throw(err);});
+		_client = await MongoClient.connect(uri).catch(err => {throw(err);});
 		return _client
 	}
 }

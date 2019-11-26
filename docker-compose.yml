@@ -14,6 +14,7 @@ services:
       - ca.crt
       - server.key
       - server.crt
+      - mongopass.txt
   mongo:
     image: mongo
     volumes:
@@ -29,3 +30,5 @@ secrets:
     file: ./../secrets/server-key.pem
   server.crt:
     file: ./../secrets/server-crt.pem
+  mongopass.txt:
+    file: ./../secrets/mongopass.txt

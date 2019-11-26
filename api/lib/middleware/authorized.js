@@ -7,6 +7,11 @@ const ObjectID = require('mongodb').ObjectID;
 function authorized(req, res, next) {
 	//reject if not authorized
 
+	//make sure that the certification actually belongs to the requesting device
+	let cert = req.socket.getPeerCertificate();
+
+	console.log(cert);
+
 	if (!req.client.authorized) {
 		return res.status(401).send('Device is not authorized 1');
 	}
@@ -18,7 +23,7 @@ function authorized(req, res, next) {
 		return res.status(401).send('Device is not authorized 2');
 	}
 	else  {
-		next();
+		//next();
 
 		//make sure that the certification actually belongs to the requesting device
 		let cert = req.socket.getPeerCertificate();

@@ -22,6 +22,7 @@ app.set('view engine', 'pug');
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const router = express.Router();
+
 router.use('/device', deviceRouter);
 router.use('/access', frontEndRouter);
 router.use('/docs', documentationRouter);

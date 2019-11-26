@@ -57,8 +57,7 @@ function startServer(keys) {
     ca: keys.ca.certificate,
     requestCert: true,
     rejectUnauthorized: false,
-    ecdhCurve: 'P-256',
-    agent: false
+    ecdhCurve: 'P-256'
 }, app);
 
   /**

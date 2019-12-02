@@ -1,3 +1,6 @@
+/**
+ * Created by eliwinkelman on 12/1/19.
+ */
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -6,9 +9,8 @@ var dotenv = require('dotenv');
 
 var {Validator, ValidationError} = require('express-json-validator-middleware');
 
-const frontEndRouter = require('./routes/access/access');
-const documentationRouter = require('./swagger-jsdoc');
-	
+const deviceRouter = require('./routes/device');
+
 // Load environment variables from .env
 dotenv.config();
 
@@ -18,17 +20,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.set('view engine', 'pug');
-app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 
 const router = express.Router();
 
-router.use('/access', frontEndRouter);
-router.use('/docs', documentationRouter);
+router.use('/device', deviceRouter);
+
 
 app.use('/api', router);
-app.use('/docs', express.static(path.join(__dirname, '..', 'docs')));
-app.use(express.static(path.join(__dirname, '..', 'build')));
-
 
 //Error handling for API request validation failures
 

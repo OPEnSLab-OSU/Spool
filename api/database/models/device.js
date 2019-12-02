@@ -179,6 +179,7 @@ class DeviceDatabase extends DatabaseInterface {
 			// then this is a coordinator
 			coordinator = true;
 			device_id = new ObjectID();
+			coordinator_id = device_id;
 		}
 
 		let new_device = new DeviceModel({

@@ -3,3 +3,5 @@ services:
     app:
         image: eliwinkelman/spool:production
         command: /bin/bash deploy.prod.sh
+        ports:
+          "443":"3000"

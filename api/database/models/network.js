@@ -131,6 +131,7 @@ class NetworkDatabase extends DatabaseInterface {
 	
 	static async del(id) {
 		const Networks = await this.getCollection();
+
 		const deleted = await Networks.deleteOne({_id: id});
 		return true;
 	}

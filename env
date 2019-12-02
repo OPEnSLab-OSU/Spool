@@ -1,0 +1,5 @@
+AUTH0_DOMAIN=opens.auth0.com
+AUTH0_CALLBACK_URL=https://localhost:3000/auth/callback
+OPENSSL_BINARY_PATH=/usr/bin/openssl
+MONGO_USERNAME=Admin
+MONGO_ADDRESS=spool-me8kz.mongodb.net/test?retryWrites=true&w=majority

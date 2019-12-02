@@ -1,0 +1,26 @@
+version: "3.7"
+services:
+  deviceapp:
+    container_name: deviceapp
+    env_file:
+      - env
+    ports:
+      - "3002:3002"
+    restart: always
+    secrets:
+      - ca.key
+      - ca.crt
+      - server.key
+      - server.crt
+      - mongopass.txt
+secrets:
+  ca.key:
+    file: ./../secrets/ca.key
+  ca.crt:
+    file: ./../secrets/ca.crt
+  server.key:
+    file: ./../secrets/server-key.pem
+  server.crt:
+    file: ./../secrets/server-crt.pem
+  mongopass.txt:
+    file: ./../secrets/mongopass.txt

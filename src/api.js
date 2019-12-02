@@ -69,12 +69,15 @@ export async function deleteDevice (device_id, getTokenSilently, callback) {
 	try {
 		const token = await getTokenSilently();
 
-		const response = await fetch("/api/access/devices/delete/"+device_id, {
+		const response = await fetch("/api/access/devices/delete/", {
 			mode: 'cors',
-			credentials: 'omit',
 			headers: {
-				Authorization: `Bearer ${token}`
-			}
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify({device_id: device_id})
 		});
 		callback();
 		
@@ -84,7 +87,7 @@ export async function deleteDevice (device_id, getTokenSilently, callback) {
 	}
 }
 
-export async function registerDevice (name, getTokenSilently, callback) {
+export async function registerDevice (name, network_id, getTokenSilently, callback) {
 	
 	try {
 		const token = await getTokenSilently();
@@ -98,7 +101,7 @@ export async function registerDevice (name, getTokenSilently, callback) {
 				'Content-Type': 'application/json'
 			},
 			method: 'POST',
-			body: JSON.stringify({name: name})
+			body: JSON.stringify({name: name, network_id})
 		});
 		const responseData = await response.json();
 		
@@ -107,7 +110,6 @@ export async function registerDevice (name, getTokenSilently, callback) {
 	catch(error) {
 		console.error(error);
 	}
-	
 }
 
 export async function newVisualization(visualization, getTokenSilently, callback) {
@@ -194,6 +196,110 @@ export async function deleteVisualization(visualizationData, getTokenSilently, c
 			},
 			method: 'POST',
 			body: JSON.stringify(visualizationData)
+		});
+
+		callback(response.status);
+	}
+	catch (error) {
+		console.log(error);
+	}
+}
+
+export async function accessNetworks(getTokenSilently, callback) {
+	try {
+
+		const token = await getTokenSilently();
+		const response = await fetch("/api/access/networks/", {
+			mode: 'cors',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		const responseData = await response.json();
+		callback(responseData.networks);
+
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export async function accessNetwork(id, getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+		const response = await fetch("/api/access/networks/view/" + id, {
+			mode: 'cors',
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
+
+		const responseData = await response.json();
+
+		callback(responseData)
+	}
+	catch(error) {
+		console.error(error);
+	}
+}
+
+export async function accessNetworkDevices(id, getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+		const response = await fetch("/api/access/networks/devices/" + id, {
+			mode: 'cors',
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
+		
+		const responseData = await response.json();
+		
+		callback(responseData)
+	}
+	catch(error) {
+		console.error(error);
+	}
+}
+
+
+export async function newNetwork(name, getTokenSilently, callback){
+	try {
+		const token = await getTokenSilently();
+
+		const response = await fetch('/api/access/networks/new', {
+			mode: 'cors',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify({name: name})
+		});
+		const responseData = await response.json();
+
+		callback(responseData);
+	}
+	catch(error) {
+		console.error(error);
+	}
+}
+
+export async function deleteNetwork(id, getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+
+		const response = await fetch('/api/access/networks/delete/', {
+			mode: 'cors',
+			credentials: 'omit',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+			body: JSON.stringify({network_id: id})
 		});
 
 		callback(response.status);

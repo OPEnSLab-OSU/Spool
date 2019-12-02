@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+    deviceapp:
+        image: eliwinkelman/spool:production
+        command: /bin/bash deploy.device.prod.sh
+        ports:
+          "443":"3002"

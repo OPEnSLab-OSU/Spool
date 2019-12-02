@@ -6,6 +6,7 @@
         "start": "PORT=3001 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
+        "doc": "./node_modules/.bin/jsdoc -c jsdoc.conf.json",
         "eject": "react-scripts eject",
         "dev": "npm-run-all --parallel start server",
         "server": "node ./api/bin/www"
@@ -24,6 +25,7 @@
         "express-session": "^1.16.2",
         "http-errors": "~1.6.3",
         "jquery": "^3.4.1",
+        "jsdoc": "^3.6.3",
         "jwks-rsa": "^1.6.0",
         "mongodb": "^3.2.7",
         "morgan": "~1.9.1",

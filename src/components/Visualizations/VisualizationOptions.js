@@ -36,7 +36,8 @@ export const DataSourceOptions = (dataLabels, currentType) => {
 	const typeOptionMap = {'scatter': ScatterOptions(dataLabels), 'histogram': HistogramOptions(dataLabels)};
 	
 	switch(currentType) {
-		case('scatter'): additionalOptions = ScatterOptions.options;
+		case('scatter'): additionalOptions = ScatterOptions.options; break;
+		case('histogram'): additionalOptions = HistogramOptions.options;
 	}
 	
 	let options = [

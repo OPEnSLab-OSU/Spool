@@ -3,17 +3,21 @@
  */
 
 const { DatabaseInterface } = require("../db") ;
+
 const ObjectID = require('mongodb').ObjectID;
 var ClientCertFactory = require('../../lib/ClientCertFactory');
 var pem = require('pem');
 var getKeys = require("../../lib/manageKeys");
 
 class DeviceModel {
-	constructor(name, device_id, fingerprint, owner) {
-		this.name = name;
-		this.device_id = device_id;
-		this.fingerprint = fingerprint;
-		this.owner = owner;
+	constructor(deviceData) {
+		this.name = deviceData.name;
+		this.device_id = deviceData.device_id;
+		this.fingerprint = deviceData.fingerprint;
+		this.owner = deviceData.owner;
+		this.coordinator = deviceData.coordinator;
+		this.coordinator_id = deviceData.coordinator_id;
+		this.network = deviceData.network;
 	}
 }
 
@@ -73,6 +77,20 @@ class DeviceDatabase extends DatabaseInterface {
 		return usersDevices;
 	}
 
+	static async getMany(list) {
+		const deviceArray = list.map(device => {
+			return ObjectID(device)
+		});
+
+		const Devices = await this.getCollection();
+		
+		const devices = await Devices.find({device_id: {$in: deviceArray}}).toArray().catch(err => {
+			throw err;
+		});
+		
+		return devices;
+	}
+	
 	/**
 	 * Gets the device with id.
 	 * @param {string} id - The id of the device.
@@ -127,15 +145,16 @@ class DeviceDatabase extends DatabaseInterface {
 	static async del(id, user) {
 		this.checkOwnership(id, user);
 
+		const device = this.get(id, user);
 		const Devices = await this.getCollection();
-
+		
 		// delete the device
 		Devices.deleteOne({device_id: new ObjectID(id)});
 
 		//delete the device data
 		const DeviceData = await super.getCollection(id.toString());
 		DeviceData.deleteOne({device_id: new ObjectID(id)});
-		
+
 		return true;
 	}
 
@@ -144,30 +163,40 @@ class DeviceDatabase extends DatabaseInterface {
 	 *
 	 * 1. Generate a client certificate and device id for the new device.
 	 * 2. Add the new device object to the MongoDB "Devices" collection.
-	 * 
-	 * @param {string} type - The type of the device.
+	 *
 	 * @param {string} name - The name of the device.
+	 * @param {Object} coordinator_id - The id of the coordinator these device is under.
 	 * @param {Object} user - The user creating the device.
 	 * @returns {{device_id: string, certificate: string?, private_key: string?}} An object containing the authentication information for the device.
 	 */
-	static async create(type, name, coordinator, user) {
-		
-		//generate a device_id
-		const device_id = new ObjectID();
 
-		let new_device = {
-			type: type,
+	static async create(name, coordinator_id, user, network_id) {
+		let coordinator = false;
+		//generate a device_id
+		let device_id = coordinator_id;
+
+		if (coordinator_id == null) {
+			// then this is a coordinator
+			coordinator = true;
+			device_id = new ObjectID();
+			coordinator_id = device_id;
+		}
+
+		let new_device = new DeviceModel({
 			name: name,
 			device_id: device_id,
-			owner: user._id
-		};
+			owner: user._id,
+			coordinator: coordinator,
+			coordinator_id: coordinator_id,
+			network: network_id
+		});
 
 		const Devices = await this.getCollection();
-
 
 		let response = {
 			device_id: device_id
 		};
+		
 		if (coordinator) {
 
 			//======= Generate Client Certificate =======//
@@ -176,7 +205,7 @@ class DeviceDatabase extends DatabaseInterface {
 
 			// generate a client certificate
 			const certFactory = new ClientCertFactory(process.env.OPENSSL_BINARY_PATH, keys.ca.certificate);
-			const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client " + device_id, false).catch((err) => {
+			const clientCert = await certFactory.create_cert(keys.ca.key, "Spool Client", false).catch((err) => {
 				throw err
 			});
 
@@ -197,6 +226,8 @@ class DeviceDatabase extends DatabaseInterface {
 		let userUpdate = Users.updateOne({_id: new ObjectID(user._id)}, {$set: {devices: user.devices}}).catch(err => {
 			throw err
 		});
+
+
 
 		return response;
 	}

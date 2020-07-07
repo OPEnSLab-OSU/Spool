@@ -4,6 +4,6 @@ services:
         volumes:
             - ./:/usr/src/app
         command: /bin/bash deploy.device.dev.sh
-        build: ./
+        build: ./dev/
         ports:
           - "3002:3002"

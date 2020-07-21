@@ -16,7 +16,7 @@ const checkJwt = jwt({
 	}),
 	audience: 'localhost:4000',
 	issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-	algorithm: ["RS256"]
+	algorithms: ["RS256"]
 });
 
 module.exports = checkJwt;

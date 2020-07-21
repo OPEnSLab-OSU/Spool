@@ -6,7 +6,7 @@ import React, {useState, useEffect} from 'react'
 import {useAuth0} from '../../react-auth0-wrapper'
 import Visualization from './Visualization'
 import { getVisualizations, newVisualization } from '../../api'
-import VisualizationEditor from './VisualizationEditor'
+/*import VisualizationEditor from './VisualizationEditor'*/
 
 import { Col, Container, CardDeck, Row, Button } from 'react-bootstrap'
 
@@ -19,7 +19,7 @@ function VisualizationDashboard(props) {
 
 	async function fetchData() {
 		getVisualizations(props.device_id, getTokenSilently, (visualizations) => {
-			if (visualizations != undefined) {
+			if (visualizations !== undefined) {
 				setVisualizationApi(visualizations);
 				setDataSources(Array.from(props.deviceData[0]).map(([key, value])=>{
 					return key;
@@ -30,7 +30,7 @@ function VisualizationDashboard(props) {
 		});
 	}
 
-	useEffect(() => {
+	useEffect(() => { /* Missing dependency fetchData. Include fetchData or remove it from the array react-hooks/exhaustive-deps*/
 		fetchData();
 	}, []);
 	
@@ -51,7 +51,7 @@ function VisualizationDashboard(props) {
 			};
 
 			newVisualization(visualization, getTokenSilently, (status) => {
-				if (status == 200){
+				if (status === 200){
 					fetchData();
 				}
 			})

@@ -7,7 +7,8 @@
 import React, { useState, useEffect } from 'react'
 import VisualizationEditor from './VisualizationEditor';
 import Plot from 'react-plotly.js';
-import {Card, Button/*, Modal, Form*/} from 'react-bootstrap';
+
+import {Card, Button} from 'react-bootstrap';
 import {updateVisualization, deleteVisualization} from '../../api';
 import {useAuth0} from '../../react-auth0-wrapper'
 

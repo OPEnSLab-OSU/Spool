@@ -1,7 +1,28 @@
 version: "3.7"
 services:
   deviceapp:
+    container_name: deviceapp
     command: "/bin/bash deploy.device.prod.sh"
     image: "eliwinkelman/spool:production"
     ports:
       - "443:3002"
+    env_file:
+      - env
+    restart: always
+    secrets:
+      - ca.key
+      - ca.crt
+      - server.key
+      - server.crt
+      - mongopass.txt
+secrets:
+  ca.key:
+    file: ./../secrets/ca.key
+  ca.crt:
+    file: ./../secrets/ca.crt
+  server.key:
+    file: ./../secrets/server-key.pem
+  server.crt:
+    file: ./../secrets/server-crt.pem
+  mongopass.txt:
+    file: ./../secrets/mongopass.txt

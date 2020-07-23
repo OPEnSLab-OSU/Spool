@@ -3,16 +3,42 @@ services:
   app:
     container_name: app
     env_file:
-      - env
+      - envdev
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+    command: /bin/bash deploy.dev.sh
+    build: ./dev/
     ports:
       - "3000:3000"
-    restart: always
+      - "3001:3001"
     secrets:
       - ca.key
       - ca.crt
       - server.key
       - server.crt
-      - mongopass.txt
+  deviceapp:
+    container_name: deviceapp
+    env_file:
+      - envdev
+    ports:
+      - "3002:3002"
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+    command: /bin/bash deploy.device.dev.sh
+    build: ./dev/
+    secrets:
+      - ca.key
+      - ca.crt
+      - server.key
+      - server.crt
+  mongo:
+    image: mongo
+    volumes:
+      - ../data:/data/db
+    expose:
+      - "27017"
 secrets:
   ca.key:
     file: ./../secrets/ca.key
@@ -22,5 +48,4 @@ secrets:
     file: ./../secrets/server-key.pem
   server.crt:
     file: ./../secrets/server-crt.pem
-  mongopass.txt:
-    file: ./../secrets/mongopass.txt
+

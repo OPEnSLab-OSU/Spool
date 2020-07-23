@@ -44,8 +44,6 @@ class NetworkDatabase extends DatabaseInterface {
 			return ObjectID(network)
 		});
 
-		console.log(networkArray);
-
 		const usersNetworks = await Networks.find({_id: {$in: networkArray}}).toArray();
 
 		return usersNetworks;

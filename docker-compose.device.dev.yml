@@ -1,9 +1,0 @@
-version: "3.7"
-services:
-    deviceapp:
-        volumes:
-            - ./:/usr/src/app
-        command: /bin/bash deploy.device.dev.sh
-        build: ./dev/
-        ports:
-          - "3002:3002"

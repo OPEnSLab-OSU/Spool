@@ -41,7 +41,7 @@
         "react-helmet": "^6.1.0",
         "react-plotly.js": "^2.4.0",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "^3.4.0",
+        "react-scripts": "3.4.0",
         "serve": "^11.3.2",
         "swagger-jsdoc": "^4.0.0",
         "swagger-ui-express": "^4.1.4",

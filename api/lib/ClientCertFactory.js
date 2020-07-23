@@ -43,7 +43,7 @@ class ClientCertFactory {
      * This function will throw an exception if the OpenSSL binary is not found.
      * @param {string} binpath A path to the OpenSSL binary, global if falsey 
      * @param {string} root_cert The PEM string representing the root certificate authority.
-     * @param {[string]} domains An array of DNS names to allow the certificates to authenticate.
+     * @param {Array} domains An array of DNS names to allow the certificates to authenticate.
      * @param {string} hash A string representing the hash function to sign the certificate with (ex. sha256)
      * @param {string} curve The name of the eliptical curve to use (from `openssl ecparam -list_curves`).
      * Different curves may or may not be supported by the version of OpenSSL you are using.
@@ -107,7 +107,7 @@ class ClientCertFactory {
                 SANs: {
                     DNS: this.domains
                 }
-            } : undefined,
+            } : undefined
         };
         // use those properties to create a CSR
         const [csr] = await promisifyOpenSSL(this.openssl.generateCSR, csr_opts, key, null);

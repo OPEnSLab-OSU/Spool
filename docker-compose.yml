@@ -2,13 +2,32 @@ version: "3.7"
 services:
   app:
     container_name: app
-    restart: always
     env_file:
-        - env
+      - envdev
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+    command: /bin/bash deploy.dev.sh
+    build: ./dev/
     ports:
       - "3000:3000"
-    depends_on:
-      - mongo
+      - "3001:3001"
+    secrets:
+      - ca.key
+      - ca.crt
+      - server.key
+      - server.crt
+  deviceapp:
+    container_name: deviceapp
+    env_file:
+      - envdev
+    ports:
+      - "3002:3002"
+    restart: always
+    volumes:
+      - ./:/usr/src/app
+    command: /bin/bash deploy.device.dev.sh
+    build: ./dev/
     secrets:
       - ca.key
       - ca.crt
@@ -29,3 +48,4 @@ secrets:
     file: ./../secrets/server-key.pem
   server.crt:
     file: ./../secrets/server-crt.pem
+

@@ -44,8 +44,6 @@ class NetworkDatabase extends DatabaseInterface {
 			return ObjectID(network)
 		});
 
-		console.log(networkArray);
-
 		const usersNetworks = await Networks.find({_id: {$in: networkArray}}).toArray();
 
 		return usersNetworks;
@@ -60,7 +58,7 @@ class NetworkDatabase extends DatabaseInterface {
 		const insertion = await Networks.insertOne(network);
 
 		// make a coordinator device
-		const coordinator = await DeviceDatabase.create("Coordinator", true, user, insertion.insertedId);
+		const coordinator = await DeviceDatabase.create("Coordinator", null, user, insertion.insertedId);
 
 		// add the coordinator to the network
 		const addedCoordinator = await this.addDevice(insertion.insertedId, coordinator.device_id);
@@ -131,6 +129,7 @@ class NetworkDatabase extends DatabaseInterface {
 	
 	static async del(id) {
 		const Networks = await this.getCollection();
+
 		const deleted = await Networks.deleteOne({_id: id});
 		return true;
 	}

@@ -1,21 +1,40 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
-const mongoURI = "mongodb://mongo:27017";
+const dotenv = require('dotenv');
+const fs = require('fs');
+
+dotenv.config();
+
 let _client;
+
+const readOptions = {
+	encoding: "utf8"
+};
 
 async function useClient() {
 	/**
 	 * Returns the MongoDB client as a promise
 	 */
 	console.log("Attempting to connect to mongodb");
+	let uri;
+
+	if (process.env.DEVELOPMENT) {
+		uri = "mongodb://" + process.env.MONGO_ADDRESS;
+	}
+	else {
+		const passKeyPath = "/run/secrets/mongopass.txt";
+		const passKey = fs.readFileSync(passKeyPath, readOptions);
+		uri= "mongodb+srv://" + process.env.MONGO_USERNAME + ":" + passKey + "@" + process.env.MONGO_ADDRESS;
+	}
+
 	// check if we already have the client and return it if we do.
 	if (_client) {
 			return _client
 	}
 	else {
 		// otherwise connect to the client and return it
-		_client = await MongoClient.connect(mongoURI).catch(err => {throw(err);});
+		_client = await MongoClient.connect(uri).catch(err => {throw(err);});
 		return _client
 	}
 }
@@ -66,6 +85,9 @@ class DatabaseInterface {
 		return fn;
 	}
 
+	static validateObjectIdHex(id){
+		return id.match(/^[0-9a-fA-F]{24}$/);
+	}
 	/**
 	 * Checks whether or not a user owns a type of object with the id. This method calls the owns method of the child that calls it, so ownership is determined by each model.
 	 *
@@ -81,7 +103,7 @@ class DatabaseInterface {
 	 * }
 	 */
 	static async checkOwnership(id, user) {
-		if (user != null) {
+		if (user !== null) {
 			let owns = await this.owns(id, user).catch(error => {console.log(error)});
 
 			if (!owns) {

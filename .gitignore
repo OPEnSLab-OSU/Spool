@@ -6,7 +6,6 @@ node_modules
 .idea/
 .ssh/
 
-
 # dependencies
 /node_modules
 /.pnp
@@ -18,6 +17,7 @@ node_modules
 # production
 /build
 data/
+docs/
 
 # misc
 .DS_Store

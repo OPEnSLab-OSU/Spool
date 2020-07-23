@@ -1,11 +1,11 @@
 version: "3.7"
 services:
-  app:
-    container_name: app
-    command: "/bin/bash deploy.prod.sh"
+  deviceapp:
+    container_name: deviceapp
+    command: "/bin/bash deploy.device.prod.sh"
     image: "eliwinkelman/spool:production"
     ports:
-      - "443:3000"
+      - "443:3002"
     env_file:
       - env
     restart: always

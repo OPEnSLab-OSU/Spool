@@ -2,11 +2,11 @@
  * @module manageKeys
  */
 
-var fs = require('fs');
+const fs = require('fs');
 const caPath = './api/temp/ca';
 const keyPath = '.key';
 const certificatePath = '.crt';
-var pem = require('pem');
+const pem = require('pem');
 
 const readOptions = {
 	encoding: "utf8"
@@ -36,7 +36,7 @@ module.exports = async function getKeys() {
 		if (fs.existsSync(serverKeyPath) && fs.existsSync(serverCertPath)) {
 			console.log("Loading keys from file system.");
 
-			var keys = {
+			let keys = {
 				key: fs.readFileSync(serverKeyPath, readOptions),
 				certificate: fs.readFileSync(serverCertPath, readOptions),
 				ca: ca

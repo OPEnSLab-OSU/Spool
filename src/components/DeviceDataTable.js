@@ -9,7 +9,6 @@ function DeviceDataTable(props){
 	if (props.data.length !== 0) {
 
 		return <TableComponent data={props.data}/>;
-		//return <h5>This device has not reported any data yet.</h5>
 	}
 	else {
 		return <h5>This device has not reported any data yet.</h5>

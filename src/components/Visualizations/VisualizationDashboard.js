@@ -6,7 +6,6 @@ import React, {useState, useEffect} from 'react'
 import {useAuth0} from '../../react-auth0-wrapper'
 import Visualization from './Visualization'
 import { getVisualizations, newVisualization } from '../../api'
-
 import { Col, Container, CardDeck, Row, Button } from 'react-bootstrap'
 
 function VisualizationDashboard(props) {
@@ -29,7 +28,7 @@ function VisualizationDashboard(props) {
 		});
 	}
 
-	useEffect(() => {
+	useEffect(() => { /* Missing dependency fetchData. Include fetchData or remove it from the array react-hooks/exhaustive-deps*/
 		fetchData();
 	});
 	

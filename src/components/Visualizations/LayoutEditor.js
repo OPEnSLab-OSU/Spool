@@ -1,5 +1,6 @@
 /**
  * Created by eliwinkelman on 9/17/19.
+ * Updated by smitmad9 on 7/21/20.
  */
 
 import React from 'react'
@@ -9,13 +10,13 @@ import {Form} from 'react-bootstrap'
 function LayoutEditor(props) {
 
 	let layout = props.layout;
-	if (layout == undefined) {
+	if (layout === undefined) {
 		layout = {xaxis: {}, yaxis: {}}
 	}
-	if (layout.xaxis == undefined) {
+	if (layout.xaxis === undefined) {
 		layout.xaxis = {}
 	}
-	if (layout.yaxis == undefined) {
+	if (layout.yaxis === undefined) {
 		layout.yaxis = {}
 	}
 	

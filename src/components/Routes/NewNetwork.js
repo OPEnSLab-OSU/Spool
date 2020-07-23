@@ -1,14 +1,12 @@
 /**
- * Created by eliwinkelman on 10/15/19.
- */
-
-/**
  * Created by eliwinkelman on 9/5/19.
+ * Created by eliwinkelman on 10/15/19.
+ * Updated by smitmad9 on 7/20/20.
  */
 
 import { useAuth0 } from "../../react-auth0-wrapper";
-import React, { useState, useEffect } from 'react'
-import {Button, Row, Container, Col} from 'react-bootstrap'
+import React, { useState/*, useEffect */} from 'react';
+import {Button, Row, Container, Col} from 'react-bootstrap';
 import {newNetwork} from '../../api';
 
 const RegisterNetworkForm = () => {

@@ -15,7 +15,8 @@ import {useAuth0} from '../../react-auth0-wrapper'
 //create your forceUpdate hook
 function useForceUpdate(){
 	const [value, set] = useState(true); //boolean state
-	return () => set(value => !value); // toggle the state to force render
+
+	return () => set(!value); // toggle the state to force render
 }
 
 function Visualization(props) {
@@ -34,7 +35,6 @@ function Visualization(props) {
 	 */
 
 	const [graphState, setGraphState] = useState(props.visualizationData.graph);
-	let updateStateForSize = true;
 	const [updateStateForSizeCounter, setUpdateStateForSizeCounter] = useState(-1);
 	const forceUpdate = useForceUpdate();
 
@@ -64,17 +64,14 @@ function Visualization(props) {
 		const height = document.getElementById(props.visualizationData.visualization_id).clientHeight;
 
 		if (height !== 0) {
-			if (updateStateForSizeCounter > 5) {
-				updateStateForSize = false;
-			}
-			if (updateStateForSize === true) {
+			if (updateStateForSizeCounter <= 5) {
 				setUpdateStateForSizeCounter(updateStateForSizeCounter+1);
 			}
 		}
 		else {
 			setUpdateStateForSizeCounter(-updateStateForSizeCounter)
 		}
-	}, [updateStateForSizeCounter]);
+	}, [updateStateForSizeCounter, props.visualizationData.visualization_id]);
 
 	const handleInputChange = (event) => {
 

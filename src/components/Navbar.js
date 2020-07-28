@@ -29,7 +29,7 @@ const NavBar = (props) => {
 			</Nav>
 		</Navbar.Collapse>
 		{isAuthenticated
-			&& props.location.pathname != '/u/'
+			&& props.location.pathname !== '/u/'
 		&&
 			<Nav className="justify-content-end">
 				<Nav.Item>

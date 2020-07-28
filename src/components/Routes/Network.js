@@ -10,7 +10,7 @@ import React, { useState, useEffect }from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
 import { Link } from "react-router-dom";
 import { accessNetworkDevices, accessNetwork } from '../../api';
-import { Table, Container, Col, Row, Button, Card, CardColumns } from 'react-bootstrap'
+import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 import NetworkDetails from '../NetworkDetails';
 
 const Network = (props) => {
@@ -34,7 +34,7 @@ const Network = (props) => {
 			})
 		}
 		fetchData();
-	}, []);
+	}, [getTokenSilently, props.match.params.network]);
 
 	const deviceDisplay = (devices) => {
 		return devices.map((device, index) => {
@@ -80,23 +80,6 @@ class DeviceRow extends React.Component {
 				<td>{this.props.name}</td>
 				<td><Link to={"/u/device/view/"+this.props.device_id}>View</Link></td>
 			</tr>
-		)
-	}
-}
-
-class DevicePanel extends  React.Component {
-	render() {
-		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>{this.props.name}</Card.Title>
-					<Card.Text>
-						<Link to={"/u/device/view/"+this.props.device_id}>
-							<Button variant="primary">View</Button>
-						</Link>
-					</Card.Text>
-				</Card.Body>
-			</Card>
 		)
 	}
 }

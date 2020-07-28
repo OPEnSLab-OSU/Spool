@@ -29,16 +29,9 @@ export const ScatterOptions = (dataLabels) => {
 };
 
 export const DataSourceOptions = (dataLabels, currentType) => {
-	
-	let additionalOptions;
-	
+
 	const types = ['scatter', 'histogram'];
 	const typeOptionMap = {'scatter': ScatterOptions(dataLabels), 'histogram': HistogramOptions(dataLabels)};
-	
-	switch(currentType) {
-		case('scatter'): additionalOptions = ScatterOptions.options; break;
-		case('histogram'): additionalOptions = HistogramOptions.options;
-	}
 	
 	let options = [
 		{name: 'type', type: 'select', options: types},

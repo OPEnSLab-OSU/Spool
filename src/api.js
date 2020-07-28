@@ -69,7 +69,7 @@ export async function deleteDevice (device_id, getTokenSilently, callback) {
 	try {
 		const token = await getTokenSilently();
 
-		const response = await fetch("/api/access/devices/delete/", {
+		await fetch("/api/access/devices/delete/", {
 			mode: 'cors',
 			headers: {
 				'Authorization': `Bearer ${token}`,
@@ -309,6 +309,7 @@ export async function deleteNetwork(id, getTokenSilently, callback) {
 	}
 }
 
+/*
 function strMapToObj(strMap) {
 	let obj = Object.create(null);
 	for (let [k,v] of strMap) {
@@ -317,7 +318,8 @@ function strMapToObj(strMap) {
 		obj[k] = v;
 	}
 	return obj;
-}
+}*/
+
 function objToStrMap(obj) {
 	let strMap = new Map();
 	for (let k of Object.keys(obj)) {

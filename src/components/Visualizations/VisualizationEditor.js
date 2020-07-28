@@ -5,17 +5,17 @@
 import {Button, Modal, Form, Collapse, Card} from 'react-bootstrap'
 import LayoutEditor from './LayoutEditor'
 import {DataSourceOptions} from './VisualizationOptions';
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 
-String.prototype.capitalize = function() {
-	return this.charAt(0).toUpperCase() + this.slice(1);
+const capitalize = function(str) {
+	return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 function VisualizationEditor(props) {
 
 	let dataSourcesEditors = [];
 
-	if (props.graphState.data != undefined) {
+	if (props.graphState.data !== undefined) {
 		props.graphState.data.forEach((dataSource) => {dataSourcesEditors.push(<DataSourceEditor dataSource={dataSource} {...props}/>)})
 	}
 
@@ -57,13 +57,13 @@ function FormGroupFromOptions(props) {
 	props.options.forEach(option => {
 		// look at the type and handle as necessary
 		let optionState = {};
-		if (props.formState != undefined) {
+		if (props.formState !== undefined) {
 			optionState = props.formState[option.name] || {};
 		}
 
 		console.log(props.formState);
 
-		let elementName = name != '' ? [name, option.name].join('.') : option.name;
+		let elementName = name !== '' ? [name, option.name].join('.') : option.name;
 		switch(option.type) {
 			case 'select': form.push(<SelectElement option={option} name={elementName} state={optionState} onChange={props.onChange}/>);
 				break;
@@ -71,20 +71,21 @@ function FormGroupFromOptions(props) {
 				break;
 			case 'form': form.push(<FormGroupFromOptions name={elementName} options={option.options} formState={optionState} onChange={props.onChange}/>);
 				break;
+			default:
 		}
 	});
 
 	return (
 		<Card>
 			<Card.Header onClick={() => setShow(!show)} aria-controls="showForm" aria-expanded={show}>
-				{names[names.length-1].capitalize()}
+				{capitalize(names[names.length-1])}
 			</Card.Header>
 			<Collapse in={show}>
 					<div id="showForm">
 						<Card.Body>
 						{form}
 				</Card.Body>
-						{props.formFooter != undefined &&
+						{props.formFooter !== undefined &&
 						<Card.Footer>
 							{props.formFooter}
 						</Card.Footer>}
@@ -101,8 +102,8 @@ function InputElement(props) {
 
 	return (
 		<Form.Group controlId="GraphForm.title">
-			<Form.Label>{option.name.capitalize()}</Form.Label>
-			<Form.Control onChange={props.onChange} name={props.name} onChange={props.onChange} value={props.state}/>
+			<Form.Label>{capitalize(option.name)}</Form.Label>
+			<Form.Control name={props.name} onChange={props.onChange} value={props.state}/>
 		</Form.Group>
 	)
 }
@@ -113,7 +114,7 @@ function SelectElement(props){
 
 	return (
 		<Form.Group controlId={option.name}>
-			<Form.Label>{option.name.capitalize()}</Form.Label>
+			<Form.Label>{capitalize(option.name)}</Form.Label>
 			<Form.Control as="select" name={props.name} onChange={props.onChange} value={props.state}>
 				{option.options.map((value, index)=> {return <option>{value}</option>})}
 			</Form.Control>

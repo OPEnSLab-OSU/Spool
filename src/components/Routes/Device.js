@@ -63,7 +63,7 @@ function DevicePage(props) {
 			});
 		}
 		fetchData();
-	}, []);
+	}, [getTokenSilently, props.match.params.device]);
 	
 	return (
 

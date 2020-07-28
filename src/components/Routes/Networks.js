@@ -10,7 +10,7 @@ import React, { useState, useEffect }from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
 import { Link } from "react-router-dom";
 import { accessNetworks } from '../../api';
-import { Table, Container, Col, Row, Button, Card, CardColumns } from 'react-bootstrap'
+import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 
 const Networks = () => {
 	const [showResult, setShowResult] = useState(false);
@@ -25,7 +25,7 @@ const Networks = () => {
 			});
 		}
 		fetchData();
-	}, []);
+	}, [getTokenSilently]);
 
 	const networkDisplay = (networks) => {
 		return networks.map((network, index) => {
@@ -75,23 +75,6 @@ class NetworkRow extends React.Component {
 				<td>{this.props.name}</td>
 				<td><Link to={"/u/networks/view/"+this.props.id}>View</Link></td>
 			</tr>
-		)
-	}
-}
-
-class Panel extends  React.Component {
-	render() {
-		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>{this.props.name}</Card.Title>
-					<Card.Text>
-						<Link to={"/u/networks/view/"+this.props.id}>
-							<Button variant="primary">View</Button>
-						</Link>
-					</Card.Text>
-				</Card.Body>
-			</Card>
 		)
 	}
 }

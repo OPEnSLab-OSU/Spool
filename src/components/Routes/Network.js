@@ -23,13 +23,16 @@ const Network = (props) => {
 	useEffect(() => {
 		async function fetchData() {
 			accessNetworkDevices(props.match.params.network, getTokenSilently, (network) => {
-
-				setDevices(network.devices);
+				if (network !== undefined && network.devices !== undefined) {
+					setDevices(network.devices);
+				}
 				setShowDevices(true);
 			});
 
 			accessNetwork(props.match.params.network, getTokenSilently, (network) => {
-				setNetwork(network);
+				if (network !== undefined) {
+					setNetwork(network);
+				}
 				setShowNetwork(true);
 			})
 		}
@@ -38,7 +41,7 @@ const Network = (props) => {
 
 	const deviceDisplay = (devices) => {
 		return devices.map((device, index) => {
-			return <DeviceRow name={device.name} index={index} device_id={device.device_id}/>
+			return <DeviceRow name={device.name} key={index} index={index} device_id={device.device_id}/>
 		});
 	};
 
@@ -52,9 +55,11 @@ const Network = (props) => {
 		<Container fluid={true}>
 			<Table bordered hover>
 				<thead>
-					<th>Number</th>
-					<th>Name</th>
-					<th>View</th>
+					<tr>
+						<th>Number</th>
+						<th>Name</th>
+						<th>View</th>
+					</tr>
 				</thead>
 				<tbody>
 				{showDevices && deviceDisplay(devices)}

@@ -14,13 +14,15 @@ import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 
 const Networks = () => {
 	const [showResult, setShowResult] = useState(false);
-	const [apiMessage, setApiMessage] = useState({devices: []});
+	const [apiMessage, setApiMessage] = useState([]);
 	const {getTokenSilently} = useAuth0();
 
 	useEffect(() => {
 		async function fetchData() {
 			accessNetworks(getTokenSilently, (networks) => {
-				setApiMessage(networks);
+				if (networks !== undefined) {
+					setApiMessage(networks);
+				}
 				setShowResult(true);
 			});
 		}
@@ -29,8 +31,7 @@ const Networks = () => {
 
 	const networkDisplay = (networks) => {
 		return networks.map((network, index) => {
-			return <NetworkRow name={network.name} index={index} id={network._id}/>
-
+			return <NetworkRow name={network.name} key={index} index={index} id={network._id}/>
 		});
 	};
 
@@ -46,9 +47,11 @@ const Networks = () => {
 			<Row>
 				<Table>
 					<thead>
-						<th>Number</th>
-						<th>Name</th>
-						<th>View</th>
+						<tr>
+							<th>Number</th>
+							<th>Name</th>
+							<th>View</th>
+						</tr>
 					</thead>
 					<tbody>
 					{showResult && networkDisplay(apiMessage)}

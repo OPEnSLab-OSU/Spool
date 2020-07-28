@@ -52,13 +52,16 @@ function DevicePage(props) {
 	useEffect(() => {
 		async function fetchData() {
 			accessDevice(props.match.params.device, getTokenSilently, (device) => {
-				setDevice(device);
+				if (device !== undefined){
+					setDevice(device);
+				}
 				setShowDevice(true);
 			});
 
 			accessDeviceData(props.match.params.device, getTokenSilently, (data) => {
-				setData(data);
-				console.log(data);
+				if (data !== undefined) {
+					setData(data);
+				}
 				setShowData(true);
 			});
 		}

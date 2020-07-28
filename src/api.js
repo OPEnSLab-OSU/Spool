@@ -14,6 +14,7 @@ export async function accessDevices(getTokenSilently, callback) {
 		});
 
 		const responseData = await response.json();
+
 		callback(responseData);
 
 	} catch (error) {
@@ -149,7 +150,7 @@ export async function getVisualizations(device_id, getTokenSilently, callback) {
 		});
 		
 		const responseData = await response.json();
-		console.log(responseData);
+
 		callback(responseData);
 	}
 	

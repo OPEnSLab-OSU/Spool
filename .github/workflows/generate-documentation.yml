@@ -1,0 +1,14 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches:
+      - master
+      
+jobs:      
+  - name: Build
+    uses: andstor/jsdoc-action@v1
+    with:
+      source_dir: ./api
+      recurse: true
+      output_dir: ./docs

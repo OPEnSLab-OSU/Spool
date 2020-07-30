@@ -1,10 +1,10 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var dotenv = require('dotenv');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
+const dotenv = require('dotenv');
 
-var {Validator, ValidationError} = require('express-json-validator-middleware');
+let {Validator, ValidationError} = require('express-json-validator-middleware');
 
 const frontEndRouter = require('./routes/access/access');
 const documentationRouter = require('./swagger-jsdoc');
@@ -12,7 +12,7 @@ const documentationRouter = require('./swagger-jsdoc');
 // Load environment variables from .env
 dotenv.config();
 
-var app = express();
+let app = express();
 
 app.use(logger('dev'));
 app.use(express.json());

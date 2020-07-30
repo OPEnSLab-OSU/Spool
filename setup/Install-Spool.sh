@@ -12,11 +12,12 @@ cd Spool_Application
 git clone https://github.com/OPEnSLab-OSU/Spool.git
 
 cd Spool
-#npm install
+
+npm install
 
 cd ..
 
 echo $PWD
 
-/bin/bash $PWD/Spool/setup/Generate-Certificates.sh
+/bin/bash Spool/setup/Generate-Certificates.sh
 

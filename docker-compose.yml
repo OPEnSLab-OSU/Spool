@@ -22,7 +22,7 @@ services:
     env_file:
       - envdev
     ports:
-      - "3002:3002"
+      - "443:3002"
     restart: always
     volumes:
       - ./:/usr/src/app

@@ -19,6 +19,7 @@ async function useClient() {
 	console.log("Attempting to connect to mongodb");
 	const passKeyPath = "/run/secrets/mongopass.txt";
 	const passKey = fs.readFileSync(passKeyPath, readOptions);
+	console.log(passKey);
 	const uri= "mongodb+srv://" + process.env.MONGO_USERNAME + ":" + passKey + "@" + process.env.MONGO_ADDRESS;
 	
 	// check if we already have the client and return it if we do.

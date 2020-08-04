@@ -1,4 +1,5 @@
 AUTH0_DOMAIN=opens.auth0.com
+AUTH0_AUDIENCE=localhost:4000
 AUTH0_CALLBACK_URL=https://localhost:3000/auth/callback
 OPENSSL_BINARY_PATH=/usr/bin/openssl
 MONGO_USERNAME=Admin

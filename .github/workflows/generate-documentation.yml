@@ -19,6 +19,8 @@ jobs:
           source_dir: api
           recurse: true
           output_dir: docs/
+          template: docdash
+          template_dir: template
           
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.5.9

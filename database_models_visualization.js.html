@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: database/models/visualization.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: database/models/visualization.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Created by eliwinkelman on 9/20/19.
+ */
+
+const { DatabaseInterface } = require("../db") ;
+const DeviceDatabase = require("./device");
+
+const ObjectID = require('mongodb').ObjectID;
+
+class VisualizationModel {
+	constructor(visualizationData) {
+		this.name = visualizationData.name;
+		this.device_id = visualizationData.device_id;
+		this.visualization_id = visualizationData.visualization_id;
+		this.owner = visualizationData.owner;
+		this.graph = visualizationData.graph;
+	}
+}
+
+/**
+ * Manages the database storage for Visualization objects.
+ * @class
+ * @implements DatabaseInterface
+ */
+class VisualizationDatabase extends DatabaseInterface {
+
+	/**
+	 * Helper function to get the collection of visualizations.
+	 * @returns {Object} The MongoDB collection object for visualizations.
+	 */
+	static async getCollection() {
+		const collection = await super.getCollection("Visualization");
+		return collection;
+	}
+
+	/**
+	 * Determines if user owns the visualization data with the specified visualization_id.
+	 * This function is called by the checkOwnership(id, user) function. If it returns false, an error is thrown.
+	 *
+	 * @param {string} visualization_id - The id of the visualization to check for ownership.
+	 * @param {Object} user - The user to check for ownership.
+	 * @returns {boolean} True if the user does own the visualization, false otherwise.
+	 */
+	static async owns(visualization_id, user) {
+		const visualization = await this.get(visualization_id);
+		
+		return user._id.toString() == visualization.owner.toString()
+	}
+
+	/**
+	 * Retrieves all visualizations associated with a device.
+	 *
+	 * @param {string} device_id - The id of the device.
+	 * @param {Object} user - The user requesting the visualizations.
+	 * @returns {Array} An array of visualization objects.
+	 * @throws If the user doesn't own the device
+	 */
+	static async getByDevice(device_id, user) {
+
+		DeviceDatabase.checkOwnership(device_id, user);
+
+		const VisualizationCollection = await this.getCollection();
+
+		return await VisualizationCollection.find({device_id: device_id}).toArray();
+	}
+
+	/**
+	 * Retrieves a visualization by id.
+	 * @param {string} visualization_id
+	 * @returns {Object}
+	 */
+	static async get(visualization_id) {
+
+		const VisualizationCollection = await this.getCollection();
+
+		let visualizations = await VisualizationCollection.find({visualization_id: visualization_id.toString()}).toArray();
+
+		return visualizations[0]
+	}
+
+	/**
+	 * Creates a visualization data object in the database.
+	 * @param {Object} visualizationData - The visualization object.
+	 * @param {string} device_id - The device id the visualization belongs to.
+	 * @param {Object} user - The user creating the visualization.
+	 */
+	static async create(visualizationData, device_id, user) {
+
+		DeviceDatabase.checkOwnership(device_id, user);
+		
+		const VisualizationCollection = await this.getCollection();
+		
+		//generate a device_id
+		const visualization_id = new ObjectID();
+		visualizationData.visualization_id = visualization_id.toString();
+		visualizationData.owner = user._id;
+
+		let analysis = new VisualizationModel(visualizationData);
+
+		let _ = await VisualizationCollection.insertOne(analysis).catch((err) => {throw err;});
+	}
+
+	/**
+	 * Updates an existing visualization object.
+	 * @param {string} visualization_id - The id of the 
+	 * @param {Object} update - The update to apply (written with the mongodb syntax)
+	 * @param {Object} user - The user asking for the update.
+	 * @returns {boolean}
+	 */
+	static async update(visualization_id, update, user) {
+		
+		this.checkOwnership(visualization_id, user);
+
+		const VisualizationCollection = await this.getCollection();
+
+		const visualizationData = new VisualizationModel(update);
+
+		let _ = await VisualizationCollection.replaceOne({visualization_id: visualization_id.toString()}, visualizationData).catch((err) => {throw(err)});
+		
+		return true;
+	}
+
+	/**
+	 * Deletes a visualization object.
+	 * @param visualization_id - The id of the object.
+	 * @param user - The user requesting deletion.
+	 */
+	static async del(visualization_id, user) {
+		
+		this.checkOwnership(visualization_id, user);
+		
+		const VisualizationCollection = await this.getCollection();
+		
+		let _ = await VisualizationCollection.deleteOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});
+		
+	}
+}
+
+module.exports = VisualizationDatabase;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-access_devices.html">access/devices</a></li><li><a href="module-access_networks.html">access/networks</a></li><li><a href="module-access_visualization.html">access/visualization</a></li><li><a href="module-ClientCertFactory.html">ClientCertFactory</a></li><li><a href="module-manageKeys.html">manageKeys</a></li><li><a href="module-middleware.html">middleware</a></li></ul><h3>Classes</h3><ul><li><a href="DeviceDatabase.html">DeviceDatabase</a></li><li><a href="DeviceDataDatabase.html">DeviceDataDatabase</a></li><li><a href="module-ClientCertFactory-ClientCertFactory.html">ClientCertFactory</a></li><li><a href="VisualizationDatabase.html">VisualizationDatabase</a></li></ul><h3>Interfaces</h3><ul><li><a href="DatabaseInterface.html">DatabaseInterface</a></li></ul><h3>Global</h3><ul><li><a href="global.html#app">app</a></li><li><a href="global.html#createError">createError</a></li><li><a href="global.html#databaseWrap">databaseWrap</a></li><li><a href="global.html#key">key</a></li><li><a href="global.html#normalizePort">normalizePort</a></li><li><a href="global.html#port">port</a></li><li><a href="global.html#strMapToObj">strMapToObj</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Aug 06 2020 17:24:28 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

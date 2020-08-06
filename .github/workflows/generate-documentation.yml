@@ -18,11 +18,11 @@ jobs:
         with:
           source_dir: api
           recurse: true
-          output_dir: docs
+          output_dir: ./docs/
           
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.5.9
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs # The folder the action should deploy.
+          FOLDER: ./docs/ # The folder the action should deploy.

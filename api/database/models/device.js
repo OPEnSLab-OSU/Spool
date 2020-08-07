@@ -172,13 +172,11 @@ class DeviceDatabase extends DatabaseInterface {
 
 	static async create(name, coordinator_id, user, network_id) {
 		let coordinator = false;
-		//generate a device_id
-		let device_id = coordinator_id;
 
-		if (coordinator_id == null) {
+		let device_id = new ObjectID();
+		if (coordinator_id === null) {
 			// then this is a coordinator
 			coordinator = true;
-			device_id = new ObjectID();
 			coordinator_id = device_id;
 		}
 

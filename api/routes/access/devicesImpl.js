@@ -74,7 +74,7 @@ async function deleteDevice(req, res) {
  */
 async function createDevice(req, res) {
 
-	const newDeviceInfo = await DeviceDatabase.create(req.body.name, false, req.apiUser, req.body.network_id);
+	const newDeviceInfo = await DeviceDatabase.create(req.body.name, null, req.apiUser, req.body.network_id);
 
 	NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
 

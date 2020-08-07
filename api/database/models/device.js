@@ -9,6 +9,10 @@ var ClientCertFactory = require('../../lib/ClientCertFactory');
 var pem = require('pem');
 var getKeys = require("../../lib/manageKeys");
 
+/**
+ * Model for Device object, used to create new Device
+ * @class
+ */
 class DeviceModel {
 	constructor(deviceData) {
 		this.name = deviceData.name;

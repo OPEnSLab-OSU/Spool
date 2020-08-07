@@ -1,4 +1,3 @@
-
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const dotenv = require('dotenv');
@@ -47,7 +46,7 @@ async function useClient() {
 class DatabaseInterface {
 
 	/**
-	 * Retrieves the loom database to work with.
+	 * Retrieves the Loom database to work with.
 	 * @returns {Object}
 	 */
 	static async getDatabase() {

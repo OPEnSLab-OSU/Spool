@@ -10,7 +10,7 @@ import React, { useState, useEffect }from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
 import { Link } from "react-router-dom";
 import { accessNetworkDevices, accessNetwork } from '../../api';
-import { Table, Container, Col, Row, Button, Card, CardColumns } from 'react-bootstrap'
+import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 import NetworkDetails from '../NetworkDetails';
 
 const Network = (props) => {
@@ -23,22 +23,25 @@ const Network = (props) => {
 	useEffect(() => {
 		async function fetchData() {
 			accessNetworkDevices(props.match.params.network, getTokenSilently, (network) => {
-
-				setDevices(network.devices);
+				if (network !== undefined && network.devices !== undefined) {
+					setDevices(network.devices);
+				}
 				setShowDevices(true);
 			});
 
 			accessNetwork(props.match.params.network, getTokenSilently, (network) => {
-				setNetwork(network);
+				if (network !== undefined) {
+					setNetwork(network);
+				}
 				setShowNetwork(true);
 			})
 		}
 		fetchData();
-	}, []);
+	}, [getTokenSilently, props.match.params.network]);
 
 	const deviceDisplay = (devices) => {
 		return devices.map((device, index) => {
-			return <DeviceRow name={device.name} index={index} device_id={device.device_id}/>
+			return <DeviceRow name={device.name} key={index} index={index} device_id={device.device_id}/>
 		});
 	};
 
@@ -52,9 +55,11 @@ const Network = (props) => {
 		<Container fluid={true}>
 			<Table bordered hover>
 				<thead>
-					<th>Number</th>
-					<th>Name</th>
-					<th>View</th>
+					<tr>
+						<th>Number</th>
+						<th>Name</th>
+						<th>View</th>
+					</tr>
 				</thead>
 				<tbody>
 				{showDevices && deviceDisplay(devices)}
@@ -80,23 +85,6 @@ class DeviceRow extends React.Component {
 				<td>{this.props.name}</td>
 				<td><Link to={"/u/device/view/"+this.props.device_id}>View</Link></td>
 			</tr>
-		)
-	}
-}
-
-class DevicePanel extends  React.Component {
-	render() {
-		return (
-			<Card>
-				<Card.Body>
-					<Card.Title>{this.props.name}</Card.Title>
-					<Card.Text>
-						<Link to={"/u/device/view/"+this.props.device_id}>
-							<Button variant="primary">View</Button>
-						</Link>
-					</Card.Text>
-				</Card.Body>
-			</Card>
 		)
 	}
 }

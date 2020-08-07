@@ -58,7 +58,7 @@ function startServer(keys) {
 		cert: keys.certificate,
 		ca: keys.ca.certificate,
 		requestCert: true,
-		rejectUnauthorized: false,
+		rejectUnauthorized: true,
 		ecdhCurve: 'P-256'
 	}, app);
 
@@ -69,7 +69,6 @@ function startServer(keys) {
 	server.listen(port);
 	server.on('error', onError);
 	server.on('listening', onListening);
-
 
 	console.log("Server listening on https://localhost:3002/");
 	/**

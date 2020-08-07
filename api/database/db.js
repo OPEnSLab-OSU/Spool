@@ -17,11 +17,18 @@ async function useClient() {
 	 * Returns the MongoDB client as a promise
 	 */
 	console.log("Attempting to connect to mongodb");
-	const passKeyPath = "/run/secrets/mongopass.txt";
-	const passKey = fs.readFileSync(passKeyPath, readOptions);
-	console.log(passKey);
-	const uri= "mongodb+srv://" + process.env.MONGO_USERNAME + ":" + passKey + "@" + process.env.MONGO_ADDRESS;
-	
+
+	let uri;
+
+	if (process.env.DEVELOPMENT) {
+		uri = "mongodb://" + process.env.MONGO_ADDRESS;
+	}
+	else {
+		const passKeyPath = "/run/secrets/mongopass.txt";
+		const passKey = fs.readFileSync(passKeyPath, readOptions);
+		uri= "mongodb+srv://" + process.env.MONGO_USERNAME + ":" + passKey + "@" + process.env.MONGO_ADDRESS;
+	}
+
 	// check if we already have the client and return it if we do.
 	if (_client) {
 			return _client
@@ -97,7 +104,7 @@ class DatabaseInterface {
 	 * }
 	 */
 	static async checkOwnership(id, user) {
-		if (user != null) {
+		if (user !== null) {
 			let owns = await this.owns(id, user).catch(error => {console.log(error)});
 
 			if (!owns) {

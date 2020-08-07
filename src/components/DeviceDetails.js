@@ -2,7 +2,7 @@
  * Created by eliwinkelman on 9/6/19.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useAuth0 } from "../react-auth0-wrapper";
 import {Row, Col, Button, Modal} from 'react-bootstrap'
 import {withRouter} from 'react-router-dom'

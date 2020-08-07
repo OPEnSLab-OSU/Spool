@@ -1,19 +1,22 @@
 /**
  * Created by eliwinkelman on 9/11/19.
+ * Updated by smitmad9 on 7/21/20.
  */
 
 
 import React, { useState, useEffect } from 'react'
 import VisualizationEditor from './VisualizationEditor';
 import Plot from 'react-plotly.js';
-import {Card, Button, Modal, Form} from 'react-bootstrap';
+
+import {Card, Button} from 'react-bootstrap';
 import {updateVisualization, deleteVisualization} from '../../api';
 import {useAuth0} from '../../react-auth0-wrapper'
 
 //create your forceUpdate hook
 function useForceUpdate(){
 	const [value, set] = useState(true); //boolean state
-	return () => set(value => !value); // toggle the state to force render
+
+	return () => set(!value); // toggle the state to force render
 }
 
 function Visualization(props) {
@@ -32,7 +35,6 @@ function Visualization(props) {
 	 */
 
 	const [graphState, setGraphState] = useState(props.visualizationData.graph);
-	let updateStateForSize = true;
 	const [updateStateForSizeCounter, setUpdateStateForSizeCounter] = useState(-1);
 	const forceUpdate = useForceUpdate();
 
@@ -52,7 +54,7 @@ function Visualization(props) {
 
 	const handleDelete = () => {
 		deleteVisualization(props.visualizationData, getTokenSilently, (status) => {
-			if (status = 200) {
+			if (status === 200) {
 				props.onDelete();
 			}
 		})
@@ -61,18 +63,15 @@ function Visualization(props) {
 	useEffect(() => {
 		const height = document.getElementById(props.visualizationData.visualization_id).clientHeight;
 
-		if (height != 0) {
-			if (updateStateForSizeCounter > 5) {
-				updateStateForSize = false;
-			}
-			if (updateStateForSize == true) {
+		if (height !== 0) {
+			if (updateStateForSizeCounter <= 5) {
 				setUpdateStateForSizeCounter(updateStateForSizeCounter+1);
 			}
 		}
 		else {
 			setUpdateStateForSizeCounter(-updateStateForSizeCounter)
 		}
-	}, [updateStateForSizeCounter]);
+	}, [updateStateForSizeCounter, props.visualizationData.visualization_id]);
 
 	const handleInputChange = (event) => {
 
@@ -89,7 +88,7 @@ function Visualization(props) {
 	};
 
 	const addPlot = () => {
-		if (graphState.data != undefined) {
+		if (graphState.data !== undefined) {
 			let tempGraphState = graphState;
 			tempGraphState.data.push({index: graphState.data.length, type: 'scatter'});
 			setGraphState(tempGraphState);
@@ -137,7 +136,7 @@ function Visualization(props) {
 
 function getLayout(graphState) {
 
-	let layout = graphState.layout != undefined ? JSON.parse(JSON.stringify(graphState.layout)) : {};
+	let layout = graphState.layout !== undefined ? JSON.parse(JSON.stringify(graphState.layout)) : {};
 	layout.autosize = true;
 	layout.margin = {l: 40, r: 0, b: 40, t: 40, pad: 0};
 	return layout;
@@ -147,9 +146,9 @@ function createDataPlots(datas, deviceData) {
 
 	let plots = [];
 
-	if (datas != undefined) {
+	if (datas !== undefined) {
 		datas.forEach((data) => {
-			if (data != undefined) {
+			if (data !== undefined) {
 				plots.push(createOneDataPlot(data, deviceData))
 			}
 		})
@@ -165,14 +164,14 @@ function createOneDataPlot(data, deviceData) {
 
 	let plot = {};
 
-	if (data.data != undefined){
+	if (data.data !== undefined){
 		for (const key of Object.keys(data.data)) {
 			plot[key] = getGraphData(deviceData, data.data[key])
 		}
 	}
 
 	for (const key of Object.keys(data)) {
-		if (key != "data") {
+		if (key !== "data") {
 			plot[key] = data[key];
 		}
 	}
@@ -183,7 +182,7 @@ function createOneDataPlot(data, deviceData) {
 function unpackNestedName(parentObject, name, value) {
 	
 	let names = name.split(".");
-	if (names.length == 1) {
+	if (names.length === 1) {
 		// we are as nested as possible, set the value.
 		parentObject[name] = value;
 	}
@@ -197,10 +196,10 @@ function unpackNestedName(parentObject, name, value) {
 		if (!isNaN(nextObjectName)) {
 			// current object is actually an array, need to treat it as such.
 
-			if (parentObject[currentObjectName] == undefined) {
+			if (parentObject[currentObjectName] === undefined) {
 				parentObject[currentObjectName] = [];
 			}
-			if (parentObject[currentObjectName][parseInt(nextObjectName)] == undefined) {
+			if (parentObject[currentObjectName][parseInt(nextObjectName)] === undefined) {
 				parentObject[currentObjectName][parseInt(nextObjectName)] = {}
 			}
 			nextObject = parentObject[currentObjectName][parseInt(nextObjectName)];
@@ -210,7 +209,7 @@ function unpackNestedName(parentObject, name, value) {
 			
 			names.unshift(nextObjectName);
 
-			if (parentObject[currentObjectName] == undefined) {
+			if (parentObject[currentObjectName] === undefined) {
 				parentObject[currentObjectName] = {};
 			}
 			nextObject = parentObject[currentObjectName];

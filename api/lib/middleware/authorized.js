@@ -25,22 +25,22 @@ async function authorized(req, res, next) {
 			const Devices = await DatabaseInterface.getCollection("Devices");
 
 			const coordinator = await Devices.find({device_id: new ObjectID(coordinator_id)}).toArray().catch(err => {console.log(err)});
-			if (coordinator.length == 0) {
+			if (coordinator.length === 0) {
 				return res.sendStatus(401);
 			}
 
-			var fingerprint = coordinator[0].fingerprint;
+			let fingerprint = coordinator[0].fingerprint;
 
 			// compare the fingerprint in the db to the devices fingerprint
 			if (fingerprint === cert.fingerprint256) {
 				// fingerprint is right. Check that this device actually has this coordinator.
 
 				const device = await Devices.find({device_id: new ObjectID(device_id)}).toArray();
-				if (device.length == 0) {
+				if (device.length === 0) {
 					return res.sendStatus(401)
 				}
 
-				if (device[0].coordinator_id == coordinator_id) {
+				if (device[0].coordinator_id === coordinator_id) {
 					// success!
 					next()
 				}

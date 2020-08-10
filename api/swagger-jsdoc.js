@@ -7,10 +7,10 @@ const options = {
 		// Like the one described here: https://swagger.io/specification/#infoObject
 		info: {
 			title: 'Spool API',
-			version: '0.0.2',
+			version: '0.2.0',
 			description: ''
 		},
-		host: 'localhost:3001',
+		host: 'spool.open-sensing.org',
 		basePath: '/',
 		components: {
 			securitySchemes: {
@@ -19,10 +19,10 @@ const options = {
 					scheme: 'bearer',
 					bearerFormat: 'JWT'
 				},
-
 			}
 		},
 		security: [{
+			bearerAuth: []
 		}]
 	},
 	// List of files to be processes. You can also set globs './routes/*.js'

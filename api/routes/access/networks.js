@@ -3,102 +3,161 @@
  */
 
 
-var express = require('express');
-var router = express.Router();
-var secured = require('../../lib/middleware/secured');
-var {wrapAsync, databaseWrap }  = require('../../lib/middleware/middleware');
-const NetworkDatabase = require('../../database/models/network');
-const DeviceDatabase = require('../../database/models/device');
+const express = require('express');
+const router = express.Router();
+const secured = require('../../lib/middleware/secured');
+const {wrapAsync}  = require('../../lib/middleware/middleware');
+const {createNetwork, getNetwork, getNetworks, deleteNetwork, addNetworkDevice, removeNetworkDevice, getNetworkDevices} = require('./networksImpl');
 
 /**
- * API Endpoint to create a new network.
- * @function newNetwork
- * 
+ * @swagger
+ * /access/networks/new:
+ *     post:
+ *         description: Creates a new network.
+ *         tags:
+ *             - access
+ *             - networks
+ *         requestBody:
+ *             required: true
+ *             content:
+ *                 'application/json':
+ *                     schema:
+ *                         type: object
+ *                         required:
+ *                             - name
+ *                         properties:
+ *                             name:
+ *                                 type: string
+ *                                 description: The name of the new network
+ *                         example:
+ *                             device_id: 'my network'
+ *
  */
-router.post("/new/", secured, wrapAsync(async (req, res, next) => {
-	try {
-		const result = await NetworkDatabase.createWithUser(req.body.name, req.apiUser);
-		res.send(result);
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
+router.post("/new/", secured, wrapAsync(createNetwork));
 
-}));
+/**
+ *  @swagger
+ *  /access/networks/:
+ *      get:
+ *          description: Gets all networks belonging to the requesting user.
+ *          tags:
+ *              - access
+ *              - networks
+ */
+router.get("/", secured, wrapAsync(getNetworks));
 
-router.get("/", secured, wrapAsync(async (req, res, next) => {
-	try {
-		const result = await NetworkDatabase.getByUser(req.apiUser);
-		console.log(result);
-		res.send({networks: result});
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error)
-	}
-}));
+/**
+ *  @swagger
+ *  /access/networks/view/{network_id}:
+ *      get:
+ *          description: Gets the information for a specific network.
+ *          tags:
+ *              - access
+ *              - networks
+ *          parameters:
+ *              - in: path
+ *                name: network_id
+ *                schema:
+ *                  type: string
+ *                required: true
+ *                description: The id of the network being requested.
+ */
+router.get("/view/:network_id", secured, wrapAsync(getNetwork));
 
-router.get("/view/:network_id", secured, wrapAsync (async (req, res, next) => {
-	try {
-		const result = await NetworkDatabase.asUser(req.params.network_id, req.apiUser, NetworkDatabase.get(req.params.network_id));
-		console.log(result);
-		res.send(result);
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
-}));
+/**
+ *  @swagger
+ *  /access/networks/devices/{network_id}:
+ *      get:
+ *          description: Gets all the devices in the network.
+ *          tags:
+ *              - access
+ *              - networks
+ *          parameters:
+ *              - in: path
+ *                name: network_id
+ *                schema:
+ *                  type: string
+ *                required: true
+ *                description: The id of the network.
+ */
+router.get("/devices/:network_id", secured, wrapAsync (getNetworkDevices));
 
-router.get("/devices/:network_id", secured, wrapAsync (async (req, res, next) => {
-	try {
-		const network = await NetworkDatabase.asUser(req.params.network_id, req.apiUser, NetworkDatabase.get(req.params.network_id));
-		const devices = await DeviceDatabase.getMany(network.devices);
-		res.send({devices: devices})
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
-}));
+/**
+ *  @swagger
+ *  /access/networks/add_device/}:
+ *      post:
+ *          description: Adds a device to the network.
+ *          tags:
+ *              - access
+ *              - networks
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - device_id
+ *                              - network_id
+ *                          properties:
+ *                              device_id:
+ *                                  type: string
+ *                                  description: The id of the device.
+ *                              network_id:
+ *                                  type: string
+ *                                  description: The id of the network.
+ *
+ */
+router.post("/add_device/", secured, wrapAsync(addNetworkDevice));
 
-router.post("/add_device/", secured, wrapAsync (async (req, res, next) => {
+/**
+ *  @swagger
+ *  /access/networks/remove_device/}:
+ *      post:
+ *          description: Removes a device from the network.
+ *          tags:
+ *              - access
+ *              - networks
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - device_id
+ *                              - network_id
+ *                          properties:
+ *                              network_id:
+ *                                  type: string
+ *                                  description: The id of the network.
+ *                              device_id:
+ *                                  type: string
+ *                                  description: The id of the device.
+ */
+router.post("/remove_device/", secured, wrapAsync(removeNetworkDevice));
 
-	try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.addDevice(req.body.network_id, req.body.device_id))
-		res.send(result);
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
-
-}));
-
-router.post("/remove_device/", secured, wrapAsync (async (req, res, next) => {
-
-	try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.removeDevice(req.body.network_id, req.body.device_id))
-		
-		res.send(result);
-	}
-	catch (error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
-}));
-
-router.post("/delete/", secured, wrapAsync (async (req, res, next) => {
-
-	try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.delWithUser(req.body.network_id, req.apiUser));
-		res.send(result);
-	}
-	catch(error) {
-		res.sendStatus(401);
-		console.log(error);
-	}
-}));
+/**
+ *  @swagger
+ *  /access/networks/delete/:
+ *      post:
+ *          description: Deletes a network.
+ *          tags:
+ *              - access
+ *              - networks
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  'application/json':
+ *                      schema:
+ *                          type: object
+ *                          required:
+ *                              - network_id
+ *                          properties:
+ *                              network_id:
+ *                                  type: string
+ *                                  description: The id of the network.
+ */
+router.post("/delete/", secured, wrapAsync(deleteNetwork));
 
 module.exports = router;

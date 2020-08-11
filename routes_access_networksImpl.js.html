@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>lib/manageKeys.js - Documentation</title>
+    <title>routes/access/networksImpl.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">lib/manageKeys.js</h1>
+    <h1 class="page-title">routes/access/networksImpl.js</h1>
     
 
     
@@ -43,63 +43,142 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @module manageKeys
+ * Created by eliwinkelman on 8/10/20.
  */
 
-const fs = require('fs');
-const caPath = './api/temp/ca';
-const keyPath = '.key';
-const certificatePath = '.crt';
-const pem = require('pem');
-
-const readOptions = {
-	encoding: "utf8"
-};
+var express = require('express');
+var router = express.Router();
+var secured = require('../../lib/middleware/secured');
+const NetworkDatabase = require('../../database/models/network');
+const DeviceDatabase = require('../../database/models/device');
 
 /**
- * Retrieves the relevant TLS certificates and keys.
- * @function getKeys
- * @returns {Promise&lt;Object, any>} A promise that will eventually return an object containing the servers key, certificate and the device certificate authority certificate and key.
+ * Retrieves all networks belonging to the requesting user and sends them in an http request response.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
  */
-module.exports = async function getKeys() {
-
-	const caKeyPath = "/run/secrets/ca.key";
-	const caCertPath = "/run/secrets/ca.crt";
-	const serverKeyPath = "/run/secrets/server.key";
-	const serverCertPath = "/run/secrets/server.crt";
-
-	if (fs.existsSync(caKeyPath) &amp;&amp; fs.existsSync(caCertPath)) {
-		//we have a certificate authority.
-
-		var ca = {
-			key: fs.readFileSync(caKeyPath, readOptions),
-			certificate: fs.readFileSync(caCertPath, readOptions)
-		};
-
-		//check if we have keys for the client
-		if (fs.existsSync(serverKeyPath) &amp;&amp; fs.existsSync(serverCertPath)) {
-			console.log("Loading keys from file system.");
-
-			let keys = {
-				key: fs.readFileSync(serverKeyPath, readOptions),
-				certificate: fs.readFileSync(serverCertPath, readOptions),
-				ca: ca
-			};
-			
-			//check that certificate hasn't expired. renew them if they have.
-			return keys
-		}
-		else {
-			console.log("You must have server certificate at " + serverCertPath + " and a server key at " + serverKeyPath + "./n")
-		}
+async function getNetworks(req, res) {
+    try {
+		const result = await NetworkDatabase.getByUser(req.apiUser);
+		res.send({networks: result});
 	}
-	else {
-		console.log("You must have a certificate authority at " + caCertPath + " and a certificate authority key at " + caKeyPath + "./n")
-
-		throw new Error("No certificate authority");
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error)
 	}
-};
-</code></pre>
+}
+
+/**
+ * Creates a new network for the current user and sends a http request to the user with the newly created network.
+ *
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ *
+ */
+async function createNetwork(req, res) {
+    try {
+		const result = await NetworkDatabase.createWithUser(req.body.name, req.apiUser);
+		res.send(result);
+	}
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error);
+	}
+}
+
+/**
+ * Gets a single network and returns it in the http response.
+ *
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function getNetwork(req, res){
+    try {
+		const result = await NetworkDatabase.getByUser(req.apiUser);
+
+		res.send({networks: result});
+	}
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error)
+	}
+}
+
+/**
+ * Gets all the devices that belong to the specified network and returns them in the http response.
+ *
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function getNetworkDevices(req, res) {
+    try {
+		const network = await NetworkDatabase.asUser(req.params.network_id, req.apiUser, NetworkDatabase.get(req.params.network_id));
+		const devices = await DeviceDatabase.getMany(network.devices);
+		res.send({devices: devices})
+	}
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error);
+	}
+}
+
+/**
+ * Adds an existing device as a device in the network.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function addNetworkDevice(req, res) {
+	try {
+		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.addDevice(req.body.network_id, req.body.device_id));
+		res.send(result);
+	}
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error);
+	}
+}
+
+/**
+ * Removes an existing device as a device in the network. This function does not do anything to the actual device object, it just disassociates it from the network.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function removeNetworkDevice(req, res) {
+    try {
+		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.removeDevice(req.body.network_id, req.body.device_id));
+		res.send(result);
+	}
+	catch (error) {
+		res.sendStatus(401);
+		console.log(error);
+	}
+}
+
+/**
+ * Deletes the network. Does not delete devices belonging to the network.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function deleteNetwork(req, res) {
+	try {
+		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.delWithUser(req.body.network_id, req.apiUser));
+		res.send(result);
+	}
+	catch(error) {
+		res.sendStatus(401);
+		console.log(error);
+	}
+}
+
+module.exports = {
+	getNetworks: getNetworks,
+	getNetwork: getNetwork,
+	deleteNetwork: deleteNetwork,
+	createNetwork: createNetwork,
+	getNetworkDevices: getNetworkDevices,
+    addNetworkDevice: addNetworkDevice,
+    removeNetworkDevice: removeNetworkDevice
+};</code></pre>
         </article>
     </section>
 

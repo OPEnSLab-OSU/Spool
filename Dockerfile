@@ -17,4 +17,4 @@ COPY . .
 
 ### Build the react site
 RUN node_modules/.bin/react-scripts build
-RUN node_modules/.bin/jsdoc -c jsdoc.conf.json
+

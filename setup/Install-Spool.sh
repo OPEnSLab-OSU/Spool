@@ -17,7 +17,5 @@ npm install
 
 cd ..
 
-echo $PWD
-
 /bin/bash Spool/setup/Generate-Certificates.sh
 

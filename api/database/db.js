@@ -16,6 +16,7 @@ async function useClient() {
 	 * Returns the MongoDB client as a promise
 	 */
 	console.log("Attempting to connect to mongodb");
+
 	let uri;
 
 	if (process.env.DEVELOPMENT) {
@@ -33,7 +34,7 @@ async function useClient() {
 	}
 	else {
 		// otherwise connect to the client and return it
-		_client = await MongoClient.connect(uri).catch(err => {throw(err);});
+		_client = await MongoClient.connect(uri, {useNewUrlParser: true}).catch(err => {throw(err);});
 		return _client
 	}
 }

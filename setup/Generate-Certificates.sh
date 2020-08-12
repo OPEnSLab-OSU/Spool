@@ -10,9 +10,9 @@ create_development_server_ca(){
 
     # create an ec key
     openssl ecparam -name prime256v1 -genkey -noout -out ca.key
-    
+
     # create a CA
-    openssl req -config /Users/eliwinkelman/OPEnS/MongoServer/secrets/config.txt -new -key ca.key -x509 -days 10000 -out ca.crt
+    openssl req -config ../Spool/setup/config.txt -new -key ca.key -x509 -days 10000 -out ca.crt
 
 }
 

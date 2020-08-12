@@ -46,7 +46,7 @@ class DeviceDataDatabase extends DatabaseInterface {
 		super.checkOwnership(device_id, user);
 		
 		const DeviceData = await this.getCollection(device_id);
-		var deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {
+		const deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {
 			throw err;
 		});
 
@@ -85,7 +85,7 @@ class DeviceDataDatabase extends DatabaseInterface {
 			formatted_device.set("Time", data.data.timestamp.time);
 
 			data.data.contents.forEach((sensor) => {
-				for (var key in sensor.data) {
+				for (let key in sensor.data) {
 					if (sensor.data.hasOwnProperty(key)) {
 						formatted_device.set(String(key), sensor.data[key]);
 					}

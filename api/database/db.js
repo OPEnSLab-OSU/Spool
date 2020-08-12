@@ -1,4 +1,3 @@
-
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const dotenv = require('dotenv');
@@ -17,6 +16,7 @@ async function useClient() {
 	 * Returns the MongoDB client as a promise
 	 */
 	console.log("Attempting to connect to mongodb");
+
 	let uri;
 
 	if (process.env.DEVELOPMENT) {
@@ -34,7 +34,7 @@ async function useClient() {
 	}
 	else {
 		// otherwise connect to the client and return it
-		_client = await MongoClient.connect(uri).catch(err => {throw(err);});
+		_client = await MongoClient.connect(uri, {useNewUrlParser: true}).catch(err => {throw(err);});
 		return _client
 	}
 }
@@ -47,7 +47,7 @@ async function useClient() {
 class DatabaseInterface {
 
 	/**
-	 * Retrieves the loom database to work with.
+	 * Retrieves the Loom database to work with.
 	 * @returns {Object}
 	 */
 	static async getDatabase() {

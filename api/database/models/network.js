@@ -139,7 +139,7 @@ class NetworkDatabase extends DatabaseInterface {
 		this.del(id);
 
 		// delete from the user object too
-		var index = user.networks.indexOf(id);
+		const index = user.networks.indexOf(id);
 		if (index > -1) {
 			user.networks.splice(index, 1);
 		}

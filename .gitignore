@@ -1,4 +1,5 @@
 node_modules
+package-lock.json
 .certificates
 .clientTLS
 .ec-clientTLS
@@ -18,6 +19,7 @@ node_modules
 /build
 data/
 docs/
+env
 
 # misc
 .DS_Store

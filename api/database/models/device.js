@@ -9,6 +9,10 @@ var ClientCertFactory = require('../../lib/ClientCertFactory');
 var pem = require('pem');
 var getKeys = require("../../lib/manageKeys");
 
+/**
+ * Model for Device object, used to create new Device
+ * @class
+ */
 class DeviceModel {
 	constructor(deviceData) {
 		this.name = deviceData.name;
@@ -167,18 +171,17 @@ class DeviceDatabase extends DatabaseInterface {
 	 * @param {string} name - The name of the device.
 	 * @param {Object} coordinator_id - The id of the coordinator these device is under.
 	 * @param {Object} user - The user creating the device.
+	 * @param {string} network_id - The id of the network where the device will be added.
 	 * @returns {{device_id: string, certificate: string?, private_key: string?}} An object containing the authentication information for the device.
 	 */
 
 	static async create(name, coordinator_id, user, network_id) {
 		let coordinator = false;
-		//generate a device_id
-		let device_id = coordinator_id;
 
-		if (coordinator_id == null) {
+		let device_id = new ObjectID();
+		if (coordinator_id === null) {
 			// then this is a coordinator
 			coordinator = true;
-			device_id = new ObjectID();
 			coordinator_id = device_id;
 		}
 

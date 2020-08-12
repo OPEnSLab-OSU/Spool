@@ -2,9 +2,6 @@
  * @module access/devices
  */
 
-//MongoDB
-var {useClient} = require('../../database/db');
-const ObjectID = require('mongodb').ObjectID;
 const DeviceDatabase = require('../../database/models/device');
 const DeviceDataDatabase = require('../../database/models/deviceData');
 const NetworkDatabase = require("../../database/models/network");
@@ -32,7 +29,7 @@ async function getDevices(req, res) {
  */
 async function getDevice(req, res) {
 	
-	var device_id = req.params.device;
+	const device_id = req.params.device;
 	
 	try {
 		let device = await DeviceDatabase.get(device_id, req.apiUser);
@@ -74,7 +71,7 @@ async function deleteDevice(req, res) {
  */
 async function createDevice(req, res) {
 
-	const newDeviceInfo = await DeviceDatabase.create(req.body.name, false, req.apiUser, req.body.network_id);
+	const newDeviceInfo = await DeviceDatabase.create(req.body.name, null, req.apiUser, req.body.network_id);
 
 	NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
 
@@ -89,7 +86,7 @@ async function createDevice(req, res) {
  */
 async function getDeviceData(req, res) {
 
-	var device_id = req.params.device;
+	const device_id = req.params.device;
 
 	try {
 		const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);

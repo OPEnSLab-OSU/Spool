@@ -81,8 +81,8 @@ class DeviceDataDatabase extends DatabaseInterface {
 			let formatted_device = new Map();
 
 			formatted_device.set("Data_Run", data.data_run);
-			formatted_device.set("Date", data.data.timestamp.Date);
-			formatted_device.set("Time", data.data.timestamp.Time);
+			formatted_device.set("Date", data.data.timestamp.date);
+			formatted_device.set("Time", data.data.timestamp.time);
 
 			data.data.contents.forEach((sensor) => {
 				for (var key in sensor.data) {

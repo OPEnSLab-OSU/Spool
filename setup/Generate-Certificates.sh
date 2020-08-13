@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #  GenerateCertificates.sh
-#  
+#
 #
 #  Created by Eli Winkelman on 7/29/20.
 #
@@ -30,8 +30,7 @@ create_development_server_certificate()
         MINGW*)     machine=MinGw;;
         *)          machine="UNKNOWN:${unameOut}"
     esac
-    echo ${machine}
-
+    echo "${machine}"
     if [ "$machine" = "MinGw" ]; then
         # generate a new CSR which uses this key and output to server.csr
         openssl req -new -sha256 -key server-key.pem -out CSR.csr -subj "//C=US\ST=Oregon\L=Corvallis\O=OPEnS Lab\OU=R&D\CN=localhost"
@@ -40,13 +39,14 @@ create_development_server_certificate()
         # generate a new CSR which uses this key and output to server.csr
         openssl req -new -sha256 -key server-key.pem -out CSR.csr -subj "/C=US/ST=Oregon/L=Corvallis/O=OPEnS Lab/OU=R&D/CN=localhost"
         echo Created CSR
-
+    fi
+    
     # generate a new certificate with the csr that is signed by the certificate authority
     openssl x509 -req -in CSR.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server-crt.pem -days 365
 }
 
 # create secrets directory
 mkdir secrets
-cd secrets
+cd secrets || exit
 create_development_server_ca
 create_development_server_certificate

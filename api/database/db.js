@@ -1,3 +1,7 @@
+/**
+ * @module database
+ */
+
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const dotenv = require('dotenv');
@@ -15,7 +19,6 @@ async function useClient() {
 	/**
 	 * Returns the MongoDB client as a promise
 	 */
-	console.log("Attempting to connect to mongodb");
 
 	let uri;
 
@@ -70,28 +73,37 @@ class DatabaseInterface {
 	static async addPermissions(id, permission_names, otherUser, user) {
 		const object = await this.get(id);
 
-		if (object.permissions.check('edit', user._id)){
+		const permissions = new Permissions(object.permissions);
+
+		if (permissions.check('edit', user._id)){
 			for (let permission in permission_names) {
-				object.permissions.add(permission, otherUser);
+				permissions.add(permission, otherUser);
 			}
 		}
+
+		// actually update the object
+		await this.update(id, {$set: {permissions: permissions.permissions}});
 	}
 
 	static async removePermissions(id, permission_names, otherUser, user) {
 		const object = await this.get(id);
 
-		if (object.permissions.check('edit', user._id)){
+		const permissions = new Permissions(object.permissions);
+
+		if (permissions.check('edit', user._id)){
 			for (let permission in permission_names) {
-				object.permissions.remove(permission, otherUser);
+				permissions.remove(permission, otherUser);
 			}
 		}
+
+		// actually update the object
+		await this.update(id, {$set: {permissions: permissions.permissions}});
 	}
 
 	static async checkPermissions(id, permission_names, user) {
 		const object = await this.get(id);
 
-		// this object nesting is.... not ideal
-		const permissions = new Permissions(object.permissions.permissions.permissions);
+		const permissions = new Permissions(object.permissions);
 
 		for (const permission of permission_names) {
 
@@ -100,15 +112,6 @@ class DatabaseInterface {
 			}
 		}
 		return true;
-	}
-
-	static async ifHasPermissions(id, permission_names, user, fn){
-		const hasPermissions = await this.checkPermissions(id, permission_names, user);
-		if (!hasPermissions) {
-				throw new Error("Unauthorized Database Request");
-		}
-
-		return fn;
 	}
 
 	static async owns(id, user) {
@@ -121,7 +124,7 @@ class DatabaseInterface {
 
 	static async get(id){};
 
-	static async update(id){};
+	static async update(id, update){};
 
 	static async asUser(id, user, fn) {
 		const owns = await this.checkOwnership(id, user);
@@ -132,29 +135,7 @@ class DatabaseInterface {
 	static validateObjectIdHex(id){
 		return id.match(/^[0-9a-fA-F]{24}$/);
 	}
-	/**
-	 * Checks whether or not a user owns a type of object with the id. This method calls the owns method of the child that calls it, so ownership is determined by each model.
-	 *
-	 * @param {string} id - The id of the object (which id will depend on the type of object).
-	 * @param {Object} user - The user to check for ownership.
-	 * @throws If the user doesn't own the object.
-	 * 
-	 *  @example
-	 * function myDatabaseMethod() {
-	 *      this.checkOwnership(id, user)
-	 *
-	 *      // my method code if the user owns the object.
-	 * }
-	 */
-	static async checkOwnership(id, user) {
-		if (user !== null) {
-			let owns = await this.owns(id, user).catch(error => {console.log(error)});
 
-			if (!owns) {
-				throw new Error("Unauthorized Database Request");
-			}
-		}
-	}
 }
 
 module.exports = {

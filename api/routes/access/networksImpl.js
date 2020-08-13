@@ -47,9 +47,14 @@ async function createNetwork(req, res) {
  */
 async function getNetwork(req, res){
     try {
-		const result = await NetworkDatabase.ifHasPermissions(req.params.network_id, ['view'], req.apiUser, NetworkDatabase.get(req.params.network_id));
+    	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
+    		const result = await NetworkDatabase.get(req.params.network_id);
 
-		res.send(result);
+			res.send(result);
+        }
+		else {
+    		res.sendStatus(401);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);
@@ -65,9 +70,14 @@ async function getNetwork(req, res){
  */
 async function getNetworkDevices(req, res) {
     try {
-		const network = await NetworkDatabase.ifHasPermissions(req.params.network_id, ['view'], req.apiUser, NetworkDatabase.get(req.params.network_id));
-		const devices = await DeviceDatabase.getMany(network.devices);
-		res.send({devices: devices})
+    	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
+    		const network = await NetworkDatabase.get(req.params.network_id);
+			const devices = await DeviceDatabase.getMany(network.devices);
+			res.send({devices: devices})
+        }
+		else {
+    		res.sendStatus(401);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);
@@ -98,7 +108,7 @@ async function addNetworkDevice(req, res) {
  */
 async function removeNetworkDevice(req, res) {
     try {
-		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.removeDevice(req.body.network_id, req.body.device_id));
+		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.removeDevice)(req.body.network_id, req.body.device_id);
 		res.send(result);
 	}
 	catch (error) {
@@ -114,8 +124,15 @@ async function removeNetworkDevice(req, res) {
  */
 async function deleteNetwork(req, res) {
 	try {
-		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['delete'], req.apiUser, NetworkDatabase.delWithUser(req.body.network_id, req.apiUser));
-		res.send(result);
+		if (await NetworkDatabase.checkPermissions(req.body.network_id, ['delete'], req.apiUser)){
+
+			 const result = await NetworkDatabase.del(req.body.network_id);
+			 res.send(result);
+		}
+		else {
+			res.sendStatus(401);
+		}
+
 	}
 	catch(error) {
 		res.sendStatus(401);

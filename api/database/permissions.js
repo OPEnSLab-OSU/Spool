@@ -21,7 +21,6 @@ class Permissions {
         else {
             this.permissions[permission_name] = [user_id]
         }
-        console.log(this.permissions[permission_name]);
     }
 
     remove(permission_name, user_id){

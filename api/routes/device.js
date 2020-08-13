@@ -1,16 +1,15 @@
-
-var express = require('express');
-var router = express.Router();
-var wrapAsync = require('../lib/middleware/asyncWrap');
+const express = require('express');
+const router = express.Router();
+const wrapAsync = require('../lib/middleware/asyncWrap');
 
 
 //API JSON Schema Validation
-var { Validator, ValidationError } = require('express-json-validator-middleware');
-var validator = new Validator({allErrors: true});
+const { Validator, ValidationError } = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
 // Define a shortcut function
-var validate = validator.validate;
+const validate = validator.validate;
 // TLS Client Authorization
-var authorized = require('../lib/middleware/authorized');
+const authorized = require('../lib/middleware/authorized');
 const {RegisterDeviceSchema, PostDeviceDataSchema} = require('./api');
 
 const DeviceDataDatabase = require('../database/models/deviceData');

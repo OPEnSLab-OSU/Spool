@@ -6,6 +6,7 @@
 const { DatabaseInterface } = require("../db") ;
 const DeviceDatabase = require("./device");
 const ObjectID = require('mongodb').ObjectID;
+const Permissions = require('../permissions');
 
 class NetworkModel {
 	constructor(networkData) {
@@ -13,6 +14,7 @@ class NetworkModel {
 		this.name = networkData.name;
 		this.devices = networkData.devices || [];
 		this.owner = networkData.owner;
+		this.permissions = new Permissions(networkData.permissions);
 	}
 }
 
@@ -24,39 +26,43 @@ class NetworkDatabase extends DatabaseInterface {
 
 	static async owns(id, user) {
 		const network = await this.get(id);
-		console.log(network);
+
 		return network.owner.toString() === user._id.toString();
 	}
 
 	static async get(id) {
 		const Networks = await this.getCollection();
-		console.log(id);
+
 		const networks = await Networks.find({_id: new ObjectID(id.toString())}).toArray();
-	
+
 		return networks[0];
 	}
 
 	static async getByUser(user) {
 
 		const Networks = await this.getCollection();
+		let networkArray = [];
+		if (user.networks !== undefined) {
+			networkArray = user.networks.map(network => {
+				return ObjectID(network)
+			});
+		}
 
-		const networkArray = user.networks.map(network => {
-			return ObjectID(network)
-		});
-
-		const usersNetworks = await Networks.find({_id: {$in: networkArray}}).toArray();
-
-		return usersNetworks;
+		return await Networks.find({_id: {$in: networkArray}}).toArray();
 	}
-	
+
 	static async createWithUser(name, user) {
 
 		const network = new NetworkModel({owner: user._id, name: name});
 
+		network.permissions.add('edit', user._id);
+		network.permissions.add('view', user._id);
+		network.permissions.add('delete', user._id);
+
 		const Networks = await this.getCollection();
 		
 		const insertion = await Networks.insertOne(network);
-
+		console.log(insertion);
 		// make a coordinator device
 		const coordinator = await DeviceDatabase.create("Coordinator", null, user, insertion.insertedId);
 
@@ -83,9 +89,9 @@ class NetworkDatabase extends DatabaseInterface {
 	static async addDevice(id, device_id) {
 		const Networks = await this.getCollection();
 		const network = await this.get(id);
-		
+
 		let networkData = new NetworkModel(network);
-		
+
 		if (!networkData.devices.includes(device_id)) {
 			networkData.devices.push(device_id)
 		}

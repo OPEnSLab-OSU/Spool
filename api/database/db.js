@@ -2,7 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const dotenv = require('dotenv');
 const fs = require('fs');
-
+const Permissions = require('./permissions');
 dotenv.config();
 
 let _client;
@@ -65,6 +65,50 @@ class DatabaseInterface {
 		const db =  await this.getDatabase().catch(error => {console.log(error)});
 		const collection = db.collection(name.toString());
 		return collection;
+	}
+
+	static async addPermissions(id, permission_names, otherUser, user) {
+		const object = await this.get(id);
+
+		if (object.permissions.check('edit', user._id)){
+			for (let permission in permission_names) {
+				object.permissions.add(permission, otherUser);
+			}
+		}
+	}
+
+	static async removePermissions(id, permission_names, otherUser, user) {
+		const object = await this.get(id);
+
+		if (object.permissions.check('edit', user._id)){
+			for (let permission in permission_names) {
+				object.permissions.remove(permission, otherUser);
+			}
+		}
+	}
+
+	static async checkPermissions(id, permission_names, user) {
+		const object = await this.get(id);
+
+		// this object nesting is.... not ideal
+		const permissions = new Permissions(object.permissions.permissions.permissions);
+
+		for (const permission of permission_names) {
+
+			if (!permissions.check(permission, user._id)) {
+				return false
+			}
+		}
+		return true;
+	}
+
+	static async ifHasPermissions(id, permission_names, user, fn){
+		const hasPermissions = await this.checkPermissions(id, permission_names, user);
+		if (!hasPermissions) {
+				throw new Error("Unauthorized Database Request");
+		}
+
+		return fn;
 	}
 
 	static async owns(id, user) {

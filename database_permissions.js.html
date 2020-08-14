@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>device_app.js - Documentation</title>
+    <title>database/permissions.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">device_app.js</h1>
+    <h1 class="page-title">database/permissions.js</h1>
     
 
     
@@ -43,68 +43,54 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * Created by eliwinkelman on 12/1/19.
+ * Created by eliwinkelman on 8/13/20.
  */
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var dotenv = require('dotenv');
 
-var {Validator, ValidationError} = require('express-json-validator-middleware');
+class Permissions {
 
-const deviceRouter = require('./routes/device');
+    constructor(permissions) {
+        if (permissions !== null &amp;&amp; permissions !== undefined){
+            this.permissions = permissions
+        }
+        else {
+            this.permissions = {}
+        }
+    }
 
-// Load environment variables from .env
-dotenv.config();
+    add(permission_name, user_id){
 
-var app = express();
+        if (permission_name in this.permissions) {
+            this.permissions[permission_name].push(user_id);
+        }
+        else {
+            this.permissions[permission_name] = [user_id]
+        }
+    }
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.set('view engine', 'pug');
+    remove(permission_name, user_id){
+        if (permission_name in this.permissions) {
+            let index = 0;
+            while(index !== -1){
+                index = this.permissions[permission_name].indexOf(user_id);
+                array.splice(index, 1);
+            }
+        }
+    }
 
-const router = express.Router();
+    check(permission_name, user_id) {
+        if (permission_name in this.permissions) {
+            for (const user of this.permissions[permission_name]) {
 
-router.use('/device', deviceRouter);
+                if (user_id.toString() === user.toString()){
+                    return true;
+                }
+            }
+        }
+        return false
+    }
+}
 
-
-app.use('/api', router);
-
-//Error handling for API request validation failures
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-	res.sendStatus(404);
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-	if (err.name === 'UnauthorizedError') {
-		res.status(401).send('Unauthorized');
-	}
-	else if (err instanceof ValidationError) {
-		// At this point you can execute your error handling code
-		console.log(err);
-		res.status(400).send('Invalid Request');
-		next();
-	}
-	else {
-		// render the error page
-		console.log(err);
-		res.sendStatus(err.status || 500);
-	}
-});
-
-
-module.exports = app;
-</code></pre>
+module.exports = Permissions;</code></pre>
         </article>
     </section>
 

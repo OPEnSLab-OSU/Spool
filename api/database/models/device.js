@@ -181,13 +181,20 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator_id = device_id;
 		}
 
+		const device_permissions = new Permissions();
+
+		device_permissions.add('view', user._id);
+		device_permissions.add('edit', user._id);
+		device_permissions.add('delete', user._id);
+
 		let new_device = new DeviceModel({
 			name: name,
 			device_id: device_id,
 			owner: user._id,
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
-			network: network_id
+			network: network_id,
+			permissions: device_permissions.permissions
 		});
 
 		const Devices = await this.getCollection();

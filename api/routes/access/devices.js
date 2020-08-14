@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var secured = require('../../lib/middleware/secured');
-var wrapAsync = require('../../lib/middleware/asyncWrap');
+const express = require('express');
+const router = express.Router();
+const secured = require('../../lib/middleware/secured');
+const wrapAsync = require('../../lib/middleware/asyncWrap');
 
 const {getDevices, getDevice, deleteDevice, createDevice, getDeviceData} = require('./devicesImpl');
 

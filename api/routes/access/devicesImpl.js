@@ -17,7 +17,7 @@ async function getDevices(req, res) {
 		res.send({devices: devices})
 	}
 	catch (error) {
-		res.sendStatus(401);
+		res.sendStatus(404);
 	}
 }
 
@@ -32,12 +32,18 @@ async function getDevice(req, res) {
 	const device_id = req.params.device;
 	
 	try {
-		let device = await DeviceDatabase.get(device_id, req.apiUser);
-		
-		res.json({device: device})
+
+		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+			let device = await DeviceDatabase.get(device_id);
+
+			res.json({device: device})
+		}
+		else {
+			res.sendStatus(404);
+		}
 	}
 	catch (error) {
-			res.sendStatus(401);		
+		res.sendStatus(404);
 	}
 }
 
@@ -50,16 +56,22 @@ async function getDevice(req, res) {
 async function deleteDevice(req, res) {
 	
 	try {
+		let device = await DeviceDatabase.get(req.body.device_id);
 
-		const device = DeviceDatabase.get(req.body.device_id, req.apiUser);
-		DeviceDatabase.del(req.body.device_id, req.apiUser);
-		NetworkDatabase.removeDevice(device.network, req.body.device_id);
+		if (DeviceDatabase.checkPermissions(req.body.device_id, ['delete'], req.apiUser && NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser))){
 
-		res.sendStatus(200);
+			await DeviceDatabase.del(req.body.device_id);
+			await NetworkDatabase.removeDevice(device.network, req.body.device_id);
+			res.sendStatus(200);
+		}
+		else {
+			res.sendStatus(404);
+		}
+
 	}
 	catch (error) {
 		// send bad status
-		res.sendStatus(401);
+		res.sendStatus(404);
 	}
 }
 
@@ -71,11 +83,17 @@ async function deleteDevice(req, res) {
  */
 async function createDevice(req, res) {
 
-	const newDeviceInfo = await DeviceDatabase.create(req.body.name, null, req.apiUser, req.body.network_id);
+	if (NetworkDatabase.checkPermissions(req.body.network_id, ['edit'], req.apiUser)){
+		const newDeviceInfo = await DeviceDatabase.create(req.body.name, null, req.apiUser, req.body.network_id);
 
-	NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
+		NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
 
-	res.send(newDeviceInfo);
+		res.send(newDeviceInfo);
+	}
+	else {
+		res.sendStatus(404);
+	}
+
 }
 
 /**
@@ -85,15 +103,19 @@ async function createDevice(req, res) {
  * @param {Object} res - An Express response object.
  */
 async function getDeviceData(req, res) {
-
 	const device_id = req.params.device;
 
 	try {
-		const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
-		res.send({data: datas});
+		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+			const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
+			res.send({data: datas});
+		}
+		else {
+			res.sendStatus(404);
+		}
 	}
 	catch (error) {
-		res.sendStatus(401);
+		res.sendStatus(404);
 	}
 }
 

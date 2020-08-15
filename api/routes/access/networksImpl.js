@@ -70,18 +70,22 @@ async function getNetwork(req, res){
  */
 async function getNetworkDevices(req, res) {
     try {
+		console.log("(73) Network id: ", req.params.network_id);
+		
     	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
     		const network = await NetworkDatabase.get(req.params.network_id);
 			const devices = await DeviceDatabase.getMany(network.devices);
-			res.send({devices: devices})
+			console.log("Devices: ", devices);
+			res.send({devices: devices});
         }
 		else {
+			console.log("Missing permissions to see the network devices.");
     		res.sendStatus(401);
 		}
 	}
 	catch(error) {
 		res.sendStatus(401);
-		console.log(error);
+		console.log("Error: ", error);
 	}
 }
 

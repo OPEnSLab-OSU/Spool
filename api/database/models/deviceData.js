@@ -82,10 +82,13 @@ class DeviceDataDatabase extends DatabaseInterface {
 			formatted_device.set("Date", data.data.timestamp.date);
 			formatted_device.set("Time", data.data.timestamp.time);
 
+			// Sensor refers to an object in the "contents" array. For every key
+			// in each sensor, concatenate the name of the sensor with the key
+			// for the data label and set the data to that label.
 			data.data.contents.forEach((sensor) => {
-				for (let key in sensor.data) {
+				for (var key in sensor.data) {
 					if (sensor.data.hasOwnProperty(key)) {
-						formatted_device.set(String(key), sensor.data[key]);
+						formatted_device.set(String(sensor.module) + '-' + String(key), sensor.data[key]);
 					}
 				}
 			});

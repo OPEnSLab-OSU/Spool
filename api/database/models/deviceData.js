@@ -42,8 +42,6 @@ class DeviceDataDatabase extends DatabaseInterface {
 	 * @returns {Object} The data belonging to the given device.
 	 */
 	static async getByDevice(device_id, user) {
-
-		super.checkOwnership(device_id, user);
 		
 		const DeviceData = await this.getCollection(device_id);
 		const deviceData = await DeviceData.find({device_id: device_id}).toArray().catch((err) => {

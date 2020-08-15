@@ -106,13 +106,13 @@ async function getDeviceData(req, res) {
 	const device_id = req.params.device;
 
 	try {
-		//if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
 			const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
 			res.send({data: datas});
-		//}
-		//else {
-		//	res.sendStatus(404);
-		//}
+		}
+		else {
+			res.sendStatus(404);
+		}
 	}
 	catch (error) {
 		console.log("Error:", error);

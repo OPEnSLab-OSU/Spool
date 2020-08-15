@@ -1,10 +1,7 @@
 /**
- * Created by eliwinkelman on 8/10/20.
+ * @module access/networks
  */
 
-var express = require('express');
-var router = express.Router();
-var secured = require('../../lib/middleware/secured');
 const NetworkDatabase = require('../../database/models/network');
 const DeviceDatabase = require('../../database/models/device');
 
@@ -20,7 +17,7 @@ async function getNetworks(req, res) {
 	}
 	catch(error) {
 		res.sendStatus(401);
-		console.log(error)
+		console.log(error);
 	}
 }
 
@@ -50,13 +47,18 @@ async function createNetwork(req, res) {
  */
 async function getNetwork(req, res){
     try {
-		const result = await NetworkDatabase.getByUser(req.apiUser);
+    	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
+    		const result = await NetworkDatabase.get(req.params.network_id);
 
-		res.send({networks: result});
+			res.send(result);
+        }
+		else {
+    		res.sendStatus(401);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);
-		console.log(error)
+		console.log(error);
 	}
 }
 
@@ -68,9 +70,14 @@ async function getNetwork(req, res){
  */
 async function getNetworkDevices(req, res) {
     try {
-		const network = await NetworkDatabase.asUser(req.params.network_id, req.apiUser, NetworkDatabase.get(req.params.network_id));
-		const devices = await DeviceDatabase.getMany(network.devices);
-		res.send({devices: devices})
+    	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
+    		const network = await NetworkDatabase.get(req.params.network_id);
+			const devices = await DeviceDatabase.getMany(network.devices);
+			res.send({devices: devices})
+        }
+		else {
+    		res.sendStatus(401);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);
@@ -85,7 +92,7 @@ async function getNetworkDevices(req, res) {
  */
 async function addNetworkDevice(req, res) {
 	try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.addDevice(req.body.network_id, req.body.device_id));
+		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.addDevice(req.body.network_id, req.body.device_id));
 		res.send(result);
 	}
 	catch(error) {
@@ -101,7 +108,7 @@ async function addNetworkDevice(req, res) {
  */
 async function removeNetworkDevice(req, res) {
     try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.removeDevice(req.body.network_id, req.body.device_id));
+		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.removeDevice)(req.body.network_id, req.body.device_id);
 		res.send(result);
 	}
 	catch (error) {
@@ -117,8 +124,15 @@ async function removeNetworkDevice(req, res) {
  */
 async function deleteNetwork(req, res) {
 	try {
-		const result = await NetworkDatabase.asUser(req.body.network_id, req.apiUser, NetworkDatabase.delWithUser(req.body.network_id, req.apiUser));
-		res.send(result);
+		if (await NetworkDatabase.checkPermissions(req.body.network_id, ['delete'], req.apiUser)){
+
+			 const result = await NetworkDatabase.del(req.body.network_id);
+			 res.send(result);
+		}
+		else {
+			res.sendStatus(401);
+		}
+
 	}
 	catch(error) {
 		res.sendStatus(401);

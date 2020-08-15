@@ -6,6 +6,7 @@
 const { DatabaseInterface } = require("../db") ;
 const DeviceDatabase = require("./device");
 const ObjectID = require('mongodb').ObjectID;
+const Permissions = require('../permissions');
 
 class NetworkModel {
 	constructor(networkData) {
@@ -13,6 +14,7 @@ class NetworkModel {
 		this.name = networkData.name;
 		this.devices = networkData.devices || [];
 		this.owner = networkData.owner;
+		this.permissions = networkData.permissions || {};
 	}
 }
 
@@ -24,34 +26,43 @@ class NetworkDatabase extends DatabaseInterface {
 
 	static async owns(id, user) {
 		const network = await this.get(id);
-		console.log(network);
+
 		return network.owner.toString() === user._id.toString();
 	}
 
 	static async get(id) {
+
 		const Networks = await this.getCollection();
-		console.log(id);
-		const networks = await Networks.find({_id: new ObjectID(id.toString())}).toArray();
-	
+		const networks = await Networks.find({_id: new ObjectID(id)}).toArray();
+
 		return networks[0];
 	}
 
 	static async getByUser(user) {
 
 		const Networks = await this.getCollection();
+		let networkArray = [];
+		if (user.networks !== undefined) {
+			networkArray = user.networks.map(network => {
+				return ObjectID(network)
+			});
+		}
 
-		const networkArray = user.networks.map(network => {
-			return ObjectID(network)
-		});
-
-		const usersNetworks = await Networks.find({_id: {$in: networkArray}}).toArray();
-
-		return usersNetworks;
+		return await Networks.find({_id: {$in: networkArray}}).toArray();
 	}
-	
+
 	static async createWithUser(name, user) {
 
 		const network = new NetworkModel({owner: user._id, name: name});
+
+		// create the starting permissions for the network
+        let networkPermissions = new Permissions();
+		networkPermissions.add('edit', user._id);
+		networkPermissions.add('view', user._id);
+		networkPermissions.add('delete', user._id);
+
+		// set the permissions
+        network.permissions = networkPermissions.permissions;
 
 		const Networks = await this.getCollection();
 		
@@ -83,9 +94,9 @@ class NetworkDatabase extends DatabaseInterface {
 	static async addDevice(id, device_id) {
 		const Networks = await this.getCollection();
 		const network = await this.get(id);
-		
+
 		let networkData = new NetworkModel(network);
-		
+
 		if (!networkData.devices.includes(device_id)) {
 			networkData.devices.push(device_id)
 		}
@@ -115,40 +126,43 @@ class NetworkDatabase extends DatabaseInterface {
 		
 		const Networks = await this.getCollection();
 	
-		const _ = await Networks.updateOne({_id: id}, update);
+		const _ = await Networks.updateOne({_id: new ObjectID(id)}, update);
 	
 		return true
 	}
-	
-	static async updateWithUser(id, update, user) {
-	
-		this.checkOwnership(id, user);
-		
-		this.update(id, update);
-	}
-	
+
 	static async del(id) {
 		const Networks = await this.getCollection();
 
-		const deleted = await Networks.deleteOne({_id: id});
-		return true;
-	}
-	
-	static async delWithUser(id, user) {
-		this.checkOwnership(id, user);
-		this.del(id);
+		// delete all devices in the network
+        const network = await this.get(id);
 
-		// delete from the user object too
-		const index = user.networks.indexOf(id);
-		if (index > -1) {
-			user.networks.splice(index, 1);
-		}
+        let networkData = new NetworkModel(network);
 
+        networkData.devices.forEach(async (device) => {
+            await DeviceDatabase.del(device)
+        });
+
+        // delete the network
+		const deleted = await Networks.deleteOne({_id: new ObjectID(id)});
+
+		// find all users with this device and remove it
 		const Users = await super.getCollection("Users");
 
-		let userUpdate = await Users.updateOne({_id: new ObjectID(user._id)}, {$set: {networks: user.networks}}).catch(err => {
-			throw err
-		});
+        const usersWithNetwork = await Users.find({networks: id}).toArray();
+
+        let index = -1;
+        usersWithNetwork.forEach(async (user) => {
+            // delete from the user object too
+            index = user.networks.indexOf(id);
+            if (index > -1) {
+                user.networks.splice(index, 1);
+            }
+            await Users.updateOne({_id: new ObjectID(user._id)}, {$set: {networks: user.networks}}).catch(err => {
+			    throw err
+		    });
+        });
+		return true;
 	}
 }
 

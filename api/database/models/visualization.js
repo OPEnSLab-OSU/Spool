@@ -44,7 +44,7 @@ class VisualizationDatabase extends DatabaseInterface {
 	static async owns(visualization_id, user) {
 		const visualization = await this.get(visualization_id);
 		
-		return user._id.toString() == visualization.owner.toString()
+		return user._id.toString() === visualization.owner.toString()
 	}
 
 	/**

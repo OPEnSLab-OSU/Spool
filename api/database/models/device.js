@@ -5,9 +5,10 @@
 const { DatabaseInterface } = require("../db") ;
 
 const ObjectID = require('mongodb').ObjectID;
-var ClientCertFactory = require('../../lib/ClientCertFactory');
-var pem = require('pem');
-var getKeys = require("../../lib/manageKeys");
+const ClientCertFactory = require('../../lib/ClientCertFactory');
+const pem = require('pem');
+const getKeys = require("../../lib/manageKeys");
+const Permissions = require("../permissions");
 
 /**
  * Model for Device object, used to create new Device
@@ -22,6 +23,7 @@ class DeviceModel {
 		this.coordinator = deviceData.coordinator;
 		this.coordinator_id = deviceData.coordinator_id;
 		this.network = deviceData.network;
+		this.permissions = deviceData.permissions || {};
 	}
 }
 
@@ -61,7 +63,7 @@ class DeviceDatabase extends DatabaseInterface {
 		// check which user role we have to handle
 		let usersDevices = [];
 		const Devices = await this.getCollection();
-		if (user.role == "user") {
+		if (user.role === "user") {
 
 			const deviceArray = user.devices.map(device => {
 				return ObjectID(device)
@@ -72,7 +74,7 @@ class DeviceDatabase extends DatabaseInterface {
 			});
 		}
 
-		else if (user.role == "admin") {
+		else if (user.role === "admin") {
 			usersDevices = await Devices.find({}).toArray().catch(err => {
 				throw err;
 			});
@@ -103,13 +105,11 @@ class DeviceDatabase extends DatabaseInterface {
 	 *
 	 * @throws User must own the device.
 	 */
-	static async get(id, user) {
-
-		this.checkOwnership(id, user);
+	static async get(id) {
 
 		const Devices = await this.getCollection();
 
-		var devices = await Devices.find({device_id: new ObjectID(id)}).toArray().catch(err => {
+		const devices = await Devices.find({device_id: new ObjectID(id)}).toArray().catch(err => {
 			throw err
 		});
 		
@@ -125,16 +125,14 @@ class DeviceDatabase extends DatabaseInterface {
 	 *
 	 * @throws User must own the device.
 	 */
-	static async update(id, update, user) {
-
-		this.checkOwnership(id, user);
+	static async update(id, update) {
 
 		const Devices = await this.getCollection();
 
 		let device = {};
-		if (this.owns(id, user)) {
-			device = await Devices.updateOne({device_id: new ObjectID(id)}, update)
-		}
+
+		device = await Devices.updateOne({device_id: new ObjectID(id)}, update);
+
 		return device;
 	}
 
@@ -146,10 +144,8 @@ class DeviceDatabase extends DatabaseInterface {
 	 *
 	 * @throws User must own the device.
 	 */
-	static async del(id, user) {
-		this.checkOwnership(id, user);
+	static async del(id) {
 
-		const device = this.get(id, user);
 		const Devices = await this.getCollection();
 		
 		// delete the device
@@ -185,13 +181,20 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator_id = device_id;
 		}
 
+		const device_permissions = new Permissions();
+
+		device_permissions.add('view', user._id);
+		device_permissions.add('edit', user._id);
+		device_permissions.add('delete', user._id);
+
 		let new_device = new DeviceModel({
 			name: name,
 			device_id: device_id,
 			owner: user._id,
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
-			network: network_id
+			network: network_id,
+			permissions: device_permissions.permissions
 		});
 
 		const Devices = await this.getCollection();

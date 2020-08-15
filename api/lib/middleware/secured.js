@@ -5,8 +5,6 @@ var dotenv = require('dotenv');
 
 dotenv.config();
 
-console.log(process.env.AUTH0_DOMAIN);
-
 const checkJwt = jwt({
 	secret: jwksRsa.expressJwtSecret({
 		cache: true,

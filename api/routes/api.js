@@ -26,14 +26,14 @@ const GetDeviceDataSchema = {
 			type: 'string'
 		},
 		data_run: {
-			type: 'string'
+			type: 'number'
 		}
 	}
 };
 
 const PostDeviceDataSchema = {
 	type: 'object',
-	required: ['device_id', 'coordinator_id', 'data', 'data_run'],
+	required: ['device_id', 'coordinator_id', 'data'],
 	properties: {
 		device_id: {
 			type: 'string'
@@ -42,7 +42,7 @@ const PostDeviceDataSchema = {
 			type: 'string'
 		},
 		data_run: {
-			type: 'string'
+			type: 'number'
 		},
 		data: {
 			type: 'object'

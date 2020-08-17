@@ -23,6 +23,8 @@ class DeviceModel {
 		this.coordinator = deviceData.coordinator;
 		this.coordinator_id = deviceData.coordinator_id;
 		this.network = deviceData.network;
+		//adding dataRun to the constructor
+		this.data_run = deviceData.data_run;
 		this.permissions = deviceData.permissions || {};
 	}
 }
@@ -194,6 +196,7 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
 			network: network_id,
+			data_run: 1,
 			permissions: device_permissions.permissions
 		});
 

@@ -5,6 +5,7 @@
 const { DatabaseInterface } = require("../db") ;
 const DeviceDatabase = require("./device");
 const { strMapToObj } = require("../../utils/utils");
+const DataRun = require("../dataRun.js");
 
 const ObjectID = require('mongodb').ObjectID;
 
@@ -59,10 +60,19 @@ class DeviceDataDatabase extends DatabaseInterface {
 	 */
 	static async create(device_id, data) {
 
-		// device data collections are named by their device ID
+		const tempDataRun = new DataRun();
+		
+		// Device data collections are named by their device ID
 		const DeviceData = await this.getCollection(device_id);
 
+		// Pass in the array of modules for the new device data object and the deviceData
+		// collection to determine if the current device data object is of the same data_run
+		// as any previous device data objects
+		data.data_run = await tempDataRun.getDataRun(data.data.contents, DeviceData);
+		console.log("Data run = ", data.data_run);
+		
 		const insertedData = await DeviceData.insertOne(data).catch(err => {throw err;});
+		
 		return insertedData;
 	}
 

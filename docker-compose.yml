@@ -17,6 +17,8 @@ services:
       - ca.crt
       - server.key
       - server.crt
+      - clientId.txt
+      - clientSecret.txt
   deviceapp:
     container_name: deviceapp
     env_file:
@@ -48,4 +50,7 @@ secrets:
     file: ./../secrets/server-key.pem
   server.crt:
     file: ./../secrets/server-crt.pem
-
+  clientId.txt:
+    file: ./../secrets/clientId.txt
+  clientSecret.txt:
+    file: ./../secrets/clientSecret.txt

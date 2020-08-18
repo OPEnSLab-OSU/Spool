@@ -1,8 +1,7 @@
 //setup authentication
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
-var dotenv = require('dotenv');
-
+const dotenv = require('dotenv');
 dotenv.config();
 
 const checkJwt = jwt({

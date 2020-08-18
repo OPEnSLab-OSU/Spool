@@ -70,14 +70,14 @@ class DatabaseInterface {
 		return collection;
 	}
 
-	static async addPermissions(id, permission_names, otherUser, user) {
+	static async addPermissions(id, permission_names, otherUserId, user, checkPermissions = true) {
 		const object = await this.get(id);
 
 		const permissions = new Permissions(object.permissions);
 
-		if (permissions.check('edit', user._id)){
-			for (let permission in permission_names) {
-				permissions.add(permission, otherUser);
+		if (!checkPermissions || permissions.check('edit', user._id)){
+			for (let permission of permission_names) {
+				permissions.add(permission, otherUserId);
 			}
 		}
 
@@ -85,14 +85,14 @@ class DatabaseInterface {
 		await this.update(id, {$set: {permissions: permissions.permissions}});
 	}
 
-	static async removePermissions(id, permission_names, otherUser, user) {
+	static async removePermissions(id, permission_names, otherUserId, user, checkPermissions = true) {
 		const object = await this.get(id);
 
 		const permissions = new Permissions(object.permissions);
 
-		if (permissions.check('edit', user._id)){
-			for (let permission in permission_names) {
-				permissions.remove(permission, otherUser);
+		if (!checkPermissions || permissions.check('edit', user._id)){
+			for (let permission of permission_names) {
+				permissions.remove(permission, otherUserId);
 			}
 		}
 
@@ -112,6 +112,14 @@ class DatabaseInterface {
 			}
 		}
 		return true;
+	}
+
+	static async hasAnyPermissions(id, user_id) {
+		const object = await this.get(id);
+
+		const permissions = new Permissions(object.permissions);
+
+		return permissions.has_permissions(user_id);
 	}
 
 	static async owns(id, user) {

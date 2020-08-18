@@ -4,6 +4,7 @@
 
 const NetworkDatabase = require('../../database/models/network');
 const DeviceDatabase = require('../../database/models/device');
+const Auth0UserManager = require('../../database/models/user');
 
 /**
  * Retrieves all networks belonging to the requesting user and sends them in an http request response.
@@ -136,7 +137,68 @@ async function deleteNetwork(req, res) {
 	}
 	catch(error) {
 		res.sendStatus(401);
-		console.log(error);
+		console.error(error);
+	}
+}
+
+async function updateNetworkPermissions(req, res) {
+	try {
+		const network_id = req.body.network_id;
+
+		if (await NetworkDatabase.checkPermissions(network_id, ['edit'], req.apiUser)) {
+
+			const network = await NetworkDatabase.get(network_id);
+			const owner = network.owner;
+
+			for (const [key, value] of Object.entries(req.body.permissions)) {
+
+				// don't modify owner permissions
+				if (key.toString() !== owner.toString()) {
+
+					// check if the user already has permissions
+					if (network.permissions.hasOwnProperty(key)) {
+							// get the added permissions, only allow adding view and edit
+						const addPermissions = value.filter((el) => !network.permissions[key].includes(el) && (el === 'view' || el === 'edit'));
+
+						console.log(value);
+						// get the removed permissions
+						const removedPermissions = network.permissions[key].filter((el) => !value.includes(el));
+						console.log(addPermissions);
+						console.log(removedPermissions);
+						// add permissions
+						await NetworkDatabase.addPermissions(network_id, addPermissions, key, req.apiUser, false);
+
+						// remove permissions
+						await NetworkDatabase.removePermissions(network_id, removedPermissions, key, req.apiUser, false);
+
+					}
+					else {
+
+						// if the user doesn't have any permissions, add the specified ones (but only view and edit)
+						const addPermissions = value.filter((el) => (el === 'view' || el === 'edit'));
+
+						// add permissions
+						await NetworkDatabase.addPermissions(network_id, addPermissions, key, req.apiUser, false);
+					}
+
+					// if the user has permissions, make sure
+					if (await NetworkDatabase.hasAnyPermissions(network_id, key)) {
+						await Auth0UserManager.addNetworkToUser(key, network_id);
+					}
+					else {
+						await Auth0UserManager.removeNetworkFromUser(key, network_id);
+					}
+				}
+			}
+			res.sendStatus(200);
+		}
+		else {
+			res.sendStatus(404);
+		}
+	}
+	catch(error) {
+		console.error(error);
+		res.sendStatus(404);
 	}
 }
 
@@ -147,5 +209,6 @@ module.exports = {
 	createNetwork: createNetwork,
 	getNetworkDevices: getNetworkDevices,
     addNetworkDevice: addNetworkDevice,
-    removeNetworkDevice: removeNetworkDevice
+    removeNetworkDevice: removeNetworkDevice,
+	updateNetworkPermissions: updateNetworkPermissions
 };

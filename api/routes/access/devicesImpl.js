@@ -5,6 +5,7 @@
 const DeviceDatabase = require('../../database/models/device');
 const DeviceDataDatabase = require('../../database/models/deviceData');
 const NetworkDatabase = require("../../database/models/network");
+
 /**
  * Retrieves devices from the database by user and sends them as the http response.
  * @param {Object} req - An Express request object.
@@ -12,7 +13,6 @@ const NetworkDatabase = require("../../database/models/network");
  */
 async function getDevices(req, res) {
 	try {
-
 		let devices = await DeviceDatabase.getByUser(req.apiUser);
 		res.send({devices: devices})
 	}
@@ -33,9 +33,10 @@ async function getDevice(req, res) {
 	
 	try {
 
-		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
-			let device = await DeviceDatabase.get(device_id);
+		const device = DeviceDatabase.get(device_id);
 
+		// check permissions by the network
+		if (NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
 			res.json({device: device})
 		}
 		else {
@@ -58,7 +59,7 @@ async function deleteDevice(req, res) {
 	try {
 		let device = await DeviceDatabase.get(req.body.device_id);
 
-		if (DeviceDatabase.checkPermissions(req.body.device_id, ['delete'], req.apiUser && NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser))){
+		if (NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser)){
 
 			await DeviceDatabase.del(req.body.device_id);
 			await NetworkDatabase.removeDevice(device.network, req.body.device_id);
@@ -93,7 +94,6 @@ async function createDevice(req, res) {
 	else {
 		res.sendStatus(404);
 	}
-
 }
 
 /**
@@ -104,9 +104,9 @@ async function createDevice(req, res) {
  */
 async function getDeviceData(req, res) {
 	const device_id = req.params.device;
-
+	let device = await DeviceDatabase.get(device_id);
 	try {
-		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+		if (NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
 			const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
 			res.send({data: datas});
 		}

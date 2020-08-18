@@ -9,13 +9,15 @@
 import React, { useState, useEffect }from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
 import { Link } from "react-router-dom";
-import { accessNetworkDevices, accessNetwork } from '../../api';
+import { accessNetworkDevices, accessNetwork, getUserInfo } from '../../api';
 import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 import NetworkDetails from '../NetworkDetails';
+import AddUserPermissionsModal from '../AddUserPermissions';
 
 const Network = (props) => {
 	const [showDevices, setShowDevices] = useState(false);
 	const [showNetwork, setShowNetwork] = useState(false);
+	const [userInfo, setUserInfo] = useState(null);
 	const [devices, setDevices] = useState([]);
 	const [network, setNetwork] = useState({});
 	const {getTokenSilently} = useAuth0();
@@ -32,6 +34,11 @@ const Network = (props) => {
 			accessNetwork(props.match.params.network, getTokenSilently, (network) => {
 				if (network !== undefined) {
 					setNetwork(network);
+					console.log(network);
+					getUserInfo(Object.keys(network.permissions), getTokenSilently, (userInfo) => {
+						setUserInfo(userInfo);
+					});
+
 				}
 				setShowNetwork(true);
 			})
@@ -50,6 +57,8 @@ const Network = (props) => {
 		<Container fluid={true}>
 
 			{showNetwork && <NetworkDetails network={network}/>}
+			{userInfo !== null && <AddUserPermissionsModal network_id={network._id} owner={network.owner} userInfo={userInfo} userPermissions={network.permissions}/> }
+
 		</Container>
 
 		<Container fluid={true}>

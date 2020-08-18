@@ -31,7 +31,7 @@ module.exports = function() {
 								role: "user"
 							}).catch((err) => {
 								throw err;
-							});
+							}).ops[0];
 			next();
 		}
 	})

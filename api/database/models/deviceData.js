@@ -60,17 +60,23 @@ class DeviceDataDatabase extends DatabaseInterface {
 	 */
 	static async create(device_id, data) {
 
-		const tempDataRun = new DataRun();
+		// Obtain the document in the device database which corresponds to the given device_id
+		const object = await DeviceDatabase.get(device_id);
 		
-		// Device data collections are named by their device ID
+		// Create a dataRun object with the same number of dataRuns as the device of interest
+		let tempDataRun = new DataRun(object.num_dataRuns);
+		
+		// Device data collections are named by their device ID.
 		const DeviceData = await this.getCollection(device_id);
-
-		// Pass in the array of modules for the new device data object and the deviceData
-		// collection to determine if the current device data object is of the same data_run
-		// as any previous device data objects
-		data.data_run = await tempDataRun.getDataRun(data.data.contents, DeviceData);
-		console.log("Data run = ", data.data_run);
 		
+		// Determine and set the data_run (number) for the deviceData object (data)
+		tempDataRun = await tempDataRun.getDataRun(data.data.contents, DeviceData);
+		data.data_run = tempDataRun.dataRun;
+
+		// Update the number of data runs for the device
+		await DeviceDatabase.update(device_id, {$set: {num_dataRuns: tempDataRun.num_dataRuns}});
+		
+		// Insert the data object into the collection for the device
 		const insertedData = await DeviceData.insertOne(data).catch(err => {throw err;});
 		
 		return insertedData;

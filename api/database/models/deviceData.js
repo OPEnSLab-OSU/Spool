@@ -320,7 +320,7 @@ class DataRun {
 	 */
     static async getSchema(dataRun, device_id) {
         const deviceData = await DeviceDataDatabase.getByDataRun(device_id, dataRun, true);
-		console.log(deviceData);
+		
         // If there are no deviceData documents for the given dataRun, return null
         if (deviceData === null) {
             return deviceData;

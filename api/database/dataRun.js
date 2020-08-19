@@ -39,9 +39,9 @@ class DataRun {
      * object which contains modules and key-value pairs for data points.
 	 * @param {Object} DeviceData - The collection of deviceData documents for
      * the Device.
-	 * @returns {{dataRun: number, num_dataRuns: number}} An object containing
-     * the dataRun for the deviceData object and the number of data runs for
-     * the device.
+	 * @returns {DataRun} The DataRun object which called the function,
+     * containing the dataRun for the deviceData object and the total number of
+     * data runs for the device.
 	 */
     async getDataRun(newSchema, DeviceData) {
     

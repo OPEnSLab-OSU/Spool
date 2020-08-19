@@ -149,20 +149,13 @@ class DataRun {
 	 */
     async modulekey_Array(j, schema) {
 
-        // Determine the number of keys in the data object
-        let numkeys = 0;
-        for (var key in schema[j].data) {
-            if (schema[j].data.hasOwnProperty(key)) {
-                numkeys++;
-            }
-        }
-        let modulekey_array = new Array(numkeys);
+        let modulekey_array = [];
         
         // Fill array with strings for each module-key pair
         let i = 0;
         for (let key in schema[j].data) {
 	    if (schema[j].data.hasOwnProperty(key)) {
-                 modulekey_array[i] = String(schema[j].module) + '-' + String(key);
+                 modulekey_array[i].push(String(schema[j].module) + '-' + String(key));
                  i++;
 	    }
         }

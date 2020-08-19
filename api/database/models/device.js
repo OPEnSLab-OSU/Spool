@@ -100,10 +100,7 @@ class DeviceDatabase extends DatabaseInterface {
 	/**
 	 * Gets the device with id.
 	 * @param {string} id - The id of the device.
-	 * @param {Object} user - The user requesting the device.
 	 * @returns {Object} A device object from the MongoDB.
-	 *
-	 * @throws User must own the device.
 	 */
 	static async get(id) {
 

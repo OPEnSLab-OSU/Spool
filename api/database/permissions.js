@@ -2,8 +2,15 @@
  * Created by eliwinkelman on 8/13/20.
  */
 
+/**
+ * @class Permissions
+ */
 class Permissions {
 
+    /**
+     * @constructor
+     * @param {Object} permissions - a permissions data object, stored with keys as user_ids and key values as arrays of permission names.
+     */
     constructor(permissions) {
         if (permissions !== null && permissions !== undefined){
             this.permissions = permissions
@@ -13,6 +20,11 @@ class Permissions {
         }
     }
 
+    /**
+     * Adds a permission to a user
+     * @param {string} permission_name - the name of the permission
+     * @param {string} user_id - the id of the user to add the permission for
+     */
     add(permission_name, user_id){
 
         if (user_id in this.permissions) {
@@ -23,6 +35,12 @@ class Permissions {
         }
     }
 
+    /**
+     * Removes a permission from a user. If a user has no permissions left after the removal,
+     * they are removed from the permissions object.
+     * @param {string} permission_name - the name of the permission
+     * @param {string} user_id - the id of the user to remove the permission from
+     */
     remove(permission_name, user_id){
         if (user_id in this.permissions) {
             let index = 0;
@@ -39,11 +57,21 @@ class Permissions {
         }
     }
 
+    /**
+     * Checks if a user has any permissions
+     * @param {string} user_id - the id of the user to check permissions for.
+     * @returns {boolean} true if they have any permissions
+     */
     has_permissions(user_id) {
-        console.log(this.permissions.hasOwnProperty(user_id));
         return this.permissions.hasOwnProperty(user_id);
     }
 
+    /**
+     * Checks if a user has a specific permission
+     * @param {string} permission_name - the name of the permission to check for
+     * @param {string} user_id - the id of the user to check permissions for
+     * @returns {boolean} true if they have the permission
+     */
     check(permission_name, user_id) {
         if (user_id in this.permissions) {
             for (const permission of this.permissions[user_id]) {

@@ -141,6 +141,12 @@ async function deleteNetwork(req, res) {
 	}
 }
 
+/**
+ * Updates permissions to view and edit a network.
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ * @returns {Promise.<void>}
+ */
 async function updateNetworkPermissions(req, res) {
 	try {
 		const network_id = req.body.network_id;

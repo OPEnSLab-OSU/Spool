@@ -120,10 +120,36 @@ async function getDeviceData(req, res) {
 	}
 }
 
+/**
+ * Retrieves the data of a device from the database and sends the data as the http response.
+ * 
+ * @param {Object} req - An Express request object.
+ * @param {Object} res - An Express response object.
+ */
+async function getDeviceDataByDataRun(req, res) {
+	const device_id = req.params.device;
+	const data_run = req.params.data_run;
+
+	try {
+		if (DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+			const datas = await DeviceDataDatabase.getByDeviceDataRun(device_id, data_run);
+			res.send({data: datas});
+		}
+		else {
+			res.sendStatus(404);
+		}
+	}
+	catch (error) {
+		console.log("Error:", error);
+		res.sendStatus(404);
+	}
+}
+
 module.exports = {
 	getDevices: getDevices,
 	getDevice: getDevice,
 	deleteDevice: deleteDevice,
 	createDevice: createDevice,
-	getDeviceData: getDeviceData
+	getDeviceData: getDeviceData, 
+	getDeviceDataByDataRun: getDeviceDataByDataRun
 };

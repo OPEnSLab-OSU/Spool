@@ -23,6 +23,8 @@ class DeviceModel {
 		this.coordinator = deviceData.coordinator;
 		this.coordinator_id = deviceData.coordinator_id;
 		this.network = deviceData.network;
+		//adding dataRun to the constructor
+		this.num_dataRuns = deviceData.num_dataRuns;
 		this.permissions = deviceData.permissions || {};
 	}
 }
@@ -194,8 +196,11 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
 			network: network_id,
+			num_dataRuns: 0,
 			permissions: device_permissions.permissions
 		});
+
+		console.log("Created new device: ", new_device);
 
 		const Devices = await this.getCollection();
 
@@ -232,8 +237,6 @@ class DeviceDatabase extends DatabaseInterface {
 		let userUpdate = Users.updateOne({_id: new ObjectID(user._id)}, {$set: {devices: user.devices}}).catch(err => {
 			throw err
 		});
-
-
 
 		return response;
 	}

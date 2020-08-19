@@ -13,35 +13,32 @@ const GetUsersDevicesSchema = {
 	required: ['user_id'],
 	properties: {
 		user_id: {
-			type: 'string'
+			type: 'string' 
 		}
 	}
 };
 
 const GetDeviceDataSchema = {
 	type: 'object',
-	required: ['device_id'],
+	required: ['device_id', 'data_run'],
 	properties: {
 		device_id: {
 			type: 'string'
 		},
 		data_run: {
-			type: 'string'
+			type: 'number'
 		}
 	}
 };
 
 const PostDeviceDataSchema = {
 	type: 'object',
-	required: ['device_id', 'coordinator_id', 'data', 'data_run'],
+	required: ['device_id', 'coordinator_id', 'data'],
 	properties: {
 		device_id: {
 			type: 'string'
 		},
 		coordinator_id: {
-			type: 'string'
-		},
-		data_run: {
 			type: 'string'
 		},
 		data: {

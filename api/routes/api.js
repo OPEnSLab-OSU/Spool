@@ -42,7 +42,7 @@ const PostDeviceDataSchema = {
 			type: 'string'
 		},
 		data_run: {
-			type: 'number'
+			type: 'string'
 		},
 		data: {
 			type: 'object'

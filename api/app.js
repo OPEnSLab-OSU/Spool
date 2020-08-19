@@ -28,12 +28,8 @@ router.use('/docs', documentationRouter);
 app.use('/api', router);
 app.use(express.static(path.join(__dirname, '..', 'build')));
 
-
-//Error handling for API request validation failures
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-	res.sendStatus(404);
+app.get('/*', function(req, res) {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 // error handler

@@ -3,7 +3,7 @@ const router = express.Router();
 const secured = require('../../lib/middleware/secured');
 const wrapAsync = require('../../lib/middleware/asyncWrap');
 
-const {getDevices, getDevice, deleteDevice, createDevice, getDeviceData} = require('./devicesImpl');
+const {getDevices, getDevice, deleteDevice, createDevice, getDeviceData, getDeviceDataByDataRun} = require('./devicesImpl');
 
 //MongoDB
 var mongoClient = require('../../database/db');
@@ -85,6 +85,31 @@ router.post('/register', secured, wrapAsync(createDevice));
  *                description: id of the device to get
  */
 router.get('/data/:device/', secured, wrapAsync(getDeviceData));
+
+/**
+ *  @swagger
+ *  /access/devices/data/{device}/{data_run}:
+ *      post:
+ *          description: Gets the data belonging to the device
+ *                          for a given data_run.
+ *          tags:
+ *              - access
+ *              - devices
+ *          parameters:
+ *              - in: path
+ *                name: device
+ *                schema:
+ *                  type: string
+ *                required: true
+ *                description: id of the device to get
+ *              - in: path
+ *                name: data_run
+ *                schema:
+ *                  type: number
+ *                required: true
+ *                description: data_run of the device to get
+ */
+router.get('/data/:device/:data_run', secured, wrapAsync(getDeviceDataByDataRun));
 
 
 module.exports = router;

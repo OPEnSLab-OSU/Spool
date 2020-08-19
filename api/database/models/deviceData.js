@@ -53,6 +53,24 @@ class DeviceDataDatabase extends DatabaseInterface {
 	}
 
 	/**
+	 * Retrieves all device data for a device for a specific data_run.
+	 * @param {string} device_id - The id of the device.
+	 * @param {number} data_run - The data_run to obtain
+	 * @returns {Object} The data belonging to the given device for the data_run.
+	 */
+	static async getByDeviceDataRun(device_id, data_run) {
+		
+		// Device data collections are named by their device ID.
+		const DeviceData = await this.getCollection(device_id);
+		const deviceData = await DeviceData.find({device_id: device_id, data_run: data_run}).toArray().catch((err) => {
+			throw err;
+		});
+		console.log("All data for data_run", data_run, ":", deviceData);
+
+		return this.__formatDeviceData(deviceData);
+	}
+
+	/**
 	 * Creates a new device data object.
 	 * @param {string} device_id - The id of the device the data belongs to.
 	 * @param {Object} data - The data being reported by the device.

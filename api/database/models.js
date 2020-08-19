@@ -1,7 +1,7 @@
 
 const DeviceDatabase = require('./models/device');
 
-const DeviceDataDatabase = require('./models/device');
+const DeviceDataDatabase = require('./models/deviceData');
 
 const VisualizationDatabase = require('./models/visualization');
 

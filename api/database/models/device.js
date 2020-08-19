@@ -9,7 +9,6 @@ const ClientCertFactory = require('../../lib/ClientCertFactory');
 const pem = require('pem');
 const getKeys = require("../../lib/manageKeys");
 const Permissions = require("../permissions");
-const DataRun = require("../DataRun.js");
 
 /**
  * Model for Device object, used to create new Device
@@ -185,8 +184,6 @@ class DeviceDatabase extends DatabaseInterface {
 		}
 
 		const device_permissions = new Permissions();
-		const device_data_run = new DataRun();
-		const device_num_data_runs = device_data_run.num_dataRuns;
 
 		device_permissions.add('view', user._id);
 		device_permissions.add('edit', user._id);
@@ -199,7 +196,7 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
 			network: network_id,
-			num_dataRuns: device_num_data_runs,
+			num_dataRuns: 0,
 			permissions: device_permissions.permissions
 		});
 

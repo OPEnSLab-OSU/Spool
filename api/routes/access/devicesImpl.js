@@ -36,7 +36,7 @@ async function getDevice(req, res) {
 		const device = DeviceDatabase.get(device_id);
 
 		// check permissions by the network
-		if (NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
+		if (await NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
 			res.json({device: device})
 		}
 		else {
@@ -59,7 +59,7 @@ async function deleteDevice(req, res) {
 	try {
 		let device = await DeviceDatabase.get(req.body.device_id);
 
-		if (NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser)){
+		if (await NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser)){
 
 			await DeviceDatabase.del(req.body.device_id);
 			await NetworkDatabase.removeDevice(device.network, req.body.device_id);
@@ -68,7 +68,6 @@ async function deleteDevice(req, res) {
 		else {
 			res.sendStatus(404);
 		}
-
 	}
 	catch (error) {
 		// send bad status
@@ -83,9 +82,19 @@ async function deleteDevice(req, res) {
  * @param {Object} res - An Express response object.
  */
 async function createDevice(req, res) {
+	if (await NetworkDatabase.checkPermissions(req.body.network_id, ['edit'], req.apiUser)){
 
-	if (NetworkDatabase.checkPermissions(req.body.network_id, ['edit'], req.apiUser)){
-		const newDeviceInfo = await DeviceDatabase.create(req.body.name, null, req.apiUser, req.body.network_id);
+		const network = await NetworkDatabase.get(req.body.network_id);
+
+		let coordinator_id = null;
+
+		for (let device in network.devices) {
+			if (device.coordinator) {
+				coordinator_id = device.device_id
+			}
+		}
+
+		const newDeviceInfo = await DeviceDatabase.create(req.body.name, coordinator_id, req.apiUser, req.body.network_id);
 
 		NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
 
@@ -106,7 +115,7 @@ async function getDeviceData(req, res) {
 	const device_id = req.params.device;
 	let device = await DeviceDatabase.get(device_id);
 	try {
-		if (NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
+		if (await NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
 			const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
 			res.send({data: datas});
 		}

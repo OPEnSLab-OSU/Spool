@@ -12,9 +12,6 @@ import { Button } from 'react-bootstrap'
 const Profile = () => {
 	const { loading, user, getTokenSilently} = useAuth0();
 
-	const [search, setSearch] = useState("");
-	const [users, setUsers] = useState([]);
-
 	if (loading || !user) {
 		return (
 			<div>Loading...</div>
@@ -25,12 +22,6 @@ const Profile = () => {
 		resetPassword(getTokenSilently);
 	}
 
-	async function searchFormChange(e) {
-		await searchUsers(e.target.value, getTokenSilently, (usersFound) => {
-			console.log(usersFound);
-			setUsers(usersFound)
-		});
-	}
 
 	return (
 		<>

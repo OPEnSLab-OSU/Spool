@@ -27,6 +27,10 @@ router.post('/reset-password', secured, wrapAsync(async (req, res, next) => {
 }));
 
 
+router.get('/my-id', secured, wrapAsync(async (req, res) => {
+    res.send(req.apiUser._id);
+}));
+
 /**
  *  @swagger
  *  /access/users/search/{query}}:

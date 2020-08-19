@@ -2,6 +2,26 @@
  * Created by eliwinkelman on 9/6/19.
  */
 
+export async function getMyUserId(getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+
+		const response = await fetch("/api/access/user/my-id/", {
+			mode: 'cors',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		const user_id = await response.json();
+
+		callback(user_id);
+	}
+	catch(error) {
+		console.error(error);
+	}
+}
+
 export async function updateNetworkPermissions(network_id, permissions, getTokenSilently, callback) {
 
 	try {

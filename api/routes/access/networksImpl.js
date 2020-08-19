@@ -93,8 +93,13 @@ async function getNetworkDevices(req, res) {
  */
 async function addNetworkDevice(req, res) {
 	try {
-		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.addDevice(req.body.network_id, req.body.device_id));
-		res.send(result);
+		if (await NetworkDatabase.checkPermissions(req.params.network_id, ['edit'], req.apiUser)) {
+			const result = await NetworkDatabase.addDevice(req.body.network_id, req.body.device_id)
+			res.send(result);
+		}
+		else {
+			res.sendStatus(404);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);
@@ -109,8 +114,13 @@ async function addNetworkDevice(req, res) {
  */
 async function removeNetworkDevice(req, res) {
     try {
-		const result = await NetworkDatabase.ifHasPermissions(req.body.network_id, ['edit'], req.apiUser, NetworkDatabase.removeDevice)(req.body.network_id, req.body.device_id);
-		res.send(result);
+    	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['edit'], req.apiUser)) {
+        	const result = await NetworkDatabase.removeDevice(req.body.network_id, req.body.device_id);
+			res.send(result);
+        }
+		else {
+    		res.sendStatus(404);
+		}
 	}
 	catch (error) {
 		res.sendStatus(401);

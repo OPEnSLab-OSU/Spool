@@ -13,7 +13,7 @@ Spool is a data logging and device management platform for [Loom](https://github
 
 ### Developers
 
-[Getting Started](https://github.com/OPEnSLab-OSU/Spool/wiki/Getting-Started#running-spool-for-development)
+[Getting Started](https://github.com/OPEnSLab-OSU/Spool/wiki/Developers:-Getting-Started#install-spool)
 
 [Documentation](https://openslab-osu.github.io/Spool)
 

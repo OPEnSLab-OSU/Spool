@@ -70,7 +70,7 @@ class DeviceDataDatabase extends DatabaseInterface {
 		const DeviceData = await this.getCollection(device_id);
 		
 		// Determine and set the data_run (number) for the deviceData object (data)
-		tempDataRun = await tempDataRun.getDataRun(data.data.contents, DeviceData);
+		await tempDataRun.getDataRun(data.data.contents, DeviceData);
 		data.data_run = tempDataRun.dataRun;
 
 		// Update the number of data runs for the device

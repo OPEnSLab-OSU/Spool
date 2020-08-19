@@ -61,22 +61,17 @@ class DataRun {
             }
             else {
                 // If any oldSchema exists, this is not the first entry
-                console.log("Found an oldSchema for data run:", i);
                 firstEntry = false;
             }
 
             // First check if the schemas have the same number of sensors
             if (newSchema.length !== oldSchema.length) {
-                console.log("New NumElements: ", newSchema.length);
-                console.log("Old NumElements: ", oldSchema.length);
-                console.log ("Num sensors does not match schema for data_run ", i);
                 continue;
             }
             else {
                 const sameSchema = await this.compareModules(newSchema, oldSchema);
                 // If the new schema matches one prior, set the dataRun and return it
                 if (sameSchema === true) {
-                    console.log("Schemas match at dataRun ", i);
                     this.dataRun = i;
                     return this;
                 }
@@ -86,7 +81,6 @@ class DataRun {
 
         // If this is the first entry, don't change the dataRun
         if (firstEntry) {
-            console.log("This is the first data entry for this device.");
             this.num_dataRuns = 1;
             return this;
         }
@@ -122,7 +116,6 @@ class DataRun {
 
             // If schemas don't have same number of keys, they are not identical
             if (newArray.length !== oldArray.length) {
-                console.log("Modules do not have the same number of keys at ", newSchema[j].module);
                 return false
             }
 
@@ -133,9 +126,6 @@ class DataRun {
                 const oldSchemaSensor = oldArray[k];
 
                 if (newSchemaSensor !== oldSchemaSensor) {
-                    console.log("Module-key pair does not match!!!");
-                    console.log("New Sensor: ", newSchemaSensor);
-                    console.log("Old Sensor: ", oldSchemaSensor);
                     return false; //need to go to the next data run
                 }      
                 // If they are equal, check the next module-key pair
@@ -170,9 +160,11 @@ class DataRun {
         
         // Fill array with strings for each module-key pair
         let i = 0;
-        for (var key in schema[j].data) {
-            modulekey_array[i] = String(schema[j].module) + '-' + String(key);
-            i++;
+        for (let key in schema[j].data) {
+	    if (schema[j].data.hasOwnProperty(key)) {
+                 modulekey_array[i] = String(schema[j].module) + '-' + String(key);
+                 i++;
+	    }
         }
         return modulekey_array;
     }

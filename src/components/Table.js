@@ -14,7 +14,7 @@ function TableComponent(props) {
 		return <tr key={index}><RenderRow key={index} data={row}/></tr>
 	});
 	
-	return <div>
+	return <div className="pre-scrollable">
 				<table className="table table-sm table-hover">
 					<thead>
 					<tr>{header}</tr>

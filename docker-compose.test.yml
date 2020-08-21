@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+  app:
+    container_name: app
+    env_file:
+      - envdev
+    volumes:
+      - ./:/usr/src/app
+    command: node_modules/mocha/bin/mocha --exit test/api/routes/access/devices.js
+    build: ./dev/
+    depends_on:
+      - mongo
+    secrets:
+      - ca.key
+      - ca.crt
+      - server.key
+      - server.crt
+      - frontEndClientId.txt
+      - testUserPassword.txt
+      - frontEndClientSecret.txt
+  mongo:
+    image: mongo
+    logging:
+      driver: none
+    volumes:
+      - ../testdata:/data/db
+    expose:
+      - "27017"
+secrets:
+  ca.key:
+    file: ./../secrets/ca.key
+  ca.crt:
+    file: ./../secrets/ca.crt
+  server.key:
+    file: ./../secrets/server-key.pem
+  server.crt:
+    file: ./../secrets/server-crt.pem
+  frontEndClientId.txt:
+    file: ./../secrets/frontEndClientId.txt
+  frontEndClientSecret.txt:
+    file: ./../secrets/frontEndClientSecret.txt
+  testUserPassword.txt:
+    file: ./../secrets/testUserPassword.txt

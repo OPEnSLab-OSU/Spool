@@ -200,8 +200,6 @@ class DeviceDatabase extends DatabaseInterface {
 			permissions: device_permissions.permissions
 		});
 
-		console.log("Created new device: ", new_device);
-
 		const Devices = await this.getCollection();
 
 		let response = {

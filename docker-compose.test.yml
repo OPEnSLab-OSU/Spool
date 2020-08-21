@@ -6,7 +6,7 @@ services:
       - envdev
     volumes:
       - ./:/usr/src/app
-    command: node_modules/mocha/bin/mocha --exit test/api/routes/access/devices.js
+    command: node_modules/mocha/bin/mocha --exit test/api/routes/access/networks.js
     build: ./dev/
     depends_on:
       - mongo

@@ -70,12 +70,11 @@ async function getNetwork(req, res){
  */
 async function getNetworkDevices(req, res) {
     try {
-		console.log("(73) Network id: ", req.params.network_id);
-		
+
     	if (await NetworkDatabase.checkPermissions(req.params.network_id, ['view'], req.apiUser)){
     		const network = await NetworkDatabase.get(req.params.network_id);
 			const devices = await DeviceDatabase.getMany(network.devices);
-			console.log("Devices: ", devices);
+
 			res.send({devices: devices});
         }
 		else {

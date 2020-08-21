@@ -34,7 +34,6 @@ module.exports = async function getKeys() {
 
 		//check if we have keys for the client
 		if (fs.existsSync(serverKeyPath) && fs.existsSync(serverCertPath)) {
-			console.log("Loading keys from file system.");
 
 			let keys = {
 				key: fs.readFileSync(serverKeyPath, readOptions),

@@ -46,9 +46,8 @@ function normalizePort(val) {
   return false;
 }
 
-
 function startServer(keys) {
-//key is serviceKey
+  //key is serviceKey
   //cert is certificate
 
   var server = https.createServer({

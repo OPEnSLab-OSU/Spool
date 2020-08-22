@@ -6,8 +6,7 @@ var express = require('express');
 var router = express.Router();
 var secured = require('../../lib/middleware/secured');
 var wrapAsync = require('../../lib/middleware/asyncWrap');
-const VisualizationDatabase = require('../../database/models/visualization');
-
+const {VisualizationDatabase, DeviceDatabase} = require('../../database/models');
 
 /**
  * API Endpoint to create a new visualization object for the passed device.
@@ -44,12 +43,19 @@ router.post('/new', wrapAsync(async (req, res) => {
 	const device_id = req.body.device_id;
 
 	try {
-		const _ = await VisualizationDatabase.create(visualizationData, device_id, req.apiUser);
-		res.sendStatus(200);
+		if	(await DeviceDatabase.checkPermissions(device_id, ['edit'], req.apiKey)) {
+
+			const _ = await VisualizationDatabase.create(visualizationData, device_id, req.apiUser);
+			res.sendStatus(200);
+        }
+        else {
+			res.sendStatus(404);
+        }
+
 	}
 	catch(error) {
 		console.log(error);
-		res.sendStatus(401);
+		res.sendStatus(404);
 	}
 }));
 
@@ -77,13 +83,19 @@ router.get('/:device_id', secured, wrapAsync(async (req, res) => {
 	const device_id = req.params.device_id;
 
 	try {
-		const visualizations = await VisualizationDatabase.getByDevice(device_id, req.apiUser);
-		res.send(visualizations);
+		if (await DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+			const visualizations = await VisualizationDatabase.getByDevice(device_id, req.apiUser);
+			res.send(visualizations);
+		}
+		else {
+			res.sendStatus(404);
+		}
+
 	}
 	catch (error) {
-		res.sendStatus(401);
+		console.error(error);
+		res.sendStatus(404);
 	}
-
 }));
 
 /**
@@ -104,8 +116,14 @@ router.post('/update/', secured, wrapAsync(async (req, res) => {
 	const visualization_id = req.body.visualization_id;
 
 	try {
-		await VisualizationDatabase.update(visualization_id, req.body);
-		res.sendStatus(200);
+		if (await VisualizationDatabase.checkPermissions(visualization_id, ['edit'], req.apiUser)) {
+			await VisualizationDatabase.update(visualization_id, req.body);
+			res.sendStatus(200);
+		}
+		else {
+			res.send(404);
+		}
+
 	}
 	catch(error) {
 		res.sendStatus(401);
@@ -144,8 +162,13 @@ router.post('/delete/', secured, wrapAsync(async (req, res) => {
 	const visualization_id = req.body.visualization_id;
 
 	try {
-		VisualizationDatabase.del(visualization_id, req.apiUser);
-		res.sendStatus(200);
+		if (await VisualizationDatabase.checkPermissions(visualization_id, ['edit'], req.apiUser)) {
+			VisualizationDatabase.del(visualization_id, req.apiUser);
+			res.sendStatus(200);
+		}
+		else {
+			res.sendStatus(404);
+		}
 	}
 	catch(error) {
 		res.sendStatus(401);

@@ -125,8 +125,11 @@ class DatabaseInterface {
      * @param {Object} user - the user to check permissions for
      * @returns {Promise.<boolean>}
      */
-	static async checkPermissions(id, permission_names, user) {
-		const object = await this.get(id);
+	static async checkPermissions(id, permission_names, user, object=null) {
+
+		if (object === null) {
+			object = await this.get(id);
+		}
 
 		const permissions = new Permissions(object.permissions);
 
@@ -164,12 +167,6 @@ class DatabaseInterface {
 	static async get(id){};
 
 	static async update(id, update){};
-
-	static async asUser(id, user, fn) {
-		const owns = await this.checkOwnership(id, user);
-		
-		return fn;
-	}
 
 	static validateObjectIdHex(id){
 		return id.match(/^[0-9a-fA-F]{24}$/);

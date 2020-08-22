@@ -59,7 +59,7 @@ async function deleteDevice(req, res) {
 	try {
 		let device = await DeviceDatabase.get(req.body.device_id);
 
-		if (await NetworkDatabase.checkPermissions(device.network, ['edit'], req.apiUser)){
+		if (await DeviceDatabase.checkPermissions(req.body.device_id, ['edit'], req.apiUser)){
 
 			await DeviceDatabase.del(req.body.device_id);
 			await NetworkDatabase.removeDevice(device.network, req.body.device_id);
@@ -96,7 +96,7 @@ async function createDevice(req, res) {
 
 		const newDeviceInfo = await DeviceDatabase.create(req.body.name, coordinator_id, req.apiUser, req.body.network_id);
 
-		NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
+		await NetworkDatabase.addDevice(req.body.network_id, newDeviceInfo.device_id);
 
 		res.send(newDeviceInfo);
 	}
@@ -113,10 +113,9 @@ async function createDevice(req, res) {
  */
 async function getDeviceData(req, res) {
 	const device_id = req.params.device;
-	let device = await DeviceDatabase.get(device_id);
 	try {
-		if (await NetworkDatabase.checkPermissions(device.network, ['view'], req.apiUser)) {
-			const datas = await DeviceDataDatabase.getByDevice(device_id, req.apiUser);
+		if (await DeviceDatabase.checkPermissions(device_id, ['view'], req.apiUser)) {
+			const datas = await DeviceDataDatabase.getByDevice(device_id);
 			res.send({data: datas});
 		}
 		else {

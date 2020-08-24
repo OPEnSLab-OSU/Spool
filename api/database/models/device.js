@@ -53,13 +53,11 @@ class DeviceDatabase extends DatabaseInterface {
      */
 	static async checkPermissions(id, permission_names, user) {
 		const device = await this.get(id);
-
 		const network_id = device.network;
 
 		const Networks = await super.getCollection("Networks");
-		const networks = await Networks.find({_id: network_id}).toArray();
+		const networks = await Networks.find({_id: new ObjectID(network_id)}).toArray();
 		const network = networks[0];
-
 		return super.checkPermissions(null, permission_names, user, network);
 	}
 

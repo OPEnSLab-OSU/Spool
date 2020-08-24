@@ -24,13 +24,14 @@ module.exports = function() {
 			//we don't have this user in our system yet
 			//create a new user that doesn't own any devices
 
-			req.apiUser = await Users.insertOne({
+			req.apiUser = (await Users.insertOne({
 								auth0_id: auth0_id,
 								devices: [],
 								role: "user"
 							}).catch((err) => {
 								throw err;
-							});
+							})).ops[0];
+
 			next();
 		}
 	})

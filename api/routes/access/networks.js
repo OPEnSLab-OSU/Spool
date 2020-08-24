@@ -30,7 +30,7 @@ const {createNetwork, getNetwork, getNetworks, deleteNetwork, addNetworkDevice, 
  *                                 type: string
  *                                 description: The name of the new network
  *                         example:
- *                             device_id: 'my network'
+ *                             name: 'my network'
  *
  */
 router.post("/new/", secured, wrapAsync(createNetwork));

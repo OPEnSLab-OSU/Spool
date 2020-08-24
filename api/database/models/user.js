@@ -1,6 +1,7 @@
 /**
  * Created by eliwinkelman on 9/20/19.
  */
+
 const AuthenticationClient = require('auth0').AuthenticationClient;
 const { DatabaseInterface } = require('../db');
 const ManagementClient = require('auth0').ManagementClient;

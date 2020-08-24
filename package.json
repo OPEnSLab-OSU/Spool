@@ -23,6 +23,7 @@
         "http-errors": "^1.8.0",
         "jsdoc": "^3.6.4",
         "jwks-rsa": "^1.8.1",
+        "mocha": "^8.1.1",
         "mongodb": "^3.5.9",
         "morgan": "^1.10.0",
         "node-openssl-cert": "^0.1.10",
@@ -63,5 +64,8 @@
             "last 1 safari version"
         ]
     },
-    "proxy": "https://localhost:3000"
+    "proxy": "https://localhost:3000",
+    "devDependencies": {
+        "supertest": "^4.0.2"
+    }
 }

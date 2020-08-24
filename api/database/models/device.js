@@ -208,8 +208,6 @@ class DeviceDatabase extends DatabaseInterface {
 			num_dataRuns: 0
 		});
 
-		console.log("Created new device: ", new_device);
-
 		const Devices = await this.getCollection();
 
 		let response = {
@@ -240,7 +238,13 @@ class DeviceDatabase extends DatabaseInterface {
 
 		//add device to user array
 		const Users = await super.getCollection("Users");
-		user.devices.push(device_id.toString());
+
+		if (Array.isArray(user.devices)) {
+			user.devices.push(device_id.toString());
+		}
+		else {
+			user.devices = [device_id.toString()]
+		}
 
 		let userUpdate = Users.updateOne({_id: new ObjectID(user._id)}, {$set: {devices: user.devices}}).catch(err => {
 			throw err

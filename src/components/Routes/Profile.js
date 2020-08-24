@@ -7,7 +7,7 @@
 import React, {useState} from "react";
 import { resetPassword, searchUsers } from '../../api';
 import { useAuth0 } from "../../react-auth0-wrapper";
-import { Button } from 'react-bootstrap'
+import { Button, Col, Row, Container, Figure } from 'react-bootstrap'
 
 const Profile = () => {
 	const { loading, user, getTokenSilently} = useAuth0();
@@ -24,17 +24,26 @@ const Profile = () => {
 
 
 	return (
-		<>
-		<img src={user.picture} alt="Profile" />
+		<Container fluid={true}>
+			<Row>
+				<Col sm={{span: 6, offset: 3}} className="text-center">
 
-		<h2>{user.name}</h2>
-		<p>{user.email}</p>
-		<code>{JSON.stringify(user, null, 2)}</code>
-		<br />
-		<Button onClick={onClickPasswordReset}>Reset Password</Button>
+					<Figure>
+					  <Figure.Image
+						width={180}
+						thumbnail src={user.picture} alt="Profile"
+					  />
+					</Figure>
 
-		<br />
-		</>
+					<h2>{user.nickname}</h2>
+					<p>{user.email}</p>
+					<br />
+					<Button onClick={onClickPasswordReset}>Reset Password</Button>
+
+					<br />
+				</Col>
+			</Row>
+		</Container>
 	);
 };
 

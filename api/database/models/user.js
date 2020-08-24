@@ -128,7 +128,14 @@ class Auth0UserManager extends DatabaseInterface {
         const Users = await this.getCollection();
         const users = await Users.find({auth0_id: auth0_id}).toArray();
 
-        return users[0];
+        // if the user exists, return, otherwise create and try again
+        if (Array.isArray(users) && users.length !== 0) {
+            return users[0];
+        }
+        else {
+            await this.create(auth0_id);
+            return await this.getByAuth0Id(auth0_id);
+        }
     }
 
     /**

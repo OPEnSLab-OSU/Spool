@@ -17,7 +17,10 @@ services:
       - server.crt
       - frontEndClientId.txt
       - testUserPassword.txt
+      - testUserPassword2.txt
       - frontEndClientSecret.txt
+      - clientId.txt
+      - clientSecret.txt
   mongo:
     image: mongo
     logging:
@@ -41,3 +44,9 @@ secrets:
     file: ./../secrets/frontEndClientSecret.txt
   testUserPassword.txt:
     file: ./../secrets/testUserPassword.txt
+  testUserPassword2.txt:
+    file: ./../secrets/testUserPassword2.txt
+  clientId.txt:
+    file: ./../secrets/clientId.txt
+  clientSecret.txt:
+    file: ./../secrets/clientSecret.txt

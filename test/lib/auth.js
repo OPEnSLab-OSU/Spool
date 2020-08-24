@@ -20,26 +20,17 @@ const clientSecret = fs.readFileSync(clientSecretPath, readOptions);
 const testUserPasswordPath = "/run/secrets/testUserPassword.txt";
 const testUserPassword = fs.readFileSync(testUserPasswordPath, readOptions);
 
-const options = { method: 'POST',
-  url: 'https://' + process.env.AUTH0_DOMAIN + '/oauth/token',
-  headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  form:
-   { grant_type: 'password',
-     username: process.env.AUTH0_TEST_USERNAME,
-     password: testUserPassword,
-     audience: process.env.AUTH0_AUDIENCE,
-     client_id: clientId,
-     client_secret: clientSecret }
-   };
+const testUserPasswordPath2 = "/run/secrets/testUserPassword2.txt";
+const testUserPassword2 = fs.readFileSync(testUserPasswordPath2, readOptions);
 
 
-async function getAccessToken() {
+async function getAccessToken(firstUser=true) {
 
     const response = await request.post('https://' + process.env.AUTH0_DOMAIN + '/oauth/token')
         .type('form')
         .send({ grant_type: 'password',
-                 username: process.env.AUTH0_TEST_USERNAME,
-                 password: testUserPassword,
+                 username: firstUser ? process.env.AUTH0_TEST_USERNAME : process.env.AUTH0_TEST_USERNAME_2,
+                 password: firstUser ? testUserPassword : testUserPassword2,
                  audience: process.env.AUTH0_AUDIENCE,
                  client_id: clientId,
                  client_secret: clientSecret

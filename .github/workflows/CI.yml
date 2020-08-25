@@ -3,6 +3,11 @@ name: CD
 on:
   push
 
+defaults:
+  run:
+    shell: bash
+    working-directory: ${{ github.workspace }}
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,9 +18,9 @@ jobs:
             curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
       
       - name: Test
-        run: echo $(ls)
-        shell: bash
-
-      - name: Test
-        run: echo $(pwd)
-        shell: bash
+        run: |
+          echo $(pwd)
+          cd app
+          echo $(pwd)
+          cd secrets
+          echo $(pwd)

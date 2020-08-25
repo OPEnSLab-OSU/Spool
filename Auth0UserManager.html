@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>DatabaseInterface - Documentation</title>
+    <title>Auth0UserManager - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">DatabaseInterface</h1>
+    <h1 class="page-title">Auth0UserManager</h1>
     
 
     
@@ -45,9 +45,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-database.html">database</a>~</span>
-        
-        DatabaseInterface
+        Auth0UserManager
         </h2>
         
     
@@ -59,12 +57,21 @@
         
             
 
+    
+
+    <h4 class="name" id="Auth0UserManager"><span class="type-signature"></span>new Auth0UserManager<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line45">line 45</a>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -78,6 +85,13 @@
 
     
 
+    
+    <dt class="implements">Implements:</dt>
+    <dd class="implements"><ul>
+        
+            <li>DatabaseInterface</li>
+        
+    </ul></dd>
     
 
     
@@ -102,11 +116,34 @@
 
 
 
-            
-                <div class="description usertext">Defines an interface for database management classes to implement/inherit from.</div>
-            
 
-            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         </div>
     
@@ -133,7 +170,7 @@
 
     
 
-    <h4 class="name" id=".addPermissions"><span class="type-signature">(async, static) </span>addPermissions<span class="signature">(id, permission_names, otherUserId, user, checkPermissions)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    <h4 class="name" id=".addNetworkToUser"><span class="type-signature">(async, static) </span>addNetworkToUser<span class="signature">(id, network_id)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
 
     
 
@@ -145,7 +182,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line82">line 82</a>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -185,277 +222,7 @@
 
 
 <div class="description usertext">
-    Adds a list of permissions to a user, possibly checking the permissions of the requesting user to do so
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the id of the object to change permissions for</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>permission_names</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">an array of permission names to add to the user</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>otherUserId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the id of the user to add the permissions for</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>user</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the user requesting the permissions be added (for checking their permissions)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>checkPermissions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    <code>true</code>
-                
-                </td>
-            
-
-            <td class="description last">a boolean describing whether the permissions of user allow them to add permissions. Defaults to true.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise.&lt;void></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".checkPermissions"><span class="type-signature">(async, static) </span>checkPermissions<span class="signature">(id, permission_names, user)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line128">line 128</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    Checks if a user has a set of permissions to an object in the database.
+    Adds a network to a user.
 </div>
 
 
@@ -498,33 +265,23 @@
 
             <td class="type">
             
-                
-<span class="param-type">string</span>
-
-
-            
             </td>
 
             
 
             
 
-            <td class="description last">the database id of the object to check permissions for</td>
+            <td class="description last">the id of the user.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>permission_names</code></td>
+                <td class="name"><code>network_id</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
             
             </td>
 
@@ -532,30 +289,7 @@
 
             
 
-            <td class="description last">An array of permission names to look for</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>user</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the user to check permissions for</td>
+            <td class="description last">the id of the network.</td>
         </tr>
 
     
@@ -603,7 +337,7 @@
 
     
 
-    <h4 class="name" id=".getCollection"><span class="type-signature">(async, static) </span>getCollection<span class="signature">(name)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id=".create"><span class="type-signature">(async, static) </span>create<span class="signature">(auth0_id)</span><span class="type-signature"> &rarr; {Promise.&lt;(ObjectId|*)>}</span></h4>
 
     
 
@@ -615,7 +349,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line67">line 67</a>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line108">line 108</a>
     </li></ul></dd>
     
 
@@ -655,7 +389,7 @@
 
 
 <div class="description usertext">
-    Get a collection from the Loom database. Override this method in children classes to retrieve the specific collection(s) they operate on.
+    Creates a user in the database for the specified auth0 id.
 </div>
 
 
@@ -693,15 +427,10 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>auth0_id</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
             
             </td>
 
@@ -709,7 +438,7 @@
 
             
 
-            <td class="description last">The name of the collection.</td>
+            <td class="description last">the auth0 id to make a user for.</td>
         </tr>
 
     
@@ -742,7 +471,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">Promise.&lt;(ObjectId|*)></span>
 
 
     </dd>
@@ -757,7 +486,7 @@
 
     
 
-    <h4 class="name" id=".getDatabase"><span class="type-signature">(async, static) </span>getDatabase<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id=".get"><span class="type-signature">(async, static) </span>get<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
 
     
 
@@ -769,7 +498,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line56">line 56</a>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -809,112 +538,7 @@
 
 
 <div class="description usertext">
-    Retrieves the Loom database to work with.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".hasAnyPermissions"><span class="type-signature">(async, static) </span>hasAnyPermissions<span class="signature">(id, user_id)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line151">line 151</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    Checks if a user has any permissions to an object in the database.
+    Gets the user with id.
 </div>
 
 
@@ -968,20 +592,155 @@
 
             
 
-            <td class="description last">the id of the object in the database</td>
+            <td class="description last">The id of the user (this is the id in the Spool database, not the auth0 id).</td>
         </tr>
 
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A user object from the MongoDB.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getAuth0User"><span class="type-signature">(async, static) </span>getAuth0User<span class="signature">(user)</span><span class="type-signature"> &rarr; {Promise.&lt;{Object}>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line161">line 161</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Gets the auth0 user object (in the auth0 database) tied to a user.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>user_id</code></td>
+                <td class="name"><code>user</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
             
@@ -991,7 +750,436 @@
 
             
 
-            <td class="description last">the id of the user to check has permissions</td>
+            <td class="description last">the user to get the auth0 user for.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The auth0 user object
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;{Object}></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getByAuth0Id"><span class="type-signature">(async, static) </span>getByAuth0Id<span class="signature">(auth0_id)</span><span class="type-signature"> &rarr; {Promise.&lt;*>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line127">line 127</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Gets a user from the database by their auth0 id.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>auth0_id</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the auth0 id of the user to get.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;*></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".getCollection"><span class="type-signature">(async, static) </span>getCollection<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Helper function to get the collection of users.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The MongoDB collection for users.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".removeNetworkFromUser"><span class="type-signature">(async, static) </span>removeNetworkFromUser<span class="signature">(id, network_id)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line94">line 94</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Removes a network from a user.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the id of the user.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>network_id</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the id of the network.</td>
         </tr>
 
     
@@ -1039,7 +1227,7 @@
 
     
 
-    <h4 class="name" id=".removePermissions"><span class="type-signature">(async, static) </span>removePermissions<span class="signature">(id, permission_names, otherUserId, user, checkPermissions)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    <h4 class="name" id=".resetUserPassword"><span class="type-signature">(async, static) </span>resetUserPassword<span class="signature">(user)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
 
     
 
@@ -1051,7 +1239,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="database_db.js.html">database/db.js</a>, <a href="database_db.js.html#line106">line 106</a>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line146">line 146</a>
     </li></ul></dd>
     
 
@@ -1091,7 +1279,7 @@
 
 
 <div class="description usertext">
-    Removes a list of permissions from a user, possibly checking the permissions of the requesting user to do so
+    Sends a password reset email for user.
 </div>
 
 
@@ -1119,8 +1307,6 @@
         
 
         
-        <th>Default</th>
-        
 
         <th class="last">Description</th>
     </tr>
@@ -1131,137 +1317,18 @@
 
         <tr>
             
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the id of the object to change permissions for</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>permission_names</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;string></span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">an array of permission names to remove from the user</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>otherUserId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the id of the user to remove the permissions from</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>user</code></td>
             
 
             <td class="type">
             
-                
-<span class="param-type">Object</span>
-
-
-            
             </td>
 
             
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last">the user requesting the permissions be removed (for checking their permissions)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>checkPermissions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">bool</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    <code>true</code>
-                
-                </td>
-            
-
-            <td class="description last">a boolean describing whether the permissions of user allow them to remove permissions. Defaults to true.</td>
+            <td class="description last">the user to send the password reset email for.</td>
         </tr>
 
     
@@ -1295,6 +1362,341 @@
     <dd>
         
 <span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".searchAuth0Users"><span class="type-signature">(async, static) </span>searchAuth0Users<span class="signature">(search)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;Object>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Searches all the auth0 users with access to this application.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>search</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a search query. See https://auth0.com/docs/users/user-search/user-search-query-syntax for the query syntax</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    an array of user objects with only their email, username, and id.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;Object>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".update"><span class="type-signature">(async, static) </span>update<span class="signature">(id, update)</span><span class="type-signature"> &rarr; {Promise.&lt;boolean>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="database_models_user.js.html">database/models/user.js</a>, <a href="database_models_user.js.html#line68">line 68</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Updates a user object.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the id of the user to update.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>update</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">an update object (see mongodb documentation for examples).</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;boolean></span>
 
 
     </dd>

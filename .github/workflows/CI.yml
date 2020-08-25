@@ -13,5 +13,9 @@ jobs:
             curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
       
       - name: Test
-        run: 'ls'
+        run: echo $(ls)
+        shell: bash
+
+      - name: Test
+        run: echo $(pwd)
         shell: bash

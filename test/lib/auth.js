@@ -6,6 +6,7 @@ const Authenticator = require('auth0').AuthenticationClient;
 const dotenv = require('dotenv');
 const fs = require('fs');
 const request = require('superagent');
+const jwt = require('jsonwebtoken');
 
 const readOptions = {
 	encoding: "utf8"
@@ -24,9 +25,10 @@ const testUserPasswordPath2 = "/run/secrets/testUserPassword2.txt";
 const testUserPassword2 = fs.readFileSync(testUserPasswordPath2, readOptions);
 
 
-async function getAccessToken(firstUser=true) {
+async function getAccessToken(accessToken, firstUser=true) {
 
-    const response = await request.post('https://' + process.env.AUTH0_DOMAIN + '/oauth/token')
+    if (accessToken == null || Date.now() >= (jwt.decode(accessToken).exp - 10) * 1000) {
+        const response = await request.post('https://' + process.env.AUTH0_DOMAIN + '/oauth/token')
         .type('form')
         .send({ grant_type: 'password',
                  username: firstUser ? process.env.AUTH0_TEST_USERNAME : process.env.AUTH0_TEST_USERNAME_2,
@@ -37,7 +39,9 @@ async function getAccessToken(firstUser=true) {
                 });
 
 
-    return response.body.access_token;
+        return response.body.access_token;
+    }
+    return accessToken;
 }
 
 module.exports = getAccessToken;

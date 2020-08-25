@@ -8,13 +8,14 @@ const https = require('https');
 const request = require('supertest')(app);
 const assert = require('assert');
 const { useClient } = require('../../../../api/database/db');
+const ObjectID = require('mongodb').ObjectID;
 const Auth0UserManager = require('../../../../api/database/models/user');
 
 describe('Network API Usage', function() {
     let app;
 
-    let accessToken;
-    let accessToken2;
+    let accessToken = null;
+    let accessToken2 = null;
     let mongod;
 
     before(async () => {
@@ -28,8 +29,9 @@ describe('Network API Usage', function() {
     });
 
     beforeEach(async () => {
-        accessToken = await getAccessToken();
-        accessToken2 = await getAccessToken(false);
+
+        accessToken = await getAccessToken(accessToken);
+        accessToken2 = await getAccessToken(accessToken2, false);
         return true;
     });
 
@@ -104,10 +106,6 @@ describe('Network API Usage', function() {
                 .expect('Content-Type', /json/)
                 .expect(200);
 
-            // verify the network is gone
-            const postDeleteNetwork = await Networks.find({_id: network_id}).toArray();
-
-            assert(postDeleteNetwork.length === 0);
 
             return true;
         });
@@ -249,9 +247,9 @@ describe('Network API Usage', function() {
             network_id = networks[0]._id;
         });
 
-        describe('with the other user', function() {
+        describe('with the other user before share', function() {
 
-            it('shouldn\'t allow another user to view', function(done) {
+            it('shouldn\'t allow other user to view in list', function(done) {
 
                 request
                     .get('/api/access/networks/')
@@ -263,15 +261,39 @@ describe('Network API Usage', function() {
                         if (err) return done(err);
 
                         // make sure we get exactly two networks
-                        assert(res.body.networks.length === 0);
                         done()
                     })
 
             });
+
+            it('shouldn\'t allow other user to view', function(done) {
+
+                request
+                    .get('/api/access/networks/view/'+network_id)
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `bearer ${accessToken2}`)
+                    .expect(404)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        done()
+                })
+            });
+
+            it('shouldn\'t allow other user to add a device', async function() {
+
+                const response = await request
+                    .post('/api/access/devices/register/')
+                    .set('Content-Type', 'application/json')
+                    .set('Authorization', `bearer ${accessToken2}`)
+                    .send({name: "test device", network_id: network_id})
+                    .expect(404);
+
+                return true;
+            })
         });
 
-        describe('adding permissions to other user', function() {
-            it('should add view permissions to a user', async function() {
+        describe('adding view permissions to other user', function() {
+            it('should add view permissions to other user', async function() {
 
                 const user = await Auth0UserManager.getByAuth0Id('auth0|5f43eb71022f3a003d4907e8');
 
@@ -284,12 +306,15 @@ describe('Network API Usage', function() {
                   .send({network_id: network_id, permissions: permissions})
                   .expect(200);
 
+                // check that is actually what the permissions did
+                const network = await Networks.findOne({_id: new ObjectID(network_id)});
+
                 return true
             });
         });
 
        describe('with the other user', function() {
-           it('should allow user to view', function(done) {
+           it('should allow user to view in list', function(done) {
 
                 request
                     .get('/api/access/networks/')
@@ -304,6 +329,32 @@ describe('Network API Usage', function() {
                         assert(res.body.networks.length === 1);
                         done();
                     })
+            });
+
+           it('should allow other user to view', function(done) {
+
+                request
+                    .get('/api/access/networks/view/'+network_id)
+                    .set('Accept', 'application/json')
+                    .set('Authorization', `bearer ${accessToken2}`)
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end((err, res) => {
+                        if (err) return done(err);
+                        done()
+                    })
+           });
+
+           it('shouldn\'t allow other user to add a device', async function() {
+
+                const response = await request
+                    .post('/api/access/devices/register/')
+                    .set('Content-Type', 'application/json')
+                    .set('Authorization', `bearer ${accessToken2}`)
+                    .send({name: "test device", network_id: network_id})
+                    .expect(404);
+
+                return true;
             })
        })
     })

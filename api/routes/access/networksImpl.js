@@ -54,11 +54,11 @@ async function getNetwork(req, res){
 			res.send(result);
         }
 		else {
-    		res.sendStatus(401);
+    		res.sendStatus(404);
 		}
 	}
 	catch(error) {
-		res.sendStatus(401);
+		res.sendStatus(500);
 		console.log(error);
 	}
 }

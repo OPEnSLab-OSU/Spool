@@ -70,14 +70,23 @@ class DatabaseInterface {
 		return collection;
 	}
 
-	static async addPermissions(id, permission_names, otherUser, user) {
+    /**
+	 * Adds a list of permissions to a user, possibly checking the permissions of the requesting user to do so
+     * @param {string} id - the id of the object to change permissions for
+     * @param {[string]} permission_names - an array of permission names to add to the user
+     * @param {string} otherUserId - the id of the user to add the permissions for
+     * @param {Object} user - the user requesting the permissions be added (for checking their permissions)
+     * @param {bool} checkPermissions - a boolean describing whether the permissions of user allow them to add permissions. Defaults to true.
+     * @returns {Promise.<void>}
+     */
+	static async addPermissions(id, permission_names, otherUserId, user, checkPermissions = true) {
 		const object = await this.get(id);
 
 		const permissions = new Permissions(object.permissions);
 
-		if (permissions.check('edit', user._id)){
-			for (let permission in permission_names) {
-				permissions.add(permission, otherUser);
+		if (!checkPermissions || permissions.check('edit', user._id)){
+			for (let permission of permission_names) {
+				permissions.add(permission, otherUserId);
 			}
 		}
 
@@ -85,14 +94,23 @@ class DatabaseInterface {
 		await this.update(id, {$set: {permissions: permissions.permissions}});
 	}
 
-	static async removePermissions(id, permission_names, otherUser, user) {
+    /**
+	 * Removes a list of permissions from a user, possibly checking the permissions of the requesting user to do so
+     * @param {string} id - the id of the object to change permissions for
+     * @param {[string]} permission_names - an array of permission names to remove from the user
+     * @param {string} otherUserId - the id of the user to remove the permissions from
+     * @param {Object} user - the user requesting the permissions be removed (for checking their permissions)
+     * @param {bool} checkPermissions - a boolean describing whether the permissions of user allow them to remove permissions. Defaults to true.
+     * @returns {Promise.<void>}
+     */
+	static async removePermissions(id, permission_names, otherUserId, user, checkPermissions = true) {
 		const object = await this.get(id);
 
 		const permissions = new Permissions(object.permissions);
 
-		if (permissions.check('edit', user._id)){
-			for (let permission in permission_names) {
-				permissions.remove(permission, otherUser);
+		if (!checkPermissions || permissions.check('edit', user._id)){
+			for (let permission of permission_names) {
+				permissions.remove(permission, otherUserId);
 			}
 		}
 
@@ -100,8 +118,18 @@ class DatabaseInterface {
 		await this.update(id, {$set: {permissions: permissions.permissions}});
 	}
 
-	static async checkPermissions(id, permission_names, user) {
-		const object = await this.get(id);
+    /**
+	 * Checks if a user has a set of permissions to an object in the database.
+     * @param {string} id - the database id of the object to check permissions for
+     * @param {[string]} permission_names - An array of permission names to look for
+     * @param {Object} user - the user to check permissions for
+     * @returns {Promise.<boolean>}
+     */
+	static async checkPermissions(id, permission_names, user, object=null) {
+
+		if (object === null) {
+			object = await this.get(id);
+		}
 
 		const permissions = new Permissions(object.permissions);
 
@@ -112,6 +140,20 @@ class DatabaseInterface {
 			}
 		}
 		return true;
+	}
+
+    /**
+	 * Checks if a user has any permissions to an object in the database.
+     * @param {string} id - the id of the object in the database
+     * @param {string} user_id - the id of the user to check has permissions
+     * @returns {Promise.<boolean>}
+     */
+	static async hasAnyPermissions(id, user_id) {
+		const object = await this.get(id);
+
+		const permissions = new Permissions(object.permissions);
+
+		return permissions.has_permissions(user_id);
 	}
 
 	static async owns(id, user) {
@@ -125,12 +167,6 @@ class DatabaseInterface {
 	static async get(id){};
 
 	static async update(id, update){};
-
-	static async asUser(id, user, fn) {
-		const owns = await this.checkOwnership(id, user);
-		
-		return fn;
-	}
 
 	static validateObjectIdHex(id){
 		return id.match(/^[0-9a-fA-F]{24}$/);

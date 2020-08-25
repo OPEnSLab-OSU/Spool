@@ -15,6 +15,8 @@ services:
       - server.key
       - server.crt
       - mongopass.txt
+      - clientId.txt
+      - clientSecret.txt
 secrets:
   ca.key:
     file: ./../secrets/ca.key
@@ -26,3 +28,7 @@ secrets:
     file: ./../secrets/server-crt.pem
   mongopass.txt:
     file: ./../secrets/mongopass.txt
+  clientId.txt:
+    file: ./../secrets/clientId.txt
+  clientSecret.txt:
+    file: ./../secrets/clientSecret.txt

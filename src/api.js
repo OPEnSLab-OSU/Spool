@@ -2,6 +2,111 @@
  * Created by eliwinkelman on 9/6/19.
  */
 
+export async function getMyUserId(getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+
+		const response = await fetch("/api/access/user/my-id/", {
+			mode: 'cors',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		const user_id = await response.json();
+
+		callback(user_id);
+	}
+	catch(error) {
+		console.error(error);
+	}
+}
+
+export async function updateNetworkPermissions(network_id, permissions, getTokenSilently, callback) {
+
+	try {
+
+		const token = await getTokenSilently();
+		const response = await fetch("/api/access/networks/permissions", {
+			mode: 'cors',
+			credentials: 'omit',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({network_id: network_id, permissions: permissions}),
+			method: 'POST',
+		});
+
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export async function resetPassword(getTokenSilently, callback) {
+	try {
+
+		const token = await getTokenSilently();
+		const response = await fetch("/api/access/user/reset-password", {
+			mode: 'cors',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			method: 'POST',
+		});
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+export async function getUserInfo(users, getTokenSilently, callback) {
+	let user_info = {};
+	for (let user of users) {
+		try {
+			const token = await getTokenSilently();
+
+			const response = await fetch("/api/access/user/info/"+user, {
+				mode: 'cors',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+
+			user_info[user] = await response.json();
+		}
+		catch(error) {
+			console.error(error);
+		}
+	}
+
+	callback(user_info)
+}
+
+export async function searchUsers(query, getTokenSilently, callback) {
+	try {
+		const token = await getTokenSilently();
+		if (query === "") {
+			callback([])
+		}
+		else {
+			const response = await fetch("/api/access/user/search/"+query+'*', {
+				mode: 'cors',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			});
+			const responseData = await response.json();
+			callback(responseData)
+		}
+
+	} catch (error) {
+		console.error(error);
+	}
+}
+
 export async function accessDevices(getTokenSilently, callback) {
 	try {
 

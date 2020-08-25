@@ -3,9 +3,6 @@
  */
 
 const fs = require('fs');
-const caPath = './api/temp/ca';
-const keyPath = '.key';
-const certificatePath = '.crt';
 const pem = require('pem');
 
 const readOptions = {

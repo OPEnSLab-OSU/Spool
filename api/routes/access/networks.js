@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const secured = require('../../lib/middleware/secured');
 const {wrapAsync}  = require('../../lib/middleware/middleware');
-const {createNetwork, getNetwork, getNetworks, deleteNetwork, addNetworkDevice, removeNetworkDevice, getNetworkDevices} = require('./networksImpl');
+const {createNetwork, getNetwork, getNetworks, deleteNetwork, addNetworkDevice, removeNetworkDevice, getNetworkDevices, updateNetworkPermissions} = require('./networksImpl');
 
 /**
  * @swagger
@@ -159,5 +159,7 @@ router.post("/remove_device/", secured, wrapAsync(removeNetworkDevice));
  *                                  description: The id of the network.
  */
 router.post("/delete/", secured, wrapAsync(deleteNetwork));
+
+router.post("/permissions/", secured, wrapAsync(updateNetworkPermissions));
 
 module.exports = router;

@@ -9,7 +9,7 @@ import {withRouter} from 'react-router-dom'
 import {deleteDevice} from '../api';
 
 function DeviceDetails(props) {
-	const {getTokenSilently} = useAuth0();
+	const {getTokenSilently, user} = useAuth0();
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 	const handleClose = () => setShowDeleteConfirm(false);
@@ -18,6 +18,7 @@ function DeviceDetails(props) {
 	const onConfirmDelete = () => {
 		deleteDevice(props.device.device_id, getTokenSilently, () => {props.history.push('/u/');})
 	};
+
 	console.log(props.device);
 	return (
 		<Row>

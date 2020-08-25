@@ -1,8 +1,11 @@
 const RegisterDeviceSchema = {
 	type: 'object',
-	required: ['name'],
+	required: ['name', 'network_id'],
 	properties: {
 		name: {
+			type: 'string'
+		},
+		network_id: {
 			type: 'string'
 		}
 	}

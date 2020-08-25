@@ -4,11 +4,13 @@
 
 // src/components/Profile.js
 
-import React from "react";
+import React, {useState} from "react";
+import { resetPassword, searchUsers } from '../../api';
 import { useAuth0 } from "../../react-auth0-wrapper";
+import { Button, Col, Row, Container, Figure } from 'react-bootstrap'
 
 const Profile = () => {
-	const { loading, user } = useAuth0();
+	const { loading, user, getTokenSilently} = useAuth0();
 
 	if (loading || !user) {
 		return (
@@ -16,14 +18,32 @@ const Profile = () => {
 		);
 	}
 
-	return (
-		<>
-		<img src={user.picture} alt="Profile" />
+	function onClickPasswordReset() {
+		resetPassword(getTokenSilently);
+	}
 
-		<h2>{user.name}</h2>
-		<p>{user.email}</p>
-		<code>{JSON.stringify(user, null, 2)}</code>
-		</>
+
+	return (
+		<Container fluid={true}>
+			<Row>
+				<Col sm={{span: 6, offset: 3}} className="text-center">
+
+					<Figure>
+					  <Figure.Image
+						width={180}
+						thumbnail src={user.picture} alt="Profile"
+					  />
+					</Figure>
+
+					<h2>{user.nickname}</h2>
+					<p>{user.email}</p>
+					<br />
+					<Button onClick={onClickPasswordReset}>Reset Password</Button>
+
+					<br />
+				</Col>
+			</Row>
+		</Container>
 	);
 };
 

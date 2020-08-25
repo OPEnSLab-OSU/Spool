@@ -9,9 +9,10 @@
 import React, { useState, useEffect }from 'react'
 import { useAuth0 } from "../../react-auth0-wrapper";
 import { Link } from "react-router-dom";
-import { accessNetworkDevices, accessNetwork } from '../../api';
+import { accessNetworkDevices, accessNetwork, getMyUserId } from '../../api';
 import { Table, Container, Col, Row, Button } from 'react-bootstrap'
 import NetworkDetails from '../NetworkDetails';
+import AddUserPermissionsModal from '../AddUserPermissions';
 
 const Network = (props) => {
 	const [showDevices, setShowDevices] = useState(false);
@@ -19,6 +20,7 @@ const Network = (props) => {
 	const [devices, setDevices] = useState([]);
 	const [network, setNetwork] = useState({});
 	const {getTokenSilently} = useAuth0();
+	const [myId, setMyId] = useState(null);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -32,9 +34,12 @@ const Network = (props) => {
 			accessNetwork(props.match.params.network, getTokenSilently, (network) => {
 				if (network !== undefined) {
 					setNetwork(network);
+
 				}
 				setShowNetwork(true);
-			})
+			});
+
+			getMyUserId(getTokenSilently, setMyId)
 		}
 		fetchData();
 	}, [getTokenSilently, props.match.params.network]);
@@ -50,6 +55,7 @@ const Network = (props) => {
 		<Container fluid={true}>
 
 			{showNetwork && <NetworkDetails network={network}/>}
+
 		</Container>
 
 		<Container fluid={true}>
@@ -65,6 +71,8 @@ const Network = (props) => {
 				{showDevices && deviceDisplay(devices)}
 				</tbody>
 			</Table>
+			{myId !== null && showNetwork &&
+			network.permissions[myId].includes('edit') &&
 			<Row>
 				<Col>
 					<Link to={"/u/device/register/" + props.match.params.network}>
@@ -72,6 +80,8 @@ const Network = (props) => {
 					</Link>
 				</Col>
 			</Row>
+			}
+
 		</Container>
 		</>
 	);

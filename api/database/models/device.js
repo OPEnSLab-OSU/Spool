@@ -25,7 +25,6 @@ class DeviceModel {
 		this.network = deviceData.network;
 		//adding dataRun to the constructor
 		this.num_dataRuns = deviceData.num_dataRuns;
-		this.permissions = deviceData.permissions || {};
 	}
 }
 
@@ -43,6 +42,23 @@ class DeviceDatabase extends DatabaseInterface {
 	static async getCollection() {
 		const collection = await super.getCollection("Devices");
 		return collection;
+	}
+
+    /**
+	 * Override the default permission checking on the device object and defer to the network instead
+     * @param {string} id - the database id of the object to check permissions for
+     * @param {[string]} permission_names - An array of permission names to look for
+     * @param {Object} user - the user to check permissions for
+     * @returns {Promise.<void>}
+     */
+	static async checkPermissions(id, permission_names, user) {
+		const device = await this.get(id);
+		const network_id = device.network;
+
+		const Networks = await super.getCollection("Networks");
+		const networks = await Networks.find({_id: new ObjectID(network_id)}).toArray();
+		const network = networks[0];
+		return super.checkPermissions(null, permission_names, user, network);
 	}
 
 	/**
@@ -102,10 +118,7 @@ class DeviceDatabase extends DatabaseInterface {
 	/**
 	 * Gets the device with id.
 	 * @param {string} id - The id of the device.
-	 * @param {Object} user - The user requesting the device.
 	 * @returns {Object} A device object from the MongoDB.
-	 *
-	 * @throws User must own the device.
 	 */
 	static async get(id) {
 
@@ -183,12 +196,6 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator_id = device_id;
 		}
 
-		const device_permissions = new Permissions();
-
-		device_permissions.add('view', user._id);
-		device_permissions.add('edit', user._id);
-		device_permissions.add('delete', user._id);
-
 		let new_device = new DeviceModel({
 			name: name,
 			device_id: device_id,
@@ -196,8 +203,7 @@ class DeviceDatabase extends DatabaseInterface {
 			coordinator: coordinator,
 			coordinator_id: coordinator_id,
 			network: network_id,
-			num_dataRuns: 0,
-			permissions: device_permissions.permissions
+			num_dataRuns: 0
 		});
 
 		const Devices = await this.getCollection();

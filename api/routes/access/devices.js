@@ -3,11 +3,14 @@ const router = express.Router();
 const secured = require('../../lib/middleware/secured');
 const wrapAsync = require('../../lib/middleware/asyncWrap');
 
+const {RegisterDeviceSchema} = require('../api');
 const {getDevices, getDevice, deleteDevice, createDevice, getDeviceData, getDeviceDataByDataRun} = require('./devicesImpl');
 
-//MongoDB
-var mongoClient = require('../../database/db');
-const ObjectID = require('mongodb').ObjectID;
+//API JSON Schema Validation
+const { Validator, ValidationError } = require('express-json-validator-middleware');
+const validator = new Validator({allErrors: true});
+// Define a shortcut function
+const validate = validator.validate;
 
 /**
  * @swagger
@@ -66,7 +69,7 @@ router.post('/delete/', secured, wrapAsync(deleteDevice));
  *              - devices
  */
 
-router.post('/register', secured, wrapAsync(createDevice));
+router.post('/register', validate({body: RegisterDeviceSchema}), secured, wrapAsync(createDevice));
 
 /**
  *  @swagger

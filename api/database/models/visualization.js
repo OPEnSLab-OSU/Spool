@@ -34,8 +34,22 @@ class VisualizationDatabase extends DatabaseInterface {
 	}
 
 	/**
+	 * Override the default permission checking on the visualization object and defer to the network instead
+     * @param {string} id - the database id of the object to check permissions for
+     * @param {[string]} permission_names - An array of permission names to look for
+     * @param {Object} user - the user to check permissions for
+     * @returns {Promise.<void>}
+     */
+	static async checkPermissions(id, permission_names, user) {
+		const visualization = await this.get(id);
+
+		const device_id = visualization.device_id;
+
+		return await DeviceDatabase.checkPermissions(device_id, permission_names, user);
+	}
+
+	/**
 	 * Determines if user owns the visualization data with the specified visualization_id.
-	 * This function is called by the checkOwnership(id, user) function. If it returns false, an error is thrown.
 	 *
 	 * @param {string} visualization_id - The id of the visualization to check for ownership.
 	 * @param {Object} user - The user to check for ownership.
@@ -55,9 +69,7 @@ class VisualizationDatabase extends DatabaseInterface {
 	 * @returns {Array} An array of visualization objects.
 	 * @throws If the user doesn't own the device
 	 */
-	static async getByDevice(device_id, user) {
-
-		DeviceDatabase.checkOwnership(device_id, user);
+	static async getByDevice(device_id) {
 
 		const VisualizationCollection = await this.getCollection();
 
@@ -86,14 +98,13 @@ class VisualizationDatabase extends DatabaseInterface {
 	 */
 	static async create(visualizationData, device_id, user) {
 
-		DeviceDatabase.checkOwnership(device_id, user);
-		
 		const VisualizationCollection = await this.getCollection();
 		
 		//generate a device_id
 		const visualization_id = new ObjectID();
 		visualizationData.visualization_id = visualization_id.toString();
 		visualizationData.owner = user._id;
+		visualizationData.device_id = device_id;
 
 		let analysis = new VisualizationModel(visualizationData);
 
@@ -108,8 +119,6 @@ class VisualizationDatabase extends DatabaseInterface {
 	 * @returns {boolean}
 	 */
 	static async update(visualization_id, update, user) {
-		
-		this.checkOwnership(visualization_id, user);
 
 		const VisualizationCollection = await this.getCollection();
 
@@ -126,9 +135,7 @@ class VisualizationDatabase extends DatabaseInterface {
 	 * @param user - The user requesting deletion.
 	 */
 	static async del(visualization_id, user) {
-		
-		this.checkOwnership(visualization_id, user);
-		
+
 		const VisualizationCollection = await this.getCollection();
 		
 		let _ = await VisualizationCollection.deleteOne({visualization_id: visualization_id.toString()}).catch((err) => {throw(err)});

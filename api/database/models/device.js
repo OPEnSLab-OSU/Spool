@@ -47,7 +47,7 @@ class DeviceDatabase extends DatabaseInterface {
     /**
 	 * Override the default permission checking on the device object and defer to the network instead
      * @param {string} id - the database id of the object to check permissions for
-     * @param {[string]} permission_names - An array of permission names to look for
+     * @param {string[]} permission_names - An array of permission names to look for
      * @param {Object} user - the user to check permissions for
      * @returns {Promise.<void>}
      */

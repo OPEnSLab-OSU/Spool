@@ -73,7 +73,7 @@ class DatabaseInterface {
     /**
 	 * Adds a list of permissions to a user, possibly checking the permissions of the requesting user to do so
      * @param {string} id - the id of the object to change permissions for
-     * @param {[string]} permission_names - an array of permission names to add to the user
+     * @param {string[]} permission_names - an array of permission names to add to the user
      * @param {string} otherUserId - the id of the user to add the permissions for
      * @param {Object} user - the user requesting the permissions be added (for checking their permissions)
      * @param {bool} checkPermissions - a boolean describing whether the permissions of user allow them to add permissions. Defaults to true.
@@ -97,7 +97,7 @@ class DatabaseInterface {
     /**
 	 * Removes a list of permissions from a user, possibly checking the permissions of the requesting user to do so
      * @param {string} id - the id of the object to change permissions for
-     * @param {[string]} permission_names - an array of permission names to remove from the user
+     * @param {string[]} permission_names - an array of permission names to remove from the user
      * @param {string} otherUserId - the id of the user to remove the permissions from
      * @param {Object} user - the user requesting the permissions be removed (for checking their permissions)
      * @param {bool} checkPermissions - a boolean describing whether the permissions of user allow them to remove permissions. Defaults to true.
@@ -121,7 +121,7 @@ class DatabaseInterface {
     /**
 	 * Checks if a user has a set of permissions to an object in the database.
      * @param {string} id - the database id of the object to check permissions for
-     * @param {[string]} permission_names - An array of permission names to look for
+     * @param {string[]} permission_names - An array of permission names to look for
      * @param {Object} user - the user to check permissions for
      * @returns {Promise.<boolean>}
      */

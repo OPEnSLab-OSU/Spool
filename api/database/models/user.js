@@ -167,7 +167,7 @@ class Auth0UserManager extends DatabaseInterface {
     /**
      * Searches all the auth0 users with access to this application.
      * @param {string} search - a search query. See https://auth0.com/docs/users/user-search/user-search-query-syntax for the query syntax
-     * @returns {Promise.<[Object]>} an array of user objects with only their email, username, and id.
+     * @returns {Promise.<Object[]>} an array of user objects with only their email, username, and id.
      */
     static async searchAuth0Users(search) {
         const users = await auth0Management.getUsers({

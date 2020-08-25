@@ -8,13 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:      
       - name: Setup Spool
-        run: curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
-      
-      - name: Copy Secrets 1
-        run: 'echo "$FRONT_END_CLIENT_ID" > ../secrets/frontEndClientId.txt'
-        shell: bash
-        env:
-          SSH_KEY: ${{secrets.FRONT_END_CLIENT_ID}}
+        run: mkdir app
+            cd app
+            curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
       
       - name: Test
         run: 'ls ../secrets'

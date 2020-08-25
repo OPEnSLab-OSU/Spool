@@ -6,7 +6,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ${{ github.workspace }}
+    working-directory: ${{ GITHUB_WORKSPACE }}
     
 jobs:
   build:

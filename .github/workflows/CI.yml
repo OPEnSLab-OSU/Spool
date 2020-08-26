@@ -8,7 +8,7 @@ defaults:
     shell: bash
     
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:      
       - name: Setup Spool
@@ -24,3 +24,28 @@ jobs:
         run: 'echo "$SECRET" > ./Spool_Application/secrets/frontEndClientSecret.txt'
         env:
           SECRET: ${{secrets.FRONT_END_CLIENT_SECRET}}
+
+      - name: Copy Secrets 3
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/clientSecret.txt'
+        env:
+          SECRET: ${{secrets.CLIENT_SECRET}}
+      
+      - name: Copy Secrets 4
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/clientId.txt'
+        env:
+          SECRET: ${{secrets.CLIENT_ID}}
+          
+      - name: Copy Secrets 5
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/testUserPassword.txt'
+        env:
+          SECRET: ${{secrets.TEST_USER_PASSWORD}}
+
+      - name: Copy Secrets 6
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/testUserPassword2.txt'
+        env:
+          SECRET: ${{secrets.TEST_USER_PASSWORD_2}}
+          
+      - name: Run Tests
+        run: |
+          cd ./Spool_Application/Spool
+          docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from app

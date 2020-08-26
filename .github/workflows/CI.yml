@@ -15,11 +15,12 @@ jobs:
         run: curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
         working-directory: ${{ github.workspace }}
         
-      - name: Test
-        run: |
-          echo $(pwd)
-          cd Spool_Application
-          echo $(pwd)
-          cd secrets
-          echo $(pwd)
-        working-directory: ${{ github.workspace }}
+      - name: Copy Secrets 1
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/frontEndClientId.txt'
+        env:
+          SECRET: ${{secrets.FRONT_END_CLIENT_ID}}
+
+      - name: Copy Secrets 2
+        run: 'echo "$SECRET" > ./Spool_Application/secrets/frontEndClientSecret.txt'
+        env:
+          SECRET: ${{secrets.FRONT_END_CLIENT_SECRET}}

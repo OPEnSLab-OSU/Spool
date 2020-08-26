@@ -23,6 +23,6 @@ jobs:
           echo $(pwd)
           cd app
           echo $(pwd)
-          cd secrets
+          cd Spool
           echo $(pwd)
         working-directory: ${{ github.workspace }}

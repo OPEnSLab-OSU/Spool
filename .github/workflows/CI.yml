@@ -12,17 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:      
       - name: Setup Spool
-        run: |
-            mkdir app
-            cd app
-            curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
+        run: curl -fsSL https://raw.githubusercontent.com/OPEnSLab-OSU/Spool/master/setup/Install-Spool.sh | sh
         working-directory: ${{ github.workspace }}
         
       - name: Test
         run: |
           echo $(pwd)
-          cd app
+          cd Spool_Application
           echo $(pwd)
-          cd Spool
+          cd secrets
           echo $(pwd)
         working-directory: ${{ github.workspace }}
